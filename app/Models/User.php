@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\OrganizationScopeType;
+use App\Services\OrganizationScope\OrganizationScopeService;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -86,46 +86,12 @@ class User extends Authenticatable
 
     /**
      * Returns the set of organization IDs accessible to this user based on active scopes.
-     * An empty array means "all organizations" (Super Admin or citywide scope).
+     * An empty array means "all organizations" (Super Admin or City Admin).
      *
      * @return string[]
      */
     public function accessibleOrganizationIds(): array
     {
-        if ($this->isSuperAdmin()) {
-            return [];
-        }
-
-        $activeScopes = $this->organizationScopes()->active()->with('organization')->get();
-
-        $hasCitywide = $activeScopes->contains(
-            fn (UserOrganizationScope $s) => $s->scope_type === OrganizationScopeType::Citywide,
-        );
-
-        if ($hasCitywide) {
-            return [];
-        }
-
-        $ids = [];
-
-        foreach ($activeScopes as $scope) {
-            if ($scope->organization_id === null) {
-                continue;
-            }
-
-            if ($scope->scope_type === OrganizationScopeType::Subtree) {
-                $ids[] = $scope->organization_id;
-                $descendantIds = \DB::table('organization_closure_paths')
-                    ->where('ancestor_organization_id', $scope->organization_id)
-                    ->where('depth', '>', 0)
-                    ->pluck('descendant_organization_id')
-                    ->toArray();
-                $ids = array_merge($ids, $descendantIds);
-            } else {
-                $ids[] = $scope->organization_id;
-            }
-        }
-
-        return array_values(array_unique($ids));
+        return app(OrganizationScopeService::class)->accessibleOrganizationIds($this)->all();
     }
 }

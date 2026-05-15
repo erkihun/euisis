@@ -57,4 +57,8 @@ return [
     'parent_and_child_cannot_match' => 'ወላጅ እና ልጅ ድርጅት አንድ መሆን አይችሉም።',
     'circularHierarchy' => 'የወላጅ ድርጅቱ የተዋረደ ዑደት እንዲፈጥር ያደርጋል።',
     'duplicateEdge' => 'ይህ የወላጅ-ልጅ ግንኙነት በተመረጠው የተዋረድ ስሪት ውስጥ አስቀድሞ ይገኛል።',
+    'no_access_organization' => 'ይህን ድርጅት ለማግኘት ፈቃድ የለዎትም።',
+    'scope_does_not_include_record' => 'የድርጅት ወሰንዎ ይህን መዝገብ አያካትትም።',
+    'subtree_scope_description' => 'ንዑስ ዛፍ ወሰን የተመረጠውን ድርጅት እና ንዑስ ድርጅቶቹን ያካትታል።',
+    'no_published_hierarchy_version' => 'የታተመ ተዋረድ ስሪት አልተገኘም። ወሰን ወደ ተመደበው ድርጅት ብቻ ይመለሳል።',
 ];

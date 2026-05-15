@@ -113,7 +113,7 @@ function scopedManager(Organization $organization): User
         'user_id' => $user->id,
         'organization_id' => $organization->id,
         'scope_type' => OrganizationScopeType::Subtree,
-        'effective_from' => now()->toDateString(),
+        'effective_from' => now()->subDay()->toDateString(),
     ]);
 
     return $user;

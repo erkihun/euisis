@@ -20,7 +20,8 @@ readonly class OrganizationPolicy
 
     public function view(User $user, Organization $organization): bool
     {
-        return $user->can('organizations.view');
+        return $user->can('organizations.view')
+            && $this->organizationScopeService->canAccessOrganization($user, $organization->id);
     }
 
     public function create(User $user): bool

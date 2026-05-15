@@ -12,6 +12,7 @@ use App\Http\Requests\UserOrganizationScopes\UpdateUserOrganizationScopeRequest;
 use App\Http\Resources\UserOrganizationScopeResource;
 use App\Models\User;
 use App\Models\UserOrganizationScope;
+use App\Services\OrganizationScope\OrganizationScopeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,6 +33,7 @@ class UserOrganizationScopeController extends Controller
         StoreUserOrganizationScopeRequest $request,
         User $user,
         WriteAuditLogAction $auditLog,
+        OrganizationScopeService $scopeService,
     ): RedirectResponse {
         /** @var User $actor */
         $actor = Auth::user();
@@ -40,6 +42,8 @@ class UserOrganizationScopeController extends Controller
             ...$request->validated(),
             'assigned_by' => $actor->getKey(),
         ]);
+
+        $scopeService->clearCache($user);
 
         $auditLog->execute(
             AuditEventType::UserOrganizationScopeAssigned,
@@ -60,6 +64,7 @@ class UserOrganizationScopeController extends Controller
         User $user,
         UserOrganizationScope $scope,
         WriteAuditLogAction $auditLog,
+        OrganizationScopeService $scopeService,
     ): RedirectResponse {
         /** @var User $actor */
         $actor = Auth::user();
@@ -67,6 +72,8 @@ class UserOrganizationScopeController extends Controller
         $old = $scope->only(['organization_id', 'scope_type', 'effective_from', 'effective_to', 'is_active']);
 
         $scope->update($request->validated());
+
+        $scopeService->clearCache($user);
 
         $auditLog->execute(
             AuditEventType::UserOrganizationScopeUpdated,
@@ -87,6 +94,7 @@ class UserOrganizationScopeController extends Controller
         User $user,
         UserOrganizationScope $scope,
         WriteAuditLogAction $auditLog,
+        OrganizationScopeService $scopeService,
     ): RedirectResponse {
         $this->authorize('delete', $scope);
 
@@ -96,6 +104,8 @@ class UserOrganizationScopeController extends Controller
         $old = $scope->only(['organization_id', 'scope_type', 'effective_from', 'effective_to', 'is_active']);
 
         $scope->delete();
+
+        $scopeService->clearCache($user);
 
         $auditLog->execute(
             AuditEventType::UserOrganizationScopeRemoved,

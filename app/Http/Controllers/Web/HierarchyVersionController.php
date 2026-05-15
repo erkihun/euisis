@@ -146,8 +146,11 @@ class HierarchyVersionController extends Controller
         PublishHierarchyVersionRequest $request,
         HierarchyVersion $hierarchyVersion,
         PublishHierarchyVersionAction $publishHierarchyVersionAction,
+        OrganizationScopeService $organizationScopeService,
     ): RedirectResponse {
         $publishHierarchyVersionAction->execute($hierarchyVersion, $request->user());
+
+        $organizationScopeService->clearCache();
 
         return to_route('hierarchy-versions.show', $hierarchyVersion)
             ->with('flash', ['message' => __('hierarchy-versions.published_successfully'), 'type' => 'success']);

@@ -12,9 +12,13 @@ use App\Models\Organization;
 use App\Models\OrganizationClosurePath;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class OrganizationScopeService
 {
+    /** @var array<string, Collection> */
+    private array $requestCache = [];
+
     public function canAccessOrganization(User $user, ?string $organizationId): bool
     {
         if ($organizationId === null) {
@@ -25,12 +29,31 @@ class OrganizationScopeService
             return true;
         }
 
+        $hasAnyScopeRecord = $user->organizationScopes()->exists();
+
+        if (! $hasAnyScopeRecord) {
+            return true;
+        }
+
         return $this->accessibleOrganizationIds($user)->contains($organizationId);
     }
 
     public function canAccessEmployee(User $user, Employee $employee): bool
     {
         return $this->canAccessOrganization($user, $employee->currentAssignment?->organization_id);
+    }
+
+    public function clearCache(?User $user = null): void
+    {
+        if ($user !== null) {
+            foreach (array_keys($this->requestCache) as $key) {
+                if (str_starts_with($key, "org_scope.{$user->getKey()}.")) {
+                    unset($this->requestCache[$key]);
+                }
+            }
+        } else {
+            $this->requestCache = [];
+        }
     }
 
     public function descendantsForOrganization(string $organizationId, ?string $hierarchyVersionId = null): Collection
@@ -51,8 +74,11 @@ class OrganizationScopeService
      * Flat depth-first traversal for the Organizations index page.
      * Returns every node with depth, parent_id, and children_count so the
      * frontend can render an indented hierarchy without recursive calls.
+     * When $allowedOrgIds is provided, only nodes within that set are included.
+     *
+     * @param  string[]|null  $allowedOrgIds  null means no restriction
      */
-    public function buildFlatTreeForIndex(?HierarchyVersion $version): array
+    public function buildFlatTreeForIndex(?HierarchyVersion $version, ?array $allowedOrgIds = null): array
     {
         if ($version === null) {
             return [];
@@ -69,6 +95,10 @@ class OrganizationScopeService
             ->merge($edges->pluck('child_organization_id'))
             ->unique()
             ->values();
+
+        if ($allowedOrgIds !== null) {
+            $allOrgIds = $allOrgIds->intersect($allowedOrgIds)->values();
+        }
 
         $organizations = Organization::query()
             ->whereIn('id', $allOrgIds)
@@ -271,22 +301,26 @@ class OrganizationScopeService
     public function accessibleOrganizationIds(User $user): Collection
     {
         if ($user->hasRole('Super Admin') || $user->hasRole('City Admin')) {
-            return OrganizationClosurePath::query()
-                ->select('descendant_organization_id')
-                ->distinct()
-                ->pluck('descendant_organization_id');
+            return Organization::query()->pluck('id');
         }
 
-        $scopes = $user->organizationScopes()->get();
+        $publishedVersionId = $this->resolvePublishedVersionId() ?? 'none';
+        $cacheKey = "org_scope.{$user->getKey()}.{$publishedVersionId}";
+
+        if (isset($this->requestCache[$cacheKey])) {
+            return $this->requestCache[$cacheKey];
+        }
+
+        $scopes = $user->organizationScopes()->active()->get();
 
         $ids = collect();
 
         foreach ($scopes as $scope) {
             if ($scope->scope_type === OrganizationScopeType::Citywide) {
-                return OrganizationClosurePath::query()
-                    ->select('descendant_organization_id')
-                    ->distinct()
-                    ->pluck('descendant_organization_id');
+                $result = Organization::query()->pluck('id');
+                $this->requestCache[$cacheKey] = $result;
+
+                return $result;
             }
 
             if ($scope->organization_id === null) {
@@ -300,14 +334,36 @@ class OrganizationScopeService
             }
 
             if ($scope->scope_type === OrganizationScopeType::Subtree) {
+                if ($publishedVersionId === 'none') {
+                    Log::warning('OrganizationScopeService: no published hierarchy version found; subtree scope falls back to assigned organization only.', [
+                        'user_id' => $user->getKey(),
+                        'organization_id' => $scope->organization_id,
+                    ]);
+                    $ids->push($scope->organization_id);
+
+                    continue;
+                }
+
                 $ids = $ids->merge(
                     OrganizationClosurePath::query()
+                        ->where('hierarchy_version_id', $publishedVersionId)
                         ->where('ancestor_organization_id', $scope->organization_id)
                         ->pluck('descendant_organization_id')
                 );
             }
         }
 
-        return $ids->unique()->values();
+        $result = $ids->unique()->values();
+        $this->requestCache[$cacheKey] = $result;
+
+        return $result;
+    }
+
+    private function resolvePublishedVersionId(): ?string
+    {
+        return HierarchyVersion::query()
+            ->where('status', HierarchyVersionStatus::Published->value)
+            ->latest('approval_date')
+            ->value('id');
     }
 }

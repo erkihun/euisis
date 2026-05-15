@@ -57,4 +57,8 @@ return [
     'parent_and_child_cannot_match' => 'Parent and child organization cannot be the same.',
     'circularHierarchy' => 'Parent organization would create a circular hierarchy.',
     'duplicateEdge' => 'This parent-child relationship already exists in the selected hierarchy version.',
+    'no_access_organization' => 'You do not have access to this organization.',
+    'scope_does_not_include_record' => 'Your organization scope does not include this record.',
+    'subtree_scope_description' => 'Subtree scope includes the selected organization and its child organizations.',
+    'no_published_hierarchy_version' => 'No published hierarchy version was found. Scope fallback to assigned organization only.',
 ];

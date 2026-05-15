@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\OrganizationUnit;
 use App\Models\User;
+use App\Services\OrganizationScope\OrganizationScopeService;
 
-class OrganizationUnitPolicy
+readonly class OrganizationUnitPolicy
 {
+    public function __construct(private OrganizationScopeService $organizationScopeService) {}
+
     public function viewAny(User $user): bool
     {
         return $user->can('organization-units.viewAny');
@@ -16,7 +19,8 @@ class OrganizationUnitPolicy
 
     public function view(User $user, OrganizationUnit $unit): bool
     {
-        return $user->can('organization-units.view');
+        return $user->can('organization-units.view')
+            && $this->organizationScopeService->canAccessOrganization($user, $unit->organization_id);
     }
 
     public function create(User $user): bool
@@ -26,17 +30,20 @@ class OrganizationUnitPolicy
 
     public function update(User $user, OrganizationUnit $unit): bool
     {
-        return $user->can('organization-units.update');
+        return $user->can('organization-units.update')
+            && $this->organizationScopeService->canAccessOrganization($user, $unit->organization_id);
     }
 
     public function archive(User $user, OrganizationUnit $unit): bool
     {
-        return $user->can('organization-units.delete') || $user->can('organization-units.archive');
+        return ($user->can('organization-units.delete') || $user->can('organization-units.archive'))
+            && $this->organizationScopeService->canAccessOrganization($user, $unit->organization_id);
     }
 
     public function restore(User $user, OrganizationUnit $unit): bool
     {
-        return $user->can('organization-units.restore');
+        return $user->can('organization-units.restore')
+            && $this->organizationScopeService->canAccessOrganization($user, $unit->organization_id);
     }
 
     public function viewDeleted(User $user): bool

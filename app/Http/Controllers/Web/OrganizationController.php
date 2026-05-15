@@ -34,7 +34,9 @@ class OrganizationController extends Controller
             ->latest('approval_date')
             ->first();
 
-        $tree = $scopeService->buildFlatTreeForIndex($publishedVersion);
+        $allowedOrgIds = $user !== null ? $scopeService->accessibleOrganizationIds($user) : collect();
+
+        $tree = $scopeService->buildFlatTreeForIndex($publishedVersion, $allowedOrgIds->isNotEmpty() ? $allowedOrgIds->all() : null);
 
         if ($user !== null) {
             $organizationsById = Organization::query()
@@ -59,11 +61,16 @@ class OrganizationController extends Controller
 
         $assignedIds = collect($tree)->pluck('id');
 
-        $unassigned = Organization::query()
+        $unassignedQuery = Organization::query()
             ->when($assignedIds->isNotEmpty(), fn ($q) => $q->whereNotIn('id', $assignedIds))
             ->with('type:id,name_en,code')
-            ->orderBy('name_en')
-            ->get(['id', 'code', 'name_en', 'name_am', 'status', 'effective_from', 'effective_to', 'organization_type_id']);
+            ->orderBy('name_en');
+
+        if ($allowedOrgIds->isNotEmpty()) {
+            $unassignedQuery->whereIn('id', $allowedOrgIds);
+        }
+
+        $unassigned = $unassignedQuery->get(['id', 'code', 'name_en', 'name_am', 'status', 'effective_from', 'effective_to', 'organization_type_id']);
 
         $canManage = $user?->can('organizations.manage') ?? false;
 

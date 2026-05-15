@@ -20,6 +20,7 @@ use App\Http\Requests\IdCards\ReportDamagedCardRequest;
 use App\Http\Requests\IdCards\ReportLostCardRequest;
 use App\Http\Requests\IdCards\RevokeCardRequest;
 use App\Models\IdCard;
+use App\Services\OrganizationScope\OrganizationScopeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,12 +29,21 @@ use Inertia\Response;
 
 class IdCardController extends Controller
 {
-    public function index(): Response
+    public function index(OrganizationScopeService $scopeService): Response
     {
         $this->authorize('viewAny', IdCard::class);
 
+        $allowedOrgIds = $scopeService->accessibleOrganizationIds(request()->user());
+
         $cards = IdCard::query()
             ->with(['employee.currentAssignment.organization', 'employee.currentAssignment.position', 'previousCard'])
+            ->when(
+                $allowedOrgIds->isNotEmpty(),
+                fn ($q) => $q->whereHas(
+                    'employee.currentAssignment',
+                    fn ($aq) => $aq->whereIn('organization_id', $allowedOrgIds)
+                )
+            )
             ->orderByDesc('created_at')
             ->paginate(25);
 
