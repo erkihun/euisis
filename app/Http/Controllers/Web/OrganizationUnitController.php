@@ -8,12 +8,15 @@ use App\Actions\OrganizationUnits\ArchiveOrganizationUnitAction;
 use App\Actions\OrganizationUnits\CreateOrganizationUnitAction;
 use App\Actions\OrganizationUnits\RestoreOrganizationUnitAction;
 use App\Actions\OrganizationUnits\UpdateOrganizationUnitAction;
+use App\Enums\HierarchyVersionStatus;
 use App\Enums\OrganizationUnitStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrganizationUnitRequest;
 use App\Http\Requests\UpdateOrganizationUnitRequest;
 use App\Http\Resources\OrganizationUnitResource;
+use App\Models\HierarchyVersion;
 use App\Models\Organization;
+use App\Models\OrganizationEdge;
 use App\Models\OrganizationUnit;
 use App\Models\OrganizationUnitType as OrganizationUnitTypeModel;
 use App\Services\OrganizationUnits\OrganizationUnitTreeService;
@@ -47,14 +50,108 @@ class OrganizationUnitController extends Controller
             'status', 'logo_path', 'effective_from',
         ]);
 
+        // Build organization hierarchy tree from current published version
+        $publishedVersion = HierarchyVersion::query()
+            ->where('status', HierarchyVersionStatus::Published)
+            ->latest('effective_from')
+            ->first(['id']);
+
+        $hasPublishedHierarchy = $publishedVersion !== null;
+        $orgMap = $organizations->keyBy('id');
+
+        if ($hasPublishedHierarchy) {
+            $edges = OrganizationEdge::query()
+                ->where('hierarchy_version_id', $publishedVersion->id)
+                ->get(['parent_organization_id', 'child_organization_id']);
+
+            $childrenMap = [];
+            $edgeChildIds = [];
+            foreach ($edges as $edge) {
+                $pid = $edge->parent_organization_id;
+                $cid = $edge->child_organization_id;
+                // Only include edges where both orgs are in accessible set
+                if ($orgMap->has($pid) && $orgMap->has($cid)) {
+                    $childrenMap[$pid][] = $cid;
+                    $edgeChildIds[] = $cid;
+                }
+            }
+            $edgeChildIds = array_unique($edgeChildIds);
+
+            $buildOrgNode = function (string $orgId, int $depth) use (&$buildOrgNode, $orgMap, $childrenMap): ?array {
+                $org = $orgMap->get($orgId);
+                if (! $org) {
+                    return null;
+                }
+                $children = [];
+                foreach ($childrenMap[$orgId] ?? [] as $childId) {
+                    $child = $buildOrgNode($childId, $depth + 1);
+                    if ($child !== null) {
+                        $children[] = $child;
+                    }
+                }
+
+                return [
+                    'id' => $org->id,
+                    'code' => $org->code,
+                    'name_en' => $org->name_en,
+                    'name_am' => $org->name_am,
+                    'status' => $org->status,
+                    'logo_url' => $org->logo_url,
+                    'has_logo' => $org->has_logo,
+                    'organization_units_count' => $org->organization_units_count,
+                    'type' => $org->type ? [
+                        'id' => $org->type->id,
+                        'code' => $org->type->code,
+                        'name_en' => $org->type->name_en,
+                        'name_am' => $org->type->name_am,
+                    ] : null,
+                    'depth' => $depth,
+                    'children' => $children,
+                ];
+            };
+
+            $organizationTree = $organizations
+                ->filter(fn ($org) => ! in_array($org->id, $edgeChildIds, true))
+                ->map(fn ($org) => $buildOrgNode($org->id, 0))
+                ->filter()
+                ->values()
+                ->all();
+        } else {
+            // Fallback: flat list, each org as depth-0 node with no children
+            $organizationTree = $organizations->map(fn ($org) => [
+                'id' => $org->id,
+                'code' => $org->code,
+                'name_en' => $org->name_en,
+                'name_am' => $org->name_am,
+                'status' => $org->status,
+                'logo_url' => $org->logo_url,
+                'has_logo' => $org->has_logo,
+                'organization_units_count' => $org->organization_units_count,
+                'type' => $org->type ? [
+                    'id' => $org->type->id,
+                    'code' => $org->type->code,
+                    'name_en' => $org->type->name_en,
+                    'name_am' => $org->type->name_am,
+                ] : null,
+                'depth' => 0,
+                'children' => [],
+            ])->values()->all();
+        }
+
         $selectedOrganization = null;
         $organizationUnits = [];
 
         if ($request->filled('organization_id')) {
+            $orgId = $request->get('organization_id');
+
+            if (! empty($accessibleOrgIds) && ! in_array($orgId, $accessibleOrgIds, true)) {
+                abort(403);
+            }
+
             $selectedOrganization = Organization::query()
                 ->with(['type:id,name_en,name_am,code'])
                 ->withCount(['organizationUnits' => fn ($q) => $q->whereNull('deleted_at')])
-                ->find($request->get('organization_id'), [
+                ->find($orgId, [
                     'id', 'organization_type_id', 'code', 'name_en', 'name_am',
                     'status', 'logo_path', 'effective_from',
                 ]);
@@ -65,7 +162,8 @@ class OrganizationUnitController extends Controller
         }
 
         return Inertia::render('OrganizationUnits/Index', [
-            'organizations' => $organizations,
+            'organizationTree' => $organizationTree,
+            'hasPublishedHierarchy' => $hasPublishedHierarchy,
             'selectedOrganization' => $selectedOrganization,
             'organizationUnits' => $organizationUnits,
             'unitTypes' => OrganizationUnitTypeModel::query()

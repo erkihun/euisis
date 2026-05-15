@@ -85,3 +85,22 @@ export interface OrganizationSummary {
         name_am: string | null;
     } | null;
 }
+
+export interface OrganizationTreeNode {
+    id: string;
+    code: string;
+    name_en: string;
+    name_am: string | null;
+    status: string;
+    logo_url: string | null;
+    has_logo: boolean;
+    organization_units_count?: number;
+    type?: {
+        id: string;
+        code: string;
+        name_en: string;
+        name_am: string | null;
+    } | null;
+    depth: number;
+    children: OrganizationTreeNode[];
+}

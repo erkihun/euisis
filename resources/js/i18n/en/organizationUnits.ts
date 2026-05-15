@@ -73,6 +73,13 @@ const organizationUnits = {
     parentUnitMustBelongToOrganization: 'Parent unit must belong to the selected organization',
     noParentUnitsYetHint: 'No parent units yet. This unit will be created as a root unit.',
     searchOrganizations: 'Search organizations...',
+    organizationTreePreview: 'Organization Tree Preview',
+    noPublishedHierarchy: 'No published hierarchy version found. Showing organizations as a flat list.',
+    noOrganizationsFound: 'No organizations found',
+    childOrganizations: 'Child Organizations',
+    expandOrganization: 'Expand organization',
+    collapseOrganization: 'Collapse organization',
+    viewUnitsTooltip: 'View units for this organization',
 } as const;
 
 export default organizationUnits;

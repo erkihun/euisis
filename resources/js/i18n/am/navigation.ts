@@ -9,6 +9,8 @@ const navigation = {
     employees: 'ሰራተኞች',
     employeeTransfers: 'የሰራተኛ ዝውውሮች',
     positions: 'የስራ መደቦች',
+    occupations: 'ሙያዎች',
+    isicActivities: 'የኢኮኖሚ ዘርፍ ምደባ',
     idCards: 'መታወቂያ ካርዶች',
     cardRequests: 'የካርድ ጥያቄዎች',
     serviceTypes: 'የአገልግሎት አይነቶች',

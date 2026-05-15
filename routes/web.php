@@ -14,6 +14,8 @@ use App\Http\Controllers\Web\EntitlementController;
 use App\Http\Controllers\Web\EntitlementRuleController;
 use App\Http\Controllers\Web\HierarchyVersionController;
 use App\Http\Controllers\Web\IdCardController;
+use App\Http\Controllers\Web\IsicActivityController;
+use App\Http\Controllers\Web\OccupationController;
 use App\Http\Controllers\Web\OrganizationController;
 use App\Http\Controllers\Web\OrganizationEdgeController;
 use App\Http\Controllers\Web\OrganizationTypeController;
@@ -107,6 +109,26 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
     Route::patch('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
     Route::post('/employees/{employee}/transfers', [EmployeeController::class, 'transfer'])->name('employees.transfer');
+
+    // Occupations
+    Route::get('/occupations', [OccupationController::class, 'index'])->name('occupations.index');
+    Route::get('/occupations/create', [OccupationController::class, 'create'])->name('occupations.create');
+    Route::post('/occupations', [OccupationController::class, 'store'])->name('occupations.store');
+    Route::get('/occupations/{occupation}', [OccupationController::class, 'show'])->name('occupations.show');
+    Route::get('/occupations/{occupation}/edit', [OccupationController::class, 'edit'])->name('occupations.edit');
+    Route::patch('/occupations/{occupation}', [OccupationController::class, 'update'])->name('occupations.update');
+    Route::delete('/occupations/{occupation}', [OccupationController::class, 'archive'])->name('occupations.archive');
+    Route::post('/occupations/{occupation}/restore', [OccupationController::class, 'restore'])->name('occupations.restore');
+
+    // ISIC Activities
+    Route::get('/isic-activities', [IsicActivityController::class, 'index'])->name('isic-activities.index');
+    Route::get('/isic-activities/create', [IsicActivityController::class, 'create'])->name('isic-activities.create');
+    Route::post('/isic-activities', [IsicActivityController::class, 'store'])->name('isic-activities.store');
+    Route::get('/isic-activities/{isicActivity}', [IsicActivityController::class, 'show'])->name('isic-activities.show');
+    Route::get('/isic-activities/{isicActivity}/edit', [IsicActivityController::class, 'edit'])->name('isic-activities.edit');
+    Route::patch('/isic-activities/{isicActivity}', [IsicActivityController::class, 'update'])->name('isic-activities.update');
+    Route::delete('/isic-activities/{isicActivity}', [IsicActivityController::class, 'archive'])->name('isic-activities.archive');
+    Route::post('/isic-activities/{isicActivity}/restore', [IsicActivityController::class, 'restore'])->name('isic-activities.restore');
 
     // Positions
     Route::get('/positions', [PositionController::class, 'index'])->name('positions.index');

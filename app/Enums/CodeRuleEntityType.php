@@ -26,4 +26,5 @@ enum CodeRuleEntityType: string
     case ApiClient = 'api_client';
     case DeviceBinding = 'device_binding';
     case SupportTicket = 'support_ticket';
+    case Occupation = 'occupation';
 }

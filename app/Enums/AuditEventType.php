@@ -121,4 +121,14 @@ enum AuditEventType: string
     case PermissionUpdated = 'permission.updated';
     case PermissionDeleted = 'permission.deleted';
     case RolePermissionsUpdated = 'role.permissions_updated';
+
+    case OccupationCreated = 'occupation_created';
+    case OccupationUpdated = 'occupation_updated';
+    case OccupationArchived = 'occupation_archived';
+    case OccupationRestored = 'occupation_restored';
+
+    case IsicActivityCreated = 'isic_activity_created';
+    case IsicActivityUpdated = 'isic_activity_updated';
+    case IsicActivityArchived = 'isic_activity_archived';
+    case IsicActivityRestored = 'isic_activity_restored';
 }

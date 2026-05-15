@@ -9,6 +9,8 @@ const navigation = {
     employees: 'Employees',
     employeeTransfers: 'Employee Transfers',
     positions: 'Positions',
+    occupations: 'Occupations',
+    isicActivities: 'ISIC Activities',
     idCards: 'ID Cards',
     cardRequests: 'Card Requests',
     serviceTypes: 'Service Types',

@@ -73,6 +73,13 @@ const organizationUnits = {
     parentUnitMustBelongToOrganization: 'ወላጅ ዩኒት ለተመረጠው ድርጅት መሆን አለበት',
     noParentUnitsYetHint: 'ገና ወላጅ ዩኒቶች የሉም። ይህ ዩኒት እንደ ዋና ዩኒት ይፈጠራል።',
     searchOrganizations: 'ድርጅቶችን ፈልግ...',
+    organizationTreePreview: 'የድርጅት ዛፍ ቅድመ-ዕይታ',
+    noPublishedHierarchy: 'የታተመ ተዋረድ ስሪት አልተገኘም። ድርጅቶችን እንደ ዝርዝር እናሳያለን።',
+    noOrganizationsFound: 'ድርጅቶች አልተገኙም',
+    childOrganizations: 'ንዑስ ድርጅቶች',
+    expandOrganization: 'ድርጅቱን ዘርጋ',
+    collapseOrganization: 'ድርጅቱን ጨምቅ',
+    viewUnitsTooltip: 'ለዚህ ድርጅት ዩኒቶችን ይመልከቱ',
 } as const;
 
 export default organizationUnits;

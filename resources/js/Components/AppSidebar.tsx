@@ -24,6 +24,7 @@ import {
     HandshakeIcon,
     KeyIcon,
     UserCogIcon,
+    NetworkIcon,
 } from '@/Components/Icons';
 import { SVGProps } from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
@@ -52,6 +53,8 @@ const mainNav: NavItem[] = [
     { routeName: 'employees.index',               labelKey: 'nav.employees',           icon: Users,              permission: 'employees.view' },
     { routeName: 'employee-transfers.index',      labelKey: 'nav.employeeTransfers',   icon: ArrowLeftRightIcon, permission: 'transfers.viewAny' },
     { routeName: 'positions.index',               labelKey: 'nav.positions',           icon: Briefcase,          permission: 'positions.viewAny' },
+    { routeName: 'occupations.index',             labelKey: 'nav.occupations',         icon: Briefcase,          permission: 'occupations.viewAny' },
+    { routeName: 'isic-activities.index',         labelKey: 'nav.isicActivities',      icon: NetworkIcon,        permission: 'isic-activities.viewAny' },
     // ID Cards
     { routeName: 'id-cards.index',                labelKey: 'nav.idCards',             icon: CreditCard,         permission: 'cards.view' },
     { routeName: 'card-requests.index',           labelKey: 'nav.cardRequests',        icon: ClipboardCheckIcon, permission: 'card-requests.viewAny' },

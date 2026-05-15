@@ -34,6 +34,7 @@ use App\Models\Organization;
 use App\Models\OrganizationEdge;
 use App\Models\OrganizationNameHistory;
 use App\Models\OrganizationType;
+use App\Models\Permission;
 use App\Models\Position;
 use App\Models\ServiceProvider;
 use App\Models\ServiceTransaction;
@@ -47,7 +48,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use RuntimeException;
-use App\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -62,6 +62,8 @@ class DatabaseSeeder extends Seeder
         $this->seedSystemSettings();
         $this->seedCodeRules();
         $this->call(OrganizationUnitTypeSeeder::class);
+        $this->call(IsicActivitySeeder::class);
+        $this->call(OccupationSeeder::class);
 
         $organizationTypes = collect([
             ['code' => 'city_government', 'prefix' => 'CITY', 'name_en' => 'City Government'],
@@ -629,6 +631,22 @@ class DatabaseSeeder extends Seeder
             'providers.viewAny',
             'service-transactions.viewAny',
             'audit-logs.viewAny',
+            'occupations.viewAny',
+            'occupations.view',
+            'occupations.create',
+            'occupations.update',
+            'occupations.archive',
+            'occupations.delete',
+            'occupations.restore',
+            'occupations.export',
+            'isic-activities.viewAny',
+            'isic-activities.view',
+            'isic-activities.create',
+            'isic-activities.update',
+            'isic-activities.archive',
+            'isic-activities.delete',
+            'isic-activities.restore',
+            'isic-activities.export',
             'positions.viewAny',
             'positions.view',
             'positions.create',
@@ -761,6 +779,8 @@ class DatabaseSeeder extends Seeder
                 'entitlements.view', 'entitlements.viewAny',
                 'service-types.viewAny', 'service-types.view',
                 'entitlement-rules.viewAny', 'entitlement-rules.view',
+                'occupations.viewAny', 'occupations.view', 'occupations.create', 'occupations.update',
+                'isic-activities.viewAny', 'isic-activities.view',
                 'positions.viewAny', 'positions.view', 'positions.create', 'positions.update',
                 'transfers.viewAny', 'transfers.view', 'transfers.create', 'transfers.update', 'transfers.submit',
             ],
@@ -777,7 +797,7 @@ class DatabaseSeeder extends Seeder
             ],
             'Service Provider User' => ['dashboard.view', 'transactions.manage', 'service-transactions.viewAny', 'providers.viewAny', 'service-types.viewAny', 'service-types.view'],
             'Settlement Officer' => ['dashboard.view', 'transactions.view', 'service-transactions.viewAny', 'providers.viewAny', 'reports.view'],
-            'Auditor' => ['dashboard.view', 'audit.view', 'audit-logs.viewAny', 'reports.view', 'positions.viewAny', 'positions.view', 'transfers.viewAny', 'transfers.view', 'card-verifications.viewAny', 'service-types.viewAny', 'entitlement-rules.viewAny', 'hierarchy-versions.viewAny', 'hierarchy-versions.view', 'organization-edges.view', 'code-rules.viewAny', 'code-rules.view', 'code-rules.preview'],
+            'Auditor' => ['dashboard.view', 'audit.view', 'audit-logs.viewAny', 'reports.view', 'occupations.viewAny', 'occupations.view', 'positions.viewAny', 'positions.view', 'transfers.viewAny', 'transfers.view', 'card-verifications.viewAny', 'service-types.viewAny', 'entitlement-rules.viewAny', 'hierarchy-versions.viewAny', 'hierarchy-versions.view', 'organization-edges.view', 'code-rules.viewAny', 'code-rules.view', 'code-rules.preview'],
             'Report Viewer' => ['dashboard.view', 'reports.view', 'dashboard.reports'],
         ];
 
@@ -993,6 +1013,16 @@ class DatabaseSeeder extends Seeder
                 'prefix' => 'CRQ',
                 'format' => '{PREFIX}-{YEAR}-{SEQUENCE}',
                 'sequence_length' => 5,
+            ],
+            [
+                'entity_type' => CodeRuleEntityType::Occupation->value,
+                'scope_type' => null,
+                'scope_id' => null,
+                'name_en' => 'Occupation Code',
+                'name_am' => 'የሙያ ኮድ',
+                'prefix' => 'OCC',
+                'format' => '{PREFIX}-{SEQUENCE}',
+                'sequence_length' => 4,
             ],
         ];
 
