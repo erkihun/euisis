@@ -1,0 +1,98 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests;
+
+use App\Enums\HierarchyVersionStatus;
+use App\Enums\OrganizationRelationshipType;
+use App\Enums\OrganizationStatus;
+use App\Models\HierarchyVersion;
+use App\Models\Organization;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Validator;
+
+class OrganizationStoreRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return $this->user()?->can('organizations.manage') ?? false;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'name_am' => $this->input('name_am') ?: null,
+            'legal_basis_ref' => $this->input('legal_basis_ref') ?: null,
+            'effective_from' => $this->input('effective_from') ?: null,
+            'effective_to' => $this->input('effective_to') ?: null,
+            'parent_organization_id' => $this->input('parent_organization_id') ?: null,
+            'branding_primary_color' => $this->input('branding_primary_color') ?: null,
+            'branding_secondary_color' => $this->input('branding_secondary_color') ?: null,
+        ]);
+    }
+
+    public function rules(): array
+    {
+        return [
+            'organization_type_id' => ['required', 'uuid', 'exists:organization_types,id'],
+            'code' => ['nullable', 'string', 'max:255', 'unique:organizations,code'],
+            'name_en' => ['required', 'string', 'max:255'],
+            'name_am' => ['nullable', 'string', 'max:255'],
+            'legal_basis_ref' => ['nullable', 'string', 'max:255'],
+            'status' => ['required', 'string'],
+            'effective_from' => ['nullable', 'date'],
+            'effective_to' => ['nullable', 'date', 'after_or_equal:effective_from'],
+            'parent_organization_id' => ['nullable', 'uuid', 'exists:organizations,id'],
+            'hierarchy_version_id' => ['required_with:parent_organization_id', 'uuid', 'exists:hierarchy_versions,id'],
+            'relationship_type' => ['required_with:parent_organization_id', new Enum(OrganizationRelationshipType::class)],
+            'logo' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'branding_primary_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'branding_secondary_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+        ];
+    }
+
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                $parentOrganizationId = $this->string('parent_organization_id')->toString();
+
+                if ($parentOrganizationId === '') {
+                    return;
+                }
+
+                $parentOrganization = Organization::query()->find($parentOrganizationId);
+
+                if ($parentOrganization === null) {
+                    return;
+                }
+
+                if ($parentOrganization->status !== OrganizationStatus::Active) {
+                    $validator->errors()->add('parent_organization_id', __('organizations.parent_organization_must_be_active'));
+                }
+
+                if (! ($this->user()?->can('createChild', $parentOrganization) ?? false)) {
+                    $validator->errors()->add('parent_organization_id', __('organizations.parent_organization_outside_scope'));
+                }
+
+                $hierarchyVersionId = $this->string('hierarchy_version_id')->toString();
+
+                if ($hierarchyVersionId === '') {
+                    return;
+                }
+
+                $hierarchyVersion = HierarchyVersion::query()->find($hierarchyVersionId);
+
+                if ($hierarchyVersion === null) {
+                    return;
+                }
+
+                if ($hierarchyVersion->status !== HierarchyVersionStatus::Draft) {
+                    $validator->errors()->add('hierarchy_version_id', __('organizations.draft_hierarchy_version_required'));
+                }
+            },
+        ];
+    }
+}

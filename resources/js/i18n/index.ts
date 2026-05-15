@@ -1,0 +1,50 @@
+// Re-export flat translation files (used by useLocale hook)
+export { default as en } from './en';
+export { default as am } from './am';
+
+// Re-export page-by-page namespaced translations
+export * as enCommon from './en/common';
+export * as enNav from './en/navigation';
+export * as enDashboard from './en/dashboard';
+export * as enOrganizations from './en/organizations';
+export * as enOrganizationTypes from './en/organizationTypes';
+export * as enOrganizationUnits from './en/organizationUnits';
+export * as enEmployees from './en/employees';
+export * as enTransfers from './en/transfers';
+export * as enPositions from './en/positions';
+export * as enServiceTypes from './en/serviceTypes';
+export * as enIdCards from './en/idCards';
+export * as enProviders from './en/providers';
+export * as enEntitlements from './en/entitlements';
+export * as enEntitlementRules from './en/entitlementRules';
+export * as enCodeRules from './en/codeRules';
+export * as enAuditLogs from './en/auditLogs';
+export * as enUsers from './en/users';
+export * as enRoles from './en/roles';
+export * as enPermissions from './en/permissions';
+export * as enSettings from './en/settings';
+export * as enAuth from './en/auth';
+export * as enHome from './en/home';
+
+export * as amCommon from './am/common';
+export * as amNav from './am/navigation';
+export * as amDashboard from './am/dashboard';
+export * as amOrganizations from './am/organizations';
+export * as amOrganizationTypes from './am/organizationTypes';
+export * as amOrganizationUnits from './am/organizationUnits';
+export * as amEmployees from './am/employees';
+export * as amTransfers from './am/transfers';
+export * as amPositions from './am/positions';
+export * as amServiceTypes from './am/serviceTypes';
+export * as amIdCards from './am/idCards';
+export * as amProviders from './am/providers';
+export * as amEntitlements from './am/entitlements';
+export * as amEntitlementRules from './am/entitlementRules';
+export * as amCodeRules from './am/codeRules';
+export * as amAuditLogs from './am/auditLogs';
+export * as amUsers from './am/users';
+export * as amRoles from './am/roles';
+export * as amPermissions from './am/permissions';
+export * as amSettings from './am/settings';
+export * as amAuth from './am/auth';
+export * as amHome from './am/home';

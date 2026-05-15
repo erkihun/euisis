@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'accepted' => 'The :attribute must be accepted.',
+    'after' => 'The :attribute must be a date after :date.',
+    'after_or_equal' => 'The :attribute must be a date after or equal to :date.',
+    'date' => 'The :attribute is not a valid date.',
+    'different' => 'The :attribute and :other must be different.',
+    'email' => 'The :attribute must be a valid email address.',
+    'exists' => 'The selected :attribute is invalid.',
+    'image' => 'The :attribute must be an image.',
+    'integer' => 'The :attribute must be an integer.',
+    'max' => [
+        'file' => 'The :attribute must not be greater than :max kilobytes.',
+        'numeric' => 'The :attribute must not be greater than :max.',
+        'string' => 'The :attribute must not be greater than :max characters.',
+    ],
+    'mimes' => 'The :attribute must be a file of type: :values.',
+    'numeric' => 'The :attribute must be a number.',
+    'regex' => 'The :attribute format is invalid.',
+    'required' => 'The :attribute field is required.',
+    'required_with' => 'The :attribute field is required when :values is present.',
+    'string' => 'The :attribute must be a string.',
+    'unique' => 'The :attribute has already been taken.',
+    'url' => 'The :attribute must be a valid URL.',
+    'uuid' => 'The :attribute must be a valid UUID.',
+
+    'attributes' => [
+        'organization_type_id' => 'organization type',
+        'parent_organization_id' => 'parent organization',
+        'child_organization_id' => 'child organization',
+        'hierarchy_version_id' => 'hierarchy version',
+        'relationship_type' => 'relationship type',
+        'effective_from' => 'effective from',
+        'effective_to' => 'effective to',
+        'branding_primary_color' => 'primary color',
+        'branding_secondary_color' => 'secondary color',
+    ],
+];

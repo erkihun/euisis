@@ -1,0 +1,73 @@
+const home = {
+    // Header
+    headerTagline: 'Addis Ababa City Administration',
+    loginButton: 'Sign In',
+    dashboardButton: 'Go to Dashboard',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
+
+    // Hero
+    heroTitle: 'Unified Employee ID & Service Integration System',
+    heroSubtitle: 'Secure digital identity and service access management for Addis Ababa City Administration employees.',
+    heroCtaLogin: 'Sign In to System',
+    heroCtaDashboard: 'Go to Dashboard',
+    platformOverview: 'Platform Overview',
+
+    // Trust / Security Highlights
+    trustSectionTitle: 'Built for Security and Accountability',
+    trustSectionSubtitle: 'Government-grade controls protecting employee data and service access.',
+    trust1Title: 'Secure QR Verification',
+    trust1Desc: 'Every ID card carries a signed QR code with hashed token storage for tamper-proof service verification.',
+    trust2Title: 'Role-Based Permissions',
+    trust2Desc: 'Fine-grained, organization-scoped access control ensures staff can only access what their role allows.',
+    trust3Title: 'Immutable Audit Logs',
+    trust3Desc: 'All actions are captured in append-only audit logs providing a full, unalterable accountability trail.',
+    trust4Title: 'Data Privacy & Security',
+    trust4Desc: 'Sensitive employee data is protected at rest and in transit with industry-standard security practices.',
+
+    // Platform Modules
+    modulesSectionTitle: 'Platform Modules',
+    modulesSectionSubtitle: 'A complete suite of integrated modules for end-to-end employee identity management.',
+    module1Title: 'Organizations',
+    module1Desc: 'Manage the city administration hierarchy with versioned org-charts and effective-dated structures.',
+    module2Title: 'Employees',
+    module2Desc: 'Maintain a stable employee registry with transfer history, deduplication, and data quality scoring.',
+    module3Title: 'ID Cards',
+    module3Desc: 'Full card lifecycle management: request, print, issue, activate, replace, and revoke.',
+    module4Title: 'Service Providers',
+    module4Desc: 'Register and manage authorized service providers that accept employee ID for access or entitlements.',
+    module5Title: 'Entitlements',
+    module5Desc: 'Define and grant service entitlements to employees with quota controls and provider restrictions.',
+    module6Title: 'Transfers',
+    module6Desc: 'Structured transfer workflow with multi-party confirmation, ensuring continuity of employee identity.',
+    module7Title: 'Audit Logs',
+    module7Desc: 'Immutable, searchable audit trail covering every system event, actor, and data change.',
+    module8Title: 'Reports',
+    module8Desc: 'Dashboard metrics and exportable operational reports across the entire platform.',
+
+    // How It Works
+    howItWorksSectionTitle: 'How It Works',
+    howItWorksSectionSubtitle: 'A structured, end-to-end workflow from organization registration to verified service access.',
+    step1Title: 'Register Organization',
+    step1Desc: 'Set up the organizational hierarchy with official legal basis and publish the version.',
+    step2Title: 'Register Employee',
+    step2Desc: 'Create a permanent employee record linked to their organization and position.',
+    step3Title: 'Request ID Card',
+    step3Desc: 'Authorized staff submit a card request with all required employee data.',
+    step4Title: 'Approve & Print',
+    step4Desc: 'Administrators verify data, approve the request, and coordinate print batches.',
+    step5Title: 'Issue & Activate',
+    step5Desc: 'The printed card is issued to the employee and activated for service use.',
+    step6Title: 'Verify at Services',
+    step6Desc: 'Service providers scan the QR code to verify the employee\'s entitlements in real time.',
+    step7Title: 'Audit & Report',
+    step7Desc: 'All transactions and system events are logged for compliance and operational reporting.',
+
+    // Footer
+    footerCopyright: 'Addis Ababa City Administration',
+    footerRights: 'All rights reserved.',
+    footerSupport: 'Support:',
+    footerSystem: 'Employee Unified ID & Service Integration System',
+} as const;
+
+export default home;

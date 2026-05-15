@@ -1,0 +1,28 @@
+const employees = {
+    title: 'Employees',
+    employee: 'Employee',
+    createEmployee: 'Create Employee',
+    editEmployee: 'Edit Employee',
+    employeeDetails: 'Employee Details',
+    employeeId: 'Employee ID',
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    middleName: 'Middle Name',
+    dateOfBirth: 'Date of Birth',
+    gender: 'Gender',
+    nationality: 'Nationality',
+    organization: 'Organization',
+    position: 'Position',
+    department: 'Department',
+    hireDate: 'Hire Date',
+    employmentType: 'Employment Type',
+    transferEmployee: 'Transfer Employee',
+    noEmployees: 'No employees found',
+    searchEmployees: 'Search employees…',
+    filterByOrg: 'Filter by organization',
+    filterByStatus: 'Filter by status',
+    idCardStatus: 'ID Card Status',
+    transferHistory: 'Transfer History',
+} as const;
+
+export default employees;

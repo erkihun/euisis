@@ -1,0 +1,24 @@
+<?php
+
+return [
+    'title' => 'Employees',
+    'employee' => 'Employee',
+    'employee_id' => 'Employee ID',
+    'first_name' => 'First Name',
+    'last_name' => 'Last Name',
+    'middle_name' => 'Middle Name',
+    'date_of_birth' => 'Date of Birth',
+    'gender' => 'Gender',
+    'nationality' => 'Nationality',
+    'organization' => 'Organization',
+    'position' => 'Position',
+    'department' => 'Department',
+    'employment_date' => 'Employment Date',
+    'employment_status' => 'Employment Status',
+    'create' => 'Create Employee',
+    'edit' => 'Edit Employee',
+    'view' => 'View Employee',
+    'no_employees' => 'No employees found',
+    'personal_info' => 'Personal Information',
+    'employment_info' => 'Employment Information',
+];

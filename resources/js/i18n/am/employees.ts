@@ -1,0 +1,28 @@
+const employees = {
+    title: 'ሠራተኞች',
+    employee: 'ሠራተኛ',
+    createEmployee: 'ሠራተኛ ፍጠር',
+    editEmployee: 'ሠራተኛ አርትዕ',
+    employeeDetails: 'የሠራተኛ ዝርዝሮች',
+    employeeId: 'የሠራተኛ መታወቂያ',
+    firstName: 'ስም',
+    lastName: 'የአባት ስም',
+    middleName: 'መካከለኛ ስም',
+    dateOfBirth: 'የትውልድ ቀን',
+    gender: 'ፆታ',
+    nationality: 'ዜግነት',
+    organization: 'ድርጅት',
+    position: 'ቦታ',
+    department: 'ክፍል',
+    hireDate: 'የቅጥር ቀን',
+    employmentType: 'የቅጥር ዓይነት',
+    transferEmployee: 'ሠራተኛ ዘውር',
+    noEmployees: 'ምንም ሠራተኛ አልተገኘም',
+    searchEmployees: 'ሠራተኞችን ፈልግ…',
+    filterByOrg: 'በድርጅት ፍልተር',
+    filterByStatus: 'በሁኔታ ፍልተር',
+    idCardStatus: 'የካርድ ሁኔታ',
+    transferHistory: 'የዝውውር ታሪክ',
+} as const;
+
+export default employees;

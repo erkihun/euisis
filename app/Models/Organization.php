@@ -1,0 +1,96 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Enums\OrganizationStatus;
+use App\Models\Concerns\HasUuidPrimaryKey;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Organization extends Model
+{
+    use HasUuidPrimaryKey;
+
+    protected $fillable = [
+        'organization_type_id',
+        'merged_into_id',
+        'code',
+        'name_en',
+        'name_am',
+        'legal_basis_ref',
+        'status',
+        'effective_from',
+        'effective_to',
+        'is_demo',
+        'metadata',
+        'logo_path',
+        'branding_primary_color',
+        'branding_secondary_color',
+    ];
+
+    protected $appends = ['logo_url', 'has_logo'];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => OrganizationStatus::class,
+            'effective_from' => 'date',
+            'effective_to' => 'date',
+            'is_demo' => 'bool',
+            'metadata' => 'array',
+        ];
+    }
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        return $this->logo_path ? '/storage/'.$this->logo_path : null;
+    }
+
+    public function getHasLogoAttribute(): bool
+    {
+        return $this->logo_path !== null;
+    }
+
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(OrganizationType::class, 'organization_type_id');
+    }
+
+    public function mergedInto(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'merged_into_id');
+    }
+
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(EmployeeAssignment::class);
+    }
+
+    public function nameHistories(): HasMany
+    {
+        return $this->hasMany(OrganizationNameHistory::class)->orderByDesc('effective_from');
+    }
+
+    public function parentEdges(): HasMany
+    {
+        return $this->hasMany(OrganizationEdge::class, 'child_organization_id');
+    }
+
+    public function childEdges(): HasMany
+    {
+        return $this->hasMany(OrganizationEdge::class, 'parent_organization_id');
+    }
+
+    public function positions(): HasMany
+    {
+        return $this->hasMany(Position::class);
+    }
+
+    public function organizationUnits(): HasMany
+    {
+        return $this->hasMany(OrganizationUnit::class);
+    }
+}

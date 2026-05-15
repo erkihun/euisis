@@ -1,0 +1,520 @@
+import Button from '@/Components/Button';
+import PageHeader from '@/Components/PageHeader';
+import SettingField from '@/Components/settings/SettingField';
+import SettingsCard from '@/Components/settings/SettingsCard';
+import SettingsSection from '@/Components/settings/SettingsSection';
+import SettingsTabs from '@/Components/settings/SettingsTabs';
+import TestChannelButton from '@/Components/settings/TestChannelButton';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useLocale } from '@/hooks/useLocale';
+import type { SettingsField, SettingsGroupPayload } from '@/lib/settings';
+import { Head, router, useForm } from '@inertiajs/react';
+import { useMemo, useState, type FormEvent } from 'react';
+
+type SettingsCan = {
+    view: boolean;
+    update: boolean;
+    manageGeneral: boolean;
+    manageLocalization: boolean;
+    manageNotifications: boolean;
+    manageEmail: boolean;
+    manageSms: boolean;
+    manageTelegram: boolean;
+    manageSecurity: boolean;
+    manageAppearance: boolean;
+    manageIdCards: boolean;
+    clearCache: boolean;
+    testChannels: boolean;
+};
+
+type Props = {
+    settingGroups: Record<string, SettingsGroupPayload>;
+    can: SettingsCan;
+};
+
+type FormValue = string | number | boolean | string[] | File | null;
+type FormShape = Record<string, FormValue>;
+
+const tabs: { id: string; labelKey: string; routeName: string; canKey: keyof SettingsCan }[] = [
+    { id: 'general', labelKey: 'settings.tabs.general', routeName: 'system-settings.general.update', canKey: 'manageGeneral' },
+    { id: 'localization', labelKey: 'settings.tabs.localization', routeName: 'system-settings.localization.update', canKey: 'manageLocalization' },
+    { id: 'notifications', labelKey: 'settings.tabs.notifications', routeName: 'system-settings.notifications.update', canKey: 'manageNotifications' },
+    { id: 'email', labelKey: 'settings.tabs.email', routeName: 'system-settings.email.update', canKey: 'manageEmail' },
+    { id: 'sms', labelKey: 'settings.tabs.sms', routeName: 'system-settings.sms.update', canKey: 'manageSms' },
+    { id: 'telegram', labelKey: 'settings.tabs.telegram', routeName: 'system-settings.telegram.update', canKey: 'manageTelegram' },
+    { id: 'security', labelKey: 'settings.tabs.security', routeName: 'system-settings.security.update', canKey: 'manageSecurity' },
+    { id: 'appearance', labelKey: 'settings.tabs.appearance', routeName: 'system-settings.appearance.update', canKey: 'manageAppearance' },
+    { id: 'id_cards', labelKey: 'settings.tabs.id_cards', routeName: 'system-settings.id-cards.update', canKey: 'manageIdCards' },
+];
+
+function toInitialValue(field: SettingsField): FormValue {
+    if (field.type === 'file' || field.type === 'image') {
+        return null;
+    }
+
+    if (field.is_encrypted) {
+        return '';
+    }
+
+    if (field.type === 'boolean') {
+        return field.value !== null && field.value !== undefined ? Boolean(field.value) : Boolean(field.default);
+    }
+
+    if (field.type === 'integer') {
+        const v = field.value ?? field.default;
+        return typeof v === 'number' ? v : (v ? Number(v) : null);
+    }
+
+    if (field.type === 'json' || field.type === 'multiselect' || field.key === 'supported_locales' || field.key === 'allowed_file_types' || field.key === 'allowed_upload_mime_types') {
+        const v = field.value ?? field.default;
+        return Array.isArray(v) ? v.filter((item): item is string => typeof item === 'string') : [];
+    }
+
+    // For select fields: always have a valid value — fall back to default then first option
+    if (field.type === 'select') {
+        const v = field.value ?? field.default;
+        if (v !== null && v !== undefined && v !== '') {
+            return String(v);
+        }
+        if (Array.isArray(field.options) && field.options.length > 0) {
+            return field.options[0];
+        }
+        return '';
+    }
+
+    const v = field.value ?? null;
+    if (v === null || v === undefined) {
+        return '';
+    }
+
+    return String(v);
+}
+
+function buildInitialData(fields: SettingsField[]): FormShape {
+    return fields.reduce<FormShape>((carry, field) => {
+        carry[field.key] = toInitialValue(field);
+        return carry;
+    }, {});
+}
+
+function normalizeForSubmit(field: SettingsField, value: FormValue): FormValue {
+    if (field.type === 'file' || field.type === 'image') {
+        return value instanceof File ? value : null;
+    }
+
+    if (field.type === 'boolean') {
+        return Boolean(value);
+    }
+
+    if (field.type === 'integer') {
+        return value === '' ? null : value;
+    }
+
+    if (field.type === 'json' || field.type === 'multiselect' || field.key === 'supported_locales' || field.key === 'allowed_file_types' || field.key === 'allowed_upload_mime_types') {
+        return Array.isArray(value) ? value : [];
+    }
+
+    return value === '' ? null : value;
+}
+
+// ── Appearance preview panel ───────────────────────────────────────────────────
+
+function AppearancePreview({ data }: { data: FormShape }) {
+    const { t } = useLocale();
+
+    return (
+        <div className="flex flex-col gap-5 sticky top-4">
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-slate-500">
+                    {t('settings.groups.appearancePreview')}
+                </p>
+
+                {/* Color swatches */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                    {(['primary_color', 'secondary_color', 'accent_color'] as const).map((key) => (
+                        <div key={key} className="flex items-center gap-2 rounded-xl border border-gray-200 px-3 py-2 dark:border-slate-700">
+                            <span
+                                className="h-5 w-5 rounded-full border border-black/10"
+                                style={{ backgroundColor: String(data[key] ?? '#2563EB') }}
+                            />
+                            <span className="text-[11px] text-gray-500 dark:text-slate-400">{key.replace('_color', '')}</span>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Sample card */}
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+                    <div className="flex items-start justify-between gap-2">
+                        <div>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-slate-100">{t('settings.fields.sampleCardTitle')}</p>
+                            <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">{t('settings.fields.sampleCardText')}</p>
+                        </div>
+                        <span
+                            className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold text-white"
+                            style={{ backgroundColor: String(data.accent_color ?? '#F97316') }}
+                        >
+                            {t('settings.fields.sampleBadge')}
+                        </span>
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        <button
+                            type="button"
+                            className="rounded-xl px-4 py-2 text-sm font-medium text-white"
+                            style={{ backgroundColor: String(data.primary_color ?? '#2563EB') }}
+                        >
+                            {t('common.save')}
+                        </button>
+                        <button
+                            type="button"
+                            className="rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 dark:border-slate-700 dark:text-slate-200"
+                        >
+                            {t('common.cancel')}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Theme/density preview */}
+                <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                    <div className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
+                        <p className="text-gray-400 dark:text-slate-500">Theme</p>
+                        <p className="font-medium text-gray-800 dark:text-slate-200 capitalize">{String(data.default_theme ?? 'system')}</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
+                        <p className="text-gray-400 dark:text-slate-500">Density</p>
+                        <p className="font-medium text-gray-800 dark:text-slate-200 capitalize">{String(data.table_density ?? 'comfortable')}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── Branding preview panel ─────────────────────────────────────────────────────
+
+function BrandingPreview({ data }: { data: FormShape }) {
+    const { t } = useLocale();
+
+    return (
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sticky top-4">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-slate-500">
+                {t('settings.groups.brandingPreview')}
+            </p>
+            <div className="space-y-3">
+                <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-950">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('settings.tabs.general')}</p>
+                    <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-slate-100">
+                        {(data.application_name as string) || 'Application Name'}
+                    </p>
+                </div>
+                <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-950">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-slate-500">Short name</p>
+                    <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-slate-100">
+                        {(data.application_short_name as string) || 'Short Name'}
+                    </p>
+                </div>
+                <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-950">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-slate-500">{t('settings.organizationName')}</p>
+                    <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-slate-100">
+                        {(data.organization_name as string) || 'Organization'}
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── ID Card preview panel ──────────────────────────────────────────────────────
+
+function IdCardPreview({ data }: { data: FormShape }) {
+    const { t, locale } = useLocale();
+
+    const frontFrom = String(data.front_bg_from ?? '#1D4ED8');
+    const frontTo   = String(data.front_bg_to   ?? '#1E3A8A');
+    const textPri   = String(data.front_text_primary   ?? '#FFFFFF');
+    const textSec   = String(data.front_text_secondary ?? '#BFDBFE');
+    const backFrom  = String(data.back_bg_from  ?? '#1E293B');
+    const backTo    = String(data.back_bg_to    ?? '#0F172A');
+    const backText  = String(data.back_text_color ?? '#94A3B8');
+    const cityName  = locale === 'am'
+        ? String(data.city_name_am ?? data.city_name_en ?? 'Addis Ababa City Administration')
+        : String(data.city_name_en ?? 'Addis Ababa City Administration');
+    const bureauName = locale === 'am'
+        ? String(data.bureau_name_am ?? data.bureau_name_en ?? 'Public Service & HRD Bureau')
+        : String(data.bureau_name_en ?? 'Public Service & HRD Bureau');
+    const returnAddress = locale === 'am'
+        ? String(data.return_address_am ?? data.return_address_en ?? '')
+        : String(data.return_address_en ?? '');
+    const showMagStripe = data.show_magnetic_stripe !== false;
+    const padding = String(data.card_padding ?? 'normal');
+    const padCls  = padding === 'compact' ? 'px-3 pb-2' : padding === 'spacious' ? 'px-5 pb-5' : 'px-4 pb-3';
+
+    return (
+        <div className="flex flex-col gap-5 sticky top-4">
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-slate-500">
+                    {t('settings.groups.idCardPreview')}
+                </p>
+
+                {/* Front card */}
+                <div
+                    className="relative overflow-hidden rounded-xl shadow-lg mb-3"
+                    style={{
+                        aspectRatio: '85.6/54',
+                        background: `linear-gradient(to bottom right, ${frontFrom}, ${frontTo})`,
+                    }}
+                >
+                    <div className="absolute inset-x-0 top-0 flex items-center gap-2 bg-white/10 px-3 py-1.5">
+                        <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center text-[9px] font-bold" style={{ color: textPri }}>
+                            AA
+                        </div>
+                        <div className="min-w-0">
+                            <p className="truncate text-[9px] font-semibold leading-tight" style={{ color: textPri }}>{cityName}</p>
+                            <p className="truncate text-[8px] leading-tight" style={{ color: textSec }}>{bureauName}</p>
+                        </div>
+                    </div>
+                    <div className={`absolute inset-x-0 top-10 bottom-0 flex gap-2 ${padCls}`}>
+                        <div className="h-14 w-11 rounded-md bg-white/20 border border-white/30 flex items-center justify-center">
+                            <span className="text-[7px]" style={{ color: textSec }}>Photo</span>
+                        </div>
+                        <div className="flex-1 min-w-0 flex flex-col justify-between">
+                            <div>
+                                <p className="text-[10px] font-bold leading-tight" style={{ color: textPri }}>Sample Employee</p>
+                                <p className="text-[8px] leading-tight mt-0.5" style={{ color: textSec }}>Position Title</p>
+                            </div>
+                            <div className="space-y-0.5">
+                                <p className="text-[8px] font-mono" style={{ color: textPri }}>ID: EMP-00001</p>
+                                <p className="text-[7px]" style={{ color: textSec }}>Exp: 2027-01</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="absolute -right-4 top-0 bottom-0 w-12 bg-white/5 -skew-x-12 pointer-events-none" />
+                </div>
+
+                {/* Back card */}
+                <div
+                    className="relative overflow-hidden rounded-xl shadow-lg"
+                    style={{
+                        aspectRatio: '85.6/54',
+                        background: `linear-gradient(to bottom right, ${backFrom}, ${backTo})`,
+                    }}
+                >
+                    {showMagStripe && (
+                        <div className="absolute inset-x-0 top-3 h-5 bg-black/40 pointer-events-none" />
+                    )}
+                    <div className={`absolute inset-0 flex items-center justify-center gap-3 ${padCls} pt-9`}>
+                        <div className="h-20 w-20 rounded bg-white p-1 flex items-center justify-center">
+                            <div className="h-full w-full rounded-sm" style={{ background: backFrom, opacity: 0.6 }} />
+                        </div>
+                        <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch pt-1">
+                            <p className="text-[7px] uppercase tracking-wide" style={{ color: backText }}>Official Card</p>
+                            <div>
+                                <p className="font-mono text-[7px]" style={{ color: backText }}>CARD-000001</p>
+                                <p className="text-[6px] leading-tight truncate mt-0.5" style={{ color: backText, opacity: 0.7 }}>{returnAddress}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── Group form panel ───────────────────────────────────────────────────────────
+
+function GroupFormPanel({
+    groupId,
+    payload,
+    routeName,
+    readOnly,
+    canTest,
+}: {
+    groupId: string;
+    payload: SettingsGroupPayload;
+    routeName: string;
+    readOnly: boolean;
+    canTest: boolean;
+}) {
+    const { locale, t } = useLocale();
+    const initial = useMemo(() => buildInitialData(payload.fields), [payload.fields]);
+    const form = useForm<FormShape>(initial);
+
+    const isDirty = useMemo(
+        () => JSON.stringify(form.data) !== JSON.stringify(initial),
+        [form.data, initial],
+    );
+
+    const submit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        form.transform((data) => ({
+            _method: 'patch',
+            ...payload.fields.reduce<Record<string, FormValue>>((carry, field) => {
+                carry[field.key] = normalizeForSubmit(field, data[field.key]);
+                return carry;
+            }, {}),
+        }));
+
+        form.post(route(routeName), {
+            preserveScroll: true,
+            preserveState: true,
+            forceFormData: true,
+        });
+    };
+
+    const triggerChannelTest = () => {
+        const routeMap: Record<string, string> = {
+            email: 'system-settings.test-email',
+            sms: 'system-settings.test-sms',
+            telegram: 'system-settings.test-telegram',
+        };
+
+        const endpoint = routeMap[groupId];
+        if (endpoint) {
+            router.post(route(endpoint), {}, { preserveScroll: true });
+        }
+    };
+
+    const footer = (
+        <div className="flex items-center justify-between gap-3">
+            <span className="text-xs text-gray-500 dark:text-slate-400">
+                {isDirty && !readOnly ? t('settings.unsavedChanges') : ''}
+            </span>
+            <Button
+                type="submit"
+                size="sm"
+                loading={form.processing}
+                disabled={readOnly || !isDirty}
+            >
+                {t('common.save')}
+            </Button>
+        </div>
+    );
+
+    const mainCard = (
+        <SettingsCard
+            title={t(`settings.tabs.${groupId}`)}
+            description={t(`settings.descriptions.${groupId}`)}
+            actions={canTest ? (
+                <TestChannelButton
+                    onClick={triggerChannelTest}
+                    disabled={readOnly}
+                    processing={form.processing}
+                />
+            ) : undefined}
+            footer={footer}
+        >
+            {payload.fields.map((field) => (
+                <SettingField
+                    key={field.key}
+                    field={field}
+                    locale={locale}
+                    value={form.data[field.key]}
+                    error={form.errors[field.key]}
+                    disabled={readOnly}
+                    onChange={(nextValue) => form.setData(field.key, nextValue)}
+                />
+            ))}
+        </SettingsCard>
+    );
+
+    return (
+        <form onSubmit={submit}>
+            <SettingsSection
+                title={t(`settings.tabs.${groupId}`)}
+                description={t(`settings.descriptions.${groupId}`)}
+                actions={readOnly ? (
+                    <span className="rounded-full bg-gray-200 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-slate-800 dark:text-slate-300">
+                        {t('settings.readOnly')}
+                    </span>
+                ) : undefined}
+            >
+                {groupId === 'appearance' ? (
+                    <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
+                        <div>{mainCard}</div>
+                        <AppearancePreview data={form.data} />
+                    </div>
+                ) : groupId === 'general' ? (
+                    <div className="grid gap-6 lg:grid-cols-[1fr_240px]">
+                        <div>{mainCard}</div>
+                        <BrandingPreview data={form.data} />
+                    </div>
+                ) : groupId === 'id_cards' ? (
+                    <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+                        <div>{mainCard}</div>
+                        <IdCardPreview data={form.data} />
+                    </div>
+                ) : (
+                    mainCard
+                )}
+
+                {groupId === 'security' && (
+                    <SettingsCard
+                        title={t('settings.groups.securityWarning')}
+                        description={t('settings.fields.securityNotice')}
+                    >
+                        <div className="px-5 py-4 text-sm text-amber-800 dark:text-amber-200">
+                            {t('settings.fields.securityNotice')}
+                        </div>
+                    </SettingsCard>
+                )}
+            </SettingsSection>
+        </form>
+    );
+}
+
+export default function SystemSettingsIndex({ settingGroups, can }: Props) {
+    const { t } = useLocale();
+    const [activeTab, setActiveTab] = useState<string>('general');
+
+    const availableTabs = tabs.filter((tab) => settingGroups[tab.id] !== undefined);
+
+    const clearCache = () => {
+        router.post(route('system-settings.clear-cache'), {}, { preserveScroll: true });
+    };
+
+    return (
+        <AuthenticatedLayout
+            header={(
+                <PageHeader
+                    title={t('settings.title')}
+                    description={t('settings.subtitle')}
+                    actions={can.clearCache ? (
+                        <Button type="button" variant="outline" size="sm" onClick={clearCache}>
+                            {t('settings.clearCache')}
+                        </Button>
+                    ) : undefined}
+                />
+            )}
+        >
+            <Head title={t('settings.title')} />
+
+            <div className="space-y-0 rounded-2xl border border-gray-200 bg-white dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
+                <SettingsTabs tabs={availableTabs} activeTab={activeTab} onSelect={setActiveTab} />
+
+                <div className="p-5 bg-gray-50 dark:bg-slate-950 min-h-[400px]">
+                    {availableTabs.map((tab) => {
+                        if (tab.id !== activeTab) {
+                            return null;
+                        }
+
+                        const payload = settingGroups[tab.id];
+                        if (!payload) {
+                            return null;
+                        }
+
+                        return (
+                            <GroupFormPanel
+                                key={tab.id}
+                                groupId={tab.id}
+                                payload={payload}
+                                routeName={tab.routeName}
+                                readOnly={!can[tab.canKey]}
+                                canTest={can.testChannels && ['email', 'sms', 'telegram'].includes(tab.id)}
+                            />
+                        );
+                    })}
+                </div>
+            </div>
+        </AuthenticatedLayout>
+    );
+}
