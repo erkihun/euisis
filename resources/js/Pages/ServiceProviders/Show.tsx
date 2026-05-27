@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PageHeader from '@/Components/PageHeader';
 import StatusBadge from '@/Components/StatusBadge';
 import EmptyState from '@/Components/EmptyState';
-import { Head } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { useLocale } from '@/hooks/useLocale';
 
 type Provider = {
@@ -26,25 +26,54 @@ type Transaction = {
 export default function ServiceProvidersShow({
     provider,
     transactions,
+    can,
 }: {
     provider: Provider;
     transactions: Transaction[];
+    can: { update: boolean; delete: boolean };
 }) {
     const { t } = useLocale();
+    const deleteForm = useForm({});
+
+    function handleDelete() {
+        if (!window.confirm(t('providers.confirmDelete'))) return;
+        deleteForm.delete(route('service-providers.destroy', provider.id));
+    }
 
     return (
         <AuthenticatedLayout
-            header={<PageHeader title={provider.name} description={provider.code} />}
+            header={
+                <div className="flex items-center justify-between gap-4">
+                    <PageHeader title={provider.name} description={provider.code} />
+                    <div className="flex items-center gap-2">
+                        {can.update && (
+                            <Link
+                                href={route('service-providers.edit', provider.id)}
+                                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                            >
+                                {t('providers.edit')}
+                            </Link>
+                        )}
+                        {can.delete && (
+                            <button
+                                onClick={handleDelete}
+                                disabled={deleteForm.processing}
+                                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-60"
+                            >
+                                {t('providers.delete')}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            }
         >
             <Head title={provider.name} />
             <div className="grid gap-6 xl:grid-cols-[1fr_1.5fr]">
                 <section className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
                     <div className="flex items-start justify-between gap-4">
-                        <div>
-                            <p className="font-mono text-sm font-medium text-gray-900 dark:text-slate-100">
-                                {provider.code}
-                            </p>
-                        </div>
+                        <p className="font-mono text-sm font-medium text-gray-900 dark:text-slate-100">
+                            {provider.code}
+                        </p>
                         <StatusBadge status={provider.status} />
                     </div>
                     <dl className="mt-4 space-y-3 text-sm">

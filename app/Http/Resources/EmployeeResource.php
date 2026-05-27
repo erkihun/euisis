@@ -17,6 +17,7 @@ class EmployeeResource extends JsonResource
             'full_name' => $this->full_name,
             'phone' => $this->phone,
             'email' => $this->email,
+            'photo_url' => $this->photo_path ? asset('storage/'.$this->photo_path) : null,
             'status' => $this->status?->value ?? $this->status,
             'duplicate_flags_count' => $this->whenCounted('employeeDuplicateFlags'),
             'current_assignment' => $this->whenLoaded('currentAssignment', fn (): ?array => $this->currentAssignment ? [
@@ -27,6 +28,11 @@ class EmployeeResource extends JsonResource
                 'organization' => $this->currentAssignment->organization ? [
                     'id' => $this->currentAssignment->organization->id,
                     'name_en' => $this->currentAssignment->organization->name_en,
+                ] : null,
+                'organization_unit' => $this->currentAssignment->organizationUnit ? [
+                    'id' => $this->currentAssignment->organizationUnit->id,
+                    'code' => $this->currentAssignment->organizationUnit->code,
+                    'name_en' => $this->currentAssignment->organizationUnit->name_en,
                 ] : null,
                 'position' => $this->currentAssignment->position ? [
                     'id' => $this->currentAssignment->position->id,

@@ -1,4 +1,6 @@
 const organizations = {
+    expandAll: 'ሁሉንም ዘርጋ',
+    collapseAll: 'ሁሉንም ሰብስብ',
     title: 'ድርጅቶች',
     organization: 'ድርጅት',
     registeredOrganizations: 'የተመዘገቡ ድርጅቶች',

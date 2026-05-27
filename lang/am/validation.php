@@ -12,6 +12,11 @@ return [
     'exists' => 'የተመረጠው :attribute ትክክል አይደለም።',
     'image' => 'የ:attribute መስክ ምስል መሆን አለበት።',
     'integer' => 'የ:attribute መስክ ሙሉ ቁጥር መሆን አለበት።',
+    'min' => [
+        'file' => 'የ:attribute መጠን ቢያንስ :min ኪሎባይት መሆን አለበት።',
+        'numeric' => 'የ:attribute መስክ ቢያንስ :min መሆን አለበት።',
+        'string' => 'የ:attribute መስክ ቢያንስ :min ፊደላት መሆን አለበት።',
+    ],
     'max' => [
         'file' => 'የ:attribute መጠን ከ:max ኪሎባይት መብለጥ የለበትም።',
         'numeric' => 'የ:attribute መስክ ከ:max መብለጥ የለበትም።',
@@ -38,4 +43,5 @@ return [
         'branding_primary_color' => 'ዋና ቀለም',
         'branding_secondary_color' => 'ሁለተኛ ቀለም',
     ],
+    'position_already_occupied' => 'ይህ ስራ መደብ ቀድሞ ለሌላ ሰራተኛ ተመድቧል።',
 ];

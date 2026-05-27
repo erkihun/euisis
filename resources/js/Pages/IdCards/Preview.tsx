@@ -13,6 +13,7 @@ type CardData = {
     status: string;
     issued_at?: string | null;
     expires_at?: string | null;
+    qr_payload?: string | null;
     employee?: {
         employee_number: string;
         full_name: string;
@@ -71,7 +72,7 @@ export default function IdCardPreview({ card, can }: PageProps) {
                         <div className="max-w-sm">
                             <IdCardBack
                                 cardNumber={card.card_number}
-                                qrValue={route('id-cards.show', card.id)}
+                                qrValue={card.qr_payload || route('id-cards.show', card.id)}
                             />
                         </div>
                     </div>

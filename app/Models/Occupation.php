@@ -15,32 +15,16 @@ class Occupation extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'code',
         'isco_code',
-        'isco_major_group_code',
-        'isco_sub_major_group_code',
-        'isco_minor_group_code',
-        'isco_unit_group_code',
         'name_en',
         'name_am',
-        'description_en',
-        'description_am',
-        'skill_level',
         'skill_specialization',
-        'is_active',
-        'sort_order',
-        'metadata',
-        'created_by',
-        'updated_by',
+        'description',
     ];
 
-    protected function casts(): array
+    public function setIscoCodeAttribute(?string $value): void
     {
-        return [
-            'is_active' => 'bool',
-            'sort_order' => 'int',
-            'metadata' => 'array',
-        ];
+        $this->attributes['isco_code'] = $value === null ? null : trim($value);
     }
 
     public function creator(): BelongsTo

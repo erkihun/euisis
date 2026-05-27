@@ -63,7 +63,7 @@ class OrganizationController extends Controller
 
         $unassignedQuery = Organization::query()
             ->when($assignedIds->isNotEmpty(), fn ($q) => $q->whereNotIn('id', $assignedIds))
-            ->with('type:id,name_en,code')
+            ->with('type:id,name_en,name_am,code')
             ->orderBy('name_en');
 
         if ($allowedOrgIds->isNotEmpty()) {

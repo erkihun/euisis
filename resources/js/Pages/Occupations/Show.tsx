@@ -78,15 +78,9 @@ export default function OccupationsShow({ occupation }: { occupation: any }) {
                             label={t('common.status')}
                             value={<StatusBadge status={occupation.is_active ? 'active' : 'inactive'} />}
                         />
-                        <Field label={t('occupations.majorGroup')} value={occupation.isco_major_group_code} />
-                        <Field label={t('occupations.subMajorGroup')} value={occupation.isco_sub_major_group_code} />
-                        <Field label={t('occupations.minorGroup')} value={occupation.isco_minor_group_code} />
-                        <Field label={t('occupations.unitGroup')} value={occupation.isco_unit_group_code} />
                         <Field label={t('occupations.nameEn')} value={occupation.name_en} />
                         <Field label={t('occupations.nameAm')} value={occupation.name_am} />
-                        <Field label={t('occupations.skillLevel')} value={occupation.skill_level} />
                         <Field label={t('occupations.skillSpecialization')} value={occupation.skill_specialization} />
-                        <Field label={t('occupations.sortOrder')} value={occupation.sort_order} />
                     </div>
                     {(occupation.description_en || occupation.description_am) && (
                         <div className="mt-4 space-y-3 border-t border-gray-100 pt-4 dark:border-slate-800">

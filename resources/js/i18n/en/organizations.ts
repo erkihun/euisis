@@ -41,6 +41,8 @@ const organizations = {
     employeeCount: 'Employee Count',
     expand: 'Expand',
     collapse: 'Collapse',
+    expandAll: 'Expand All',
+    collapseAll: 'Collapse All',
     selectParentOrganization: 'Select Parent Organization',
     searchParentOrganizations: 'Search Parent Organizations',
     eligibleParentOrganizations: 'Eligible Parent Organizations',

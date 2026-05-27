@@ -9,9 +9,12 @@ use App\Enums\CodeRuleEntityType;
 use App\Enums\CodeRuleResetFrequency;
 use App\Enums\CodeRuleScopeStrategy;
 use App\Enums\CodeRuleScopeType;
+use App\Exceptions\MissingSequenceScopeContextException;
+use App\Exceptions\MissingTokenContextException;
 use App\Models\CodeRule;
 use App\Models\Organization;
 use App\Models\OrganizationType;
+use App\Models\OrganizationUnitType;
 use App\Models\ServiceType;
 use App\Services\CodeGeneration\CodeFormatTokenRegistry;
 use Illuminate\Foundation\Http\FormRequest;
@@ -98,7 +101,11 @@ class StoreCodeRuleRequest extends FormRequest
                     return;
                 }
 
-                $preview = app(PreviewCodeRuleAction::class)->execute($this->validated());
+                try {
+                    $preview = app(PreviewCodeRuleAction::class)->execute($this->validated());
+                } catch (MissingSequenceScopeContextException|MissingTokenContextException) {
+                    $preview = null;
+                }
 
                 if ($preview === '') {
                     $validator->errors()->add('format', __('code-rules.invalid_format'));
@@ -150,6 +157,7 @@ class StoreCodeRuleRequest extends FormRequest
         return match ($scopeType) {
             CodeRuleScopeType::Organization->value => Organization::query()->whereKey($scopeId)->exists(),
             CodeRuleScopeType::OrganizationType->value => OrganizationType::query()->whereKey($scopeId)->exists(),
+            CodeRuleScopeType::OrganizationUnitType->value => OrganizationUnitType::query()->whereKey($scopeId)->exists(),
             CodeRuleScopeType::ServiceType->value => ServiceType::query()->whereKey($scopeId)->exists(),
             default => false,
         };

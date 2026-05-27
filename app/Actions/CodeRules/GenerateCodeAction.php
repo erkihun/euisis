@@ -7,6 +7,7 @@ namespace App\Actions\CodeRules;
 use App\Actions\Audit\WriteAuditLogAction;
 use App\Enums\AuditEventType;
 use App\Enums\CodeRuleEntityType;
+use App\Exceptions\MissingSequenceScopeContextException;
 use App\Models\User;
 use App\Services\CodeGeneration\CodeGeneratorService;
 use App\Services\CodeGeneration\CodeRuleResolver;
@@ -67,7 +68,13 @@ class GenerateCodeAction
             ]);
         }
 
-        $generatedCode = $this->codeGeneratorService->generate($codeRule, $context, $actor, $entityId);
+        try {
+            $generatedCode = $this->codeGeneratorService->generate($codeRule, $context, $actor, $entityId);
+        } catch (MissingSequenceScopeContextException $exception) {
+            throw ValidationException::withMessages([
+                $field => $exception->getMessage(),
+            ]);
+        }
 
         $this->writeAuditLogAction->execute(
             AuditEventType::CodeGenerated,

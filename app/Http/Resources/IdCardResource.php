@@ -48,6 +48,11 @@ class IdCardResource extends JsonResource
                     ] : null,
                 ] : null,
             ]),
+            'qr_payload'       => $user?->can('view', $this->resource) ? $this->qr_payload : null,
+            'public_card_uuid' => $this->public_card_uuid,
+            'qr_status'        => $this->qr_status,
+            'qr_issued_at'     => $this->qr_issued_at?->toIso8601String(),
+            'qr_rotated_at'    => $this->qr_rotated_at?->toIso8601String(),
             'can' => $user ? [
                 'view' => $user->can('view', $this->resource),
                 'update' => $user->can('update', $this->resource),

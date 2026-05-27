@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -12,6 +13,10 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
+    // Public self-service registration is gated by the `security.registration_enabled`
+    // config flag (driven by REGISTRATION_ENABLED in .env). The routes are always
+    // registered so route() helpers and reverse-routing keep working, but the
+    // controller short-circuits to a /login redirect when the flag is off.
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
@@ -56,4 +61,19 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // ── MFA (TOTP) ───────────────────────────────────────────────────────
+    Route::get('/mfa/setup', [MfaController::class, 'showSetup'])->name('mfa.setup');
+    Route::post('/mfa/setup/confirm', [MfaController::class, 'confirmSetup'])
+        ->middleware('throttle:10,1')
+        ->name('mfa.setup.confirm');
+
+    Route::get('/mfa/challenge', [MfaController::class, 'showChallenge'])->name('mfa.challenge');
+    Route::post('/mfa/challenge', [MfaController::class, 'verifyChallenge'])
+        ->middleware('throttle:5,1')
+        ->name('mfa.challenge.verify');
+
+    Route::post('/mfa/disable', [MfaController::class, 'disable'])
+        ->middleware('throttle:10,1')
+        ->name('mfa.disable');
 });

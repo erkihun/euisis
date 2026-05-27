@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { SearchIcon, Building2 } from '@/Components/Icons';
 import { useLocale } from '@/hooks/useLocale';
 import OrganizationTreePreviewNode from '@/Components/organization-units/OrganizationTreePreviewNode';
@@ -9,6 +9,16 @@ interface Props {
     selectedId: string | null;
     hasPublishedHierarchy: boolean;
     onSelect: (node: OrganizationTreeNode) => void;
+}
+
+/** Returns the IDs of all nodes on the path from a root to the target (inclusive). */
+function findPathToNode(nodes: OrganizationTreeNode[], targetId: string): string[] | null {
+    for (const node of nodes) {
+        if (node.id === targetId) return [node.id];
+        const childPath = findPathToNode(node.children, targetId);
+        if (childPath !== null) return [node.id, ...childPath];
+    }
+    return null;
 }
 
 function collectAllIds(nodes: OrganizationTreeNode[]): string[] {
@@ -63,9 +73,25 @@ export default function OrganizationTreePreview({
     const { t } = useLocale();
     const [search, setSearch] = useState('');
     const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
-        // Start with all root nodes (depth 0) expanded
-        return new Set(tree.map((n) => n.id));
+        const initial = new Set(tree.map((n) => n.id));
+        if (selectedId) {
+            const path = findPathToNode(tree, selectedId);
+            if (path) path.forEach((id) => initial.add(id));
+        }
+        return initial;
     });
+
+    // When selectedId changes (e.g. after navigating back), expand its ancestors
+    useEffect(() => {
+        if (!selectedId) return;
+        const path = findPathToNode(tree, selectedId);
+        if (!path) return;
+        setExpandedIds((prev) => {
+            const next = new Set(prev);
+            path.forEach((id) => next.add(id));
+            return next;
+        });
+    }, [selectedId, tree]);
 
     const allIds = useMemo(() => collectAllIds(tree), [tree]);
 

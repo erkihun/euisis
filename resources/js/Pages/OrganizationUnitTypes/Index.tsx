@@ -10,6 +10,7 @@ import { useConfirm } from '@/hooks/useConfirm';
 type UnitType = {
     id: string;
     code: string;
+    prefix: string | null;
     name_en: string;
     name_am: string | null;
     description_en: string | null;
@@ -90,6 +91,7 @@ export default function OrganizationUnitTypesIndex({
                                 <tr>
                                     {[
                                         t('common.code'),
+                                        t('organizationUnitTypes.prefix'),
                                         t('common.name'),
                                         t('organizationUnitTypes.sortOrder'),
                                         t('common.status'),
@@ -112,6 +114,9 @@ export default function OrganizationUnitTypesIndex({
                                     >
                                         <td className="py-3 pl-5 pr-4 font-mono text-xs font-medium text-gray-500 dark:text-slate-400">
                                             {type.code}
+                                        </td>
+                                        <td className="px-4 py-3 font-mono text-xs font-medium text-indigo-600 dark:text-indigo-400">
+                                            {type.prefix ?? '—'}
                                         </td>
                                         <td className="px-4 py-3">
                                             <p className="font-medium">{type.name_en}</p>

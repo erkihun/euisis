@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Web;
 use App\Actions\Entitlements\GrantEntitlementAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EntitlementStoreRequest;
+use App\Models\CafeteriaProvider;
 use App\Models\Employee;
 use App\Models\Entitlement;
 use App\Models\ServiceProvider;
@@ -27,6 +28,10 @@ class EntitlementController extends Controller
             'employees' => Employee::query()->orderBy('full_name')->get(['id', 'employee_number', 'full_name']),
             'serviceTypes' => ServiceType::query()->orderBy('name_en')->get(['id', 'name_en']),
             'providers' => ServiceProvider::query()->orderBy('name')->get(['id', 'name', 'service_type_id']),
+            'cafeteriaProviders' => CafeteriaProvider::query()
+                ->with('organization')
+                ->orderBy('name_en')
+                ->get(['id', 'code', 'name_en', 'name_am', 'organization_id', 'is_active', 'location']),
         ]);
     }
 

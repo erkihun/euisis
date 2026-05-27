@@ -1,4 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
+import { useMemo, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import StatusBadge from '@/Components/StatusBadge';
 import EmptyState from '@/Components/EmptyState';
@@ -23,8 +24,9 @@ type UnassignedOrg = {
     id: string;
     code: string;
     name_en: string;
+    name_am: string | null;
     status: string;
-    type?: { name_en: string; code: string } | null;
+    type?: { name_en: string; name_am?: string | null; code: string } | null;
 };
 
 export default function OrganizationsIndex({
@@ -40,7 +42,54 @@ export default function OrganizationsIndex({
     hierarchyVersions: HierarchyVersion[];
     can: CanProps;
 }) {
-    const { t } = useLocale();
+    const { locale, t } = useLocale();
+    const expandableIds = useMemo(
+        () => tree.filter((node) => node.children_count > 0).map((node) => node.id),
+        [tree],
+    );
+    const parentById = useMemo(
+        () => new Map(tree.map((node) => [node.id, node.parent_id])),
+        [tree],
+    );
+    const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set(expandableIds));
+
+    const visibleTree = useMemo(() => {
+        return tree.filter((node) => {
+            let parentId = node.parent_id;
+
+            while (parentId !== null) {
+                if (!expandedIds.has(parentId)) {
+                    return false;
+                }
+
+                parentId = parentById.get(parentId) ?? null;
+            }
+
+            return true;
+        });
+    }, [expandedIds, parentById, tree]);
+
+    function toggleNode(id: string) {
+        setExpandedIds((current) => {
+            const next = new Set(current);
+
+            if (next.has(id)) {
+                next.delete(id);
+            } else {
+                next.add(id);
+            }
+
+            return next;
+        });
+    }
+
+    function expandAll() {
+        setExpandedIds(new Set(expandableIds));
+    }
+
+    function collapseAll() {
+        setExpandedIds(new Set());
+    }
 
     return (
         <AuthenticatedLayout
@@ -68,15 +117,31 @@ export default function OrganizationsIndex({
                             {tree.length}
                         </span>
                     </div>
-                    {can.create && (
-                        <Link
-                            href={route('organizations.create')}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                        <button
+                            type="button"
+                            onClick={expandAll}
+                            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-500 dark:hover:text-blue-300"
                         >
-                            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                            {t('organizations.createOrganization')}
-                        </Link>
-                    )}
+                            {t('organizations.expandAll')}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={collapseAll}
+                            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-blue-500 dark:hover:text-blue-300"
+                        >
+                            {t('organizations.collapseAll')}
+                        </button>
+                        {can.create && (
+                            <Link
+                                href={route('organizations.create')}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                            >
+                                <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                                {t('organizations.createOrganization')}
+                            </Link>
+                        )}
+                    </div>
                 </div>
 
                 {tree.length === 0 ? (
@@ -113,10 +178,12 @@ export default function OrganizationsIndex({
                                 </tr>
                             </thead>
                             <tbody>
-                                {tree.map((node) => (
+                                {visibleTree.map((node) => (
                                     <OrganizationTreeRow
                                         key={node.id}
                                         node={node}
+                                        expanded={expandedIds.has(node.id)}
+                                        onToggle={toggleNode}
                                         can={{
                                             update: can.create,
                                             archive: can.create,
@@ -176,9 +243,9 @@ export default function OrganizationsIndex({
                                                 {org.code}
                                             </Link>
                                         </td>
-                                        <td className="px-4 py-2.5">{org.name_en}</td>
+                                        <td className="px-4 py-2.5">{locale === 'am' && org.name_am ? org.name_am : org.name_en}</td>
                                         <td className="px-4 py-2.5 text-gray-500 dark:text-slate-400">
-                                            {org.type?.name_en ?? '—'}
+                                            {(locale === 'am' && org.type?.name_am ? org.type.name_am : org.type?.name_en) ?? '—'}
                                         </td>
                                         <td className="px-4 py-2.5">
                                             <StatusBadge status={org.status} />

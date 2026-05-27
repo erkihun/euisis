@@ -28,6 +28,8 @@ class OrganizationStoreRequest extends FormRequest
             'effective_from' => $this->input('effective_from') ?: null,
             'effective_to' => $this->input('effective_to') ?: null,
             'parent_organization_id' => $this->input('parent_organization_id') ?: null,
+            'hierarchy_version_id' => $this->nullableInput('hierarchy_version_id'),
+            'relationship_type' => $this->nullableInput('relationship_type'),
             'branding_primary_color' => $this->input('branding_primary_color') ?: null,
             'branding_secondary_color' => $this->input('branding_secondary_color') ?: null,
         ]);
@@ -45,8 +47,8 @@ class OrganizationStoreRequest extends FormRequest
             'effective_from' => ['nullable', 'date'],
             'effective_to' => ['nullable', 'date', 'after_or_equal:effective_from'],
             'parent_organization_id' => ['nullable', 'uuid', 'exists:organizations,id'],
-            'hierarchy_version_id' => ['required_with:parent_organization_id', 'uuid', 'exists:hierarchy_versions,id'],
-            'relationship_type' => ['required_with:parent_organization_id', new Enum(OrganizationRelationshipType::class)],
+            'hierarchy_version_id' => ['nullable', 'required_with:parent_organization_id', 'uuid', 'exists:hierarchy_versions,id'],
+            'relationship_type' => ['nullable', 'required_with:parent_organization_id', new Enum(OrganizationRelationshipType::class)],
             'logo' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'branding_primary_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'branding_secondary_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
@@ -94,5 +96,12 @@ class OrganizationStoreRequest extends FormRequest
                 }
             },
         ];
+    }
+
+    private function nullableInput(string $key): mixed
+    {
+        $value = $this->input($key);
+
+        return in_array($value, ['', 'null', 'undefined'], true) ? null : $value;
     }
 }

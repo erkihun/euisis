@@ -318,6 +318,19 @@ class SystemSettingsRegistry
                     validationRules: ['nullable', 'string', 'max:32'],
                     sortOrder: 100,
                 ),
+                'calendar_system_mode' => self::field(
+                    type: 'select',
+                    default: 'locale_based',
+                    labelEn: 'Calendar System Mode',
+                    labelAm: 'የቀን አቆጣጠር ስርዓት',
+                    descriptionEn: 'locale_based uses Ethiopian for Amharic users and Gregorian for English users. gregorian_only forces Gregorian everywhere. ethiopian_only forces Ethiopian everywhere.',
+                    descriptionAm: 'locale_based ለአማርኛ ተጠቃሚዎች ኢትዮጵያዊ፣ ለእንግሊዝኛ ተጠቃሚዎች ጎርጎሮሳዊ ቀን አቆጣጠር ይጠቀማል።',
+                    isPublic: true,
+                    isRequired: true,
+                    options: ['locale_based', 'gregorian_only', 'ethiopian_only'],
+                    validationRules: ['required', 'in:locale_based,gregorian_only,ethiopian_only'],
+                    sortOrder: 110,
+                ),
             ],
 
             self::GROUP_NOTIFICATIONS => [

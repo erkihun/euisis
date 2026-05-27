@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PageHeader from '@/Components/PageHeader';
 import StatusBadge from '@/Components/StatusBadge';
+import LocalizedDateDisplay from '@/Components/Calendar/LocalizedDateDisplay';
 import { Head, Link } from '@inertiajs/react';
 import { useLocale } from '@/hooks/useLocale';
 
@@ -147,7 +148,10 @@ export default function EmployeesShow({ employee }: { employee: EmployeeDetail }
                             <Field label={t('employees.phone')} value={employee.phone} />
                             <Field label={t('employees.email')} value={employee.email} />
                             <Field label={t('employees.gender')} value={employee.gender} />
-                            <Field label={t('employees.dateOfBirth')} value={employee.date_of_birth} />
+                            <div>
+                                <dt className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-slate-500">{t('employees.dateOfBirth')}</dt>
+                                <dd className="mt-1 text-sm text-gray-900 dark:text-slate-100"><LocalizedDateDisplay value={employee.date_of_birth} /></dd>
+                            </div>
                             <Field label={t('employees.dataQualityScore')} value={employee.data_quality_score ?? 0} />
                         </dl>
                     </div>
@@ -168,10 +172,10 @@ export default function EmployeesShow({ employee }: { employee: EmployeeDetail }
                                 label={t('employees.columnPosition')}
                                 value={employee.current_assignment.position?.title_en}
                             />
-                            <Field
-                                label={t('common.effectiveFrom')}
-                                value={employee.current_assignment.effective_from ?? undefined}
-                            />
+                            <div>
+                                <dt className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-slate-500">{t('common.effectiveFrom')}</dt>
+                                <dd className="mt-1 text-sm text-gray-900 dark:text-slate-100"><LocalizedDateDisplay value={employee.current_assignment.effective_from} /></dd>
+                            </div>
                         </dl>
                     ) : (
                         <p className="text-sm text-gray-400 dark:text-slate-500">{t('common.unassigned')}</p>
@@ -202,7 +206,9 @@ export default function EmployeesShow({ employee }: { employee: EmployeeDetail }
                                         {a.position?.title_en ?? t('employees.noPosition')}
                                     </div>
                                     <div className="mt-1 text-xs text-gray-400 dark:text-slate-500">
-                                        {a.effective_from ?? '?'} → {a.effective_to ?? t('common.present')}
+                                        <LocalizedDateDisplay value={a.effective_from} fallback="?" />
+                                        {' → '}
+                                        {a.effective_to ? <LocalizedDateDisplay value={a.effective_to} /> : t('common.present')}
                                     </div>
                                     {a.reason && (
                                         <div className="mt-2 text-xs text-gray-400 dark:text-slate-500 italic">

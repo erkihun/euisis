@@ -243,15 +243,17 @@ class DatabaseSeeder extends Seeder
             'effective_from' => now()->toDateString(),
         ]);
 
-        $demoPosition = Position::query()->create([
-            'organization_id' => $publicServiceBureau->id,
-            'job_position_code' => 'DEMO-HR-001',
-            'title_en' => 'Human Resource Officer',
-            'title_am' => 'የሰው ሀብት ባለሙያ',
-            'description_en' => 'Demo HR position',
-            'is_active' => true,
-            'effective_from' => now()->toDateString(),
-        ]);
+        $demoPosition = Position::query()->firstOrCreate(
+            ['job_position_code' => 'DEMO-HR-001'],
+            [
+                'organization_id' => $publicServiceBureau->id,
+                'title_en' => 'Human Resource Officer',
+                'title_am' => 'የሰው ሀብት ባለሙያ',
+                'description_en' => 'Demo HR position',
+                'is_active' => true,
+                'effective_from' => now()->toDateString(),
+            ]
+        );
 
         $employee = Employee::query()->create([
             'employee_number' => 'EMP-0001',
@@ -475,7 +477,7 @@ class DatabaseSeeder extends Seeder
             Employee::where('is_demo', true)->delete();
         }
 
-        Position::where('job_position_code', 'like', 'DEMO-%')->delete();
+        Position::withTrashed()->where('job_position_code', 'like', 'DEMO-%')->forceDelete();
         ServiceProvider::where('is_demo', true)->delete();
 
         if ($demoUserIds->isNotEmpty()) {
@@ -505,6 +507,12 @@ class DatabaseSeeder extends Seeder
                 ->orWhereIn('child_organization_id', $demoOrgIds)
                 ->delete();
             OrganizationNameHistory::whereIn('organization_id', $demoOrgIds)->delete();
+            DB::table('audit_logs')->whereIn('organization_id', $demoOrgIds)->delete();
+            DB::table('user_organization_scopes')->whereIn('organization_id', $demoOrgIds)->delete();
+            DB::table('organization_units')->whereIn('organization_id', $demoOrgIds)->delete();
+            DB::table('service_providers')->whereIn('organization_id', $demoOrgIds)->delete();
+            DB::table('organization_change_requests')->whereIn('organization_id', $demoOrgIds)->delete();
+            Organization::whereIn('merged_into_id', $demoOrgIds)->update(['merged_into_id' => null]);
         }
 
         Organization::where('is_demo', true)->delete();
@@ -625,6 +633,7 @@ class DatabaseSeeder extends Seeder
             'id-cards.export',
             'id-cards.printAnytime',
             'id-cards.exportPng',
+            'id-cards.previewSvg',
             'card-verifications.viewAny',
             'employees.viewAny',
             'entitlements.viewAny',
@@ -775,7 +784,7 @@ class DatabaseSeeder extends Seeder
                 'employees.viewAny',
                 'cards.view', 'cards.manage',
                 'id-cards.viewAny', 'id-cards.view', 'id-cards.submitRequest', 'id-cards.verifyRequest',
-                'id-cards.printAnytime', 'id-cards.exportPng',
+                'id-cards.printAnytime', 'id-cards.exportPng', 'id-cards.previewSvg',
                 'entitlements.view', 'entitlements.viewAny',
                 'service-types.viewAny', 'service-types.view',
                 'entitlement-rules.viewAny', 'entitlement-rules.view',
@@ -793,7 +802,7 @@ class DatabaseSeeder extends Seeder
                 'id-cards.createPrintBatch', 'id-cards.print', 'id-cards.issue', 'id-cards.activate',
                 'id-cards.reportLost', 'id-cards.reportDamaged', 'id-cards.replace', 'id-cards.revoke',
                 'card-verifications.viewAny',
-                'id-cards.export', 'id-cards.printAnytime', 'id-cards.exportPng',
+                'id-cards.export', 'id-cards.printAnytime', 'id-cards.exportPng', 'id-cards.previewSvg',
             ],
             'Service Provider User' => ['dashboard.view', 'transactions.manage', 'service-transactions.viewAny', 'providers.viewAny', 'service-types.viewAny', 'service-types.view'],
             'Settlement Officer' => ['dashboard.view', 'transactions.view', 'service-transactions.viewAny', 'providers.viewAny', 'reports.view'],

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useLocale } from '@/hooks/useLocale';
-import { getCsrfToken } from '@/lib/errors';
 
 export interface CodeRuleFieldProps {
     entityType: string;
@@ -95,35 +94,32 @@ export default function CodeRuleField({
         setFetchError(null);
 
         try {
-            const response = await fetch(route('code-rules.preview-code'), {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': getCsrfToken(),
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: JSON.stringify(buildRequestBody()),
+            const response = await window.axios.post<PreviewResponse>(
+                route('code-rules.preview-code'),
+                buildRequestBody(),
+                {
                 signal: abortRef.current.signal,
-            });
+                },
+            );
 
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({})) as { message?: string };
-                setFetchError(data.message ?? t('codeRules.previewUnavailable'));
-                setPreview(null);
-            } else {
-                const data = await response.json() as PreviewResponse;
-                setPreview(data);
+            const data = response.data;
+            setPreview(data);
 
-                // In auto mode, push the preview code into the form so backend gets it
-                if (!isManualMode && data.code !== null) {
-                    onChange('');
-                }
+            // In auto mode, push the preview code into the form so backend gets it
+            if (!isManualMode && data.code !== null) {
+                onChange('');
             }
         } catch (err) {
             if (err instanceof Error && err.name === 'AbortError') return;
-            setFetchError(t('codeRules.previewUnavailable'));
+            const message =
+                typeof err === 'object' &&
+                err !== null &&
+                'response' in err &&
+                typeof (err as { response?: { data?: { message?: unknown } } }).response?.data?.message === 'string'
+                    ? (err as { response: { data: { message: string } } }).response.data.message
+                    : t('codeRules.previewUnavailable');
+
+            setFetchError(message);
             setPreview(null);
         } finally {
             setLoading(false);

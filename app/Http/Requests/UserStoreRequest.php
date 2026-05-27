@@ -17,7 +17,13 @@ class UserStoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         if ($this->has('national_id')) {
-            $this->merge(['national_id' => trim((string) $this->input('national_id', '')) ?: null]);
+            $nid = trim((string) $this->input('national_id', '')) ?: null;
+            // We validate uniqueness against the deterministic hash column
+            // because the plaintext national_id is stored encrypted.
+            $this->merge([
+                'national_id'      => $nid,
+                'national_id_hash' => $nid !== null ? hash('sha256', $nid) : null,
+            ]);
         }
     }
 
@@ -31,7 +37,8 @@ class UserStoreRequest extends FormRequest
             'roles'                 => ['array'],
             'roles.*'               => ['string', 'exists:roles,name'],
             'profile_photo'         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-            'national_id'           => ['nullable', 'string', 'max:100', 'unique:users,national_id'],
+            'national_id'           => ['nullable', 'string', 'max:100'],
+            'national_id_hash'      => ['nullable', 'string', 'size:64', 'unique:users,national_id_hash'],
             'phone_number'          => ['nullable', 'string', 'max:30', 'regex:/^[+\d\s\-()]+$/'],
             'gender'                => ['nullable', 'string', 'in:male,female,other,not_specified'],
         ];

@@ -6,6 +6,7 @@ import EmptyState from '@/Components/EmptyState';
 import { Plus } from '@/Components/Icons';
 import { useLocale } from '@/hooks/useLocale';
 import { useConfirm } from '@/hooks/useConfirm';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type Version = {
     id: string;
@@ -104,11 +105,10 @@ export default function HierarchyVersionsIndex({
                     <option value="published">{t('hierarchyVersions.published')}</option>
                     <option value="archived">{t('hierarchyVersions.archived')}</option>
                 </select>
-                <input
-                    type="date"
+                <LocalizedDatePicker
                     className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
                     value={filterForm.data.effective_from}
-                    onChange={(event) => filterForm.setData('effective_from', event.target.value)}
+                    onChange={(iso) => filterForm.setData('effective_from', iso)}
                 />
                 <div className="flex items-center justify-end gap-2">
                     <button

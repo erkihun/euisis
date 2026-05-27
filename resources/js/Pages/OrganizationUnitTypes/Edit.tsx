@@ -10,6 +10,7 @@ const labelCls = 'block text-xs font-medium text-gray-600 dark:text-slate-400';
 type OrgUnitType = {
     id: string;
     code: string;
+    prefix: string | null;
     name_en: string;
     name_am: string | null;
     description_en: string | null;
@@ -41,6 +42,7 @@ export default function OrganizationUnitTypesEdit({ type }: { type: OrgUnitType 
 
     const form = useForm({
         code: type.code,
+        prefix: type.prefix ?? '',
         name_en: type.name_en,
         name_am: type.name_am ?? '',
         description_en: type.description_en ?? '',
@@ -79,17 +81,26 @@ export default function OrganizationUnitTypesEdit({ type }: { type: OrgUnitType 
                                     onChange={(e) => form.setData('code', e.target.value)}
                                 />
                             </Field>
-                            <Field label={t('organizationUnitTypes.sortOrder')} error={form.errors.sort_order}>
+                            <Field label={t('organizationUnitTypes.prefix')} error={form.errors.prefix}>
                                 <input
-                                    type="number"
                                     className={inputCls}
-                                    value={form.data.sort_order}
-                                    onChange={(e) =>
-                                        form.setData('sort_order', parseInt(e.target.value, 10) || 0)
-                                    }
+                                    value={form.data.prefix}
+                                    placeholder="e.g. DEPT"
+                                    onChange={(e) => form.setData('prefix', e.target.value)}
                                 />
                             </Field>
                         </div>
+
+                        <Field label={t('organizationUnitTypes.sortOrder')} error={form.errors.sort_order}>
+                            <input
+                                type="number"
+                                className={inputCls}
+                                value={form.data.sort_order}
+                                onChange={(e) =>
+                                    form.setData('sort_order', parseInt(e.target.value, 10) || 0)
+                                }
+                            />
+                        </Field>
 
                         <Field label={`${t('organizationUnitTypes.nameEn')} *`} error={form.errors.name_en}>
                             <input

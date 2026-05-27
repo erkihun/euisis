@@ -15,6 +15,7 @@ return [
     'no_active_rule' => 'No active code rule is configured for this entity.',
     'scope_type_organization' => 'Organization',
     'scope_type_organization_type' => 'Organization Type',
+    'scope_type_organization_unit_type' => 'Organization Unit Type',
     'scope_type_service_type' => 'Service Type',
     // Format token UI
     'format_tokens' => 'Format Tokens',

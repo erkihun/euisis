@@ -44,6 +44,7 @@ test('super admin receives all dashboard sections', function (): void {
             ->where('can.dashboard', true)
             ->where('can.employees', true)
             ->where('can.organizations', true)
+            ->where('can.positions', true)
             ->where('can.cards', true)
             ->where('can.entitlements', true)
             ->where('can.transactions', true)
@@ -52,6 +53,10 @@ test('super admin receives all dashboard sections', function (): void {
             ->where('can.audit', true)
             ->has('kpis')
             ->has('charts')
+            ->has('cards.positions')
+            ->has('charts.positionsByGradeLevel')
+            ->has('charts.positionsByJobFamily')
+            ->has('charts.positionsByOrganization')
             ->has('workflowQueues')
             ->has('alerts')
         );

@@ -26,7 +26,7 @@ class OrganizationUnitTypeController extends Controller
     {
         $this->authorize('viewAny', OrganizationUnitType::class);
 
-        $user  = Auth::user();
+        $user = Auth::user();
         $types = OrganizationUnitType::query()
             ->withTrashed()
             ->orderBy('sort_order')
@@ -35,16 +35,17 @@ class OrganizationUnitTypeController extends Controller
 
         return Inertia::render('OrganizationUnitTypes/Index', [
             'types' => $types->map(fn (OrganizationUnitType $t) => [
-                'id'             => $t->id,
-                'code'           => $t->code,
-                'name_en'        => $t->name_en,
-                'name_am'        => $t->name_am,
+                'id' => $t->id,
+                'code' => $t->code,
+                'prefix' => $t->prefix,
+                'name_en' => $t->name_en,
+                'name_am' => $t->name_am,
                 'description_en' => $t->description_en,
-                'is_active'      => $t->is_active,
-                'sort_order'     => $t->sort_order,
-                'deleted_at'     => $t->deleted_at?->toISOString(),
-                'can'            => [
-                    'update'  => $user?->can('update', $t) ?? false,
+                'is_active' => $t->is_active,
+                'sort_order' => $t->sort_order,
+                'deleted_at' => $t->deleted_at?->toISOString(),
+                'can' => [
+                    'update' => $user?->can('update', $t) ?? false,
                     'archive' => $user?->can('archive', $t) ?? false,
                     'restore' => $user?->can('restore', $t) ?? false,
                 ],

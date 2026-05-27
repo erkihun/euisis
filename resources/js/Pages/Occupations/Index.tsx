@@ -11,12 +11,9 @@ import { useConfirm } from '@/hooks/useConfirm';
 type OccupationRow = {
     id: string;
     isco_code: string;
-    isco_major_group_code: string | null;
     name_en: string | null;
     name_am: string | null;
-    skill_level: string | null;
     is_active: boolean;
-    sort_order: number;
     deleted_at: string | null;
     can: { view: boolean; update: boolean; archive: boolean; restore: boolean };
 };
@@ -32,23 +29,17 @@ export default function OccupationsIndex({
     occupations,
     meta,
     filters,
-    majorGroups,
-    skillLevels,
     can,
 }: {
     occupations: OccupationRow[];
     meta: Meta;
     filters: Record<string, string>;
-    majorGroups: string[];
-    skillLevels: string[];
     can: { create: boolean };
 }) {
     const { t } = useLocale();
     const { confirm } = useConfirm();
     const form = useForm({
         search: filters.search ?? '',
-        isco_major_group_code: filters.isco_major_group_code ?? '',
-        skill_level: filters.skill_level ?? '',
         is_active: filters.is_active ?? '',
     });
 
@@ -105,37 +96,13 @@ export default function OccupationsIndex({
 
             <div className="space-y-6">
                 <section className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-                    <form className="grid gap-3 sm:grid-cols-2 md:grid-cols-5" onSubmit={submit}>
+                    <form className="grid gap-3 sm:grid-cols-2 md:grid-cols-3" onSubmit={submit}>
                         <input
                             className={inputCls}
                             value={form.data.search}
                             placeholder={t('occupations.searchOccupations')}
                             onChange={(e) => form.setData('search', e.target.value)}
                         />
-                        <select
-                            className={inputCls}
-                            value={form.data.isco_major_group_code}
-                            onChange={(e) => form.setData('isco_major_group_code', e.target.value)}
-                        >
-                            <option value="">{t('occupations.allMajorGroups')}</option>
-                            {majorGroups.map((c) => (
-                                <option key={c} value={c}>
-                                    {c}
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            className={inputCls}
-                            value={form.data.skill_level}
-                            onChange={(e) => form.setData('skill_level', e.target.value)}
-                        >
-                            <option value="">{t('occupations.allSkillLevels')}</option>
-                            {skillLevels.map((s) => (
-                                <option key={s} value={s}>
-                                    {s}
-                                </option>
-                            ))}
-                        </select>
                         <select
                             className={inputCls}
                             value={form.data.is_active}
@@ -167,8 +134,6 @@ export default function OccupationsIndex({
                                         {[
                                             t('occupations.iscoCode'),
                                             t('occupations.nameEn'),
-                                            t('occupations.majorGroup'),
-                                            t('occupations.skillLevel'),
                                             t('common.status'),
                                             '',
                                         ].map((heading, i) => (
@@ -198,8 +163,6 @@ export default function OccupationsIndex({
                                             <td className="px-4 py-3 font-medium">
                                                 {occ.name_en ?? occ.name_am ?? '—'}
                                             </td>
-                                            <td className="px-4 py-3">{occ.isco_major_group_code ?? '—'}</td>
-                                            <td className="px-4 py-3">{occ.skill_level ?? '—'}</td>
                                             <td className="px-4 py-3">
                                                 <StatusBadge status={occ.is_active ? 'active' : 'inactive'} />
                                             </td>

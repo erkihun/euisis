@@ -71,6 +71,7 @@ const codeRules = {
     scopeTypes: {
         organization: 'Organization',
         organization_type: 'Organization Type',
+        organization_unit_type: 'Organization Unit Type',
         service_type: 'Service Type',
     },
     resetFrequencies: {

@@ -17,28 +17,38 @@ readonly class CreateOccupationAction
 
     public function execute(array $attributes, User $actor): Occupation
     {
-        if (isset($attributes['isco_code']) && $attributes['isco_code'] !== '') {
-            $attributes['isco_code'] = strtoupper(trim($attributes['isco_code']));
-        }
+        $activeAttributes = $this->activeAttributes($attributes);
 
-        // Mirror isco_code into legacy code column to satisfy NOT NULL/unique constraint.
-        if (! isset($attributes['code']) || $attributes['code'] === '' || $attributes['code'] === null) {
-            $attributes['code'] = $attributes['isco_code'] ?? null;
-        }
+        $occupation = new Occupation($activeAttributes);
 
-        $attributes['created_by'] = $actor->getKey();
-        $attributes['updated_by'] = $actor->getKey();
-
-        $occupation = Occupation::query()->create($attributes);
+        $occupation->forceFill([
+            'code' => $activeAttributes['isco_code'],
+            'created_by' => $actor->getKey(),
+            'updated_by' => $actor->getKey(),
+        ])->save();
 
         $this->writeAuditLogAction->execute(
             AuditEventType::OccupationCreated,
             $actor,
             $occupation,
             null,
-            newValues: $occupation->toArray(),
+            newValues: $activeAttributes,
         );
 
         return $occupation;
+    }
+
+    /**
+     * @return array{isco_code: string, name_en?: string|null, name_am?: string|null, skill_specialization?: string|null, description?: string|null}
+     */
+    private function activeAttributes(array $attributes): array
+    {
+        return [
+            'isco_code' => trim((string) $attributes['isco_code']),
+            'name_en' => $attributes['name_en'] ?? null,
+            'name_am' => $attributes['name_am'] ?? null,
+            'skill_specialization' => $attributes['skill_specialization'] ?? null,
+            'description' => $attributes['description'] ?? null,
+        ];
     }
 }

@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Middleware\EnsureMfaNotRequired;
 use App\Http\Middleware\EnsureProviderServiceScope;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RequestCorrelationId;
+use App\Http\Middleware\RequireMfa;
+use App\Http\Middleware\SecurityHeaders;
 use App\Services\ErrorLoggingService;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -30,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->prepend(RequestCorrelationId::class);
+        $middleware->prepend(SecurityHeaders::class);
 
         $middleware->web(append: [
             HandleInertiaRequests::class,
@@ -38,6 +42,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'provider.scope' => EnsureProviderServiceScope::class,
+            'mfa'            => RequireMfa::class,
+            'mfa.setup'      => EnsureMfaNotRequired::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -367,6 +367,19 @@ class CodeFormatTokenRegistry
                 'is_active' => true,
                 'supported_entity_types' => null,
             ],
+            'UNIT_TYPE_PREFIX' => [
+                'token' => 'UNIT_TYPE_PREFIX',
+                'label_en' => 'Organization Unit Type Prefix',
+                'label_am' => 'የድርጅት ዩኒት ዓይነት ቅድመ ኮድ',
+                'description_en' => 'Inserts the prefix field of the organization unit type (falls back to type code).',
+                'description_am' => 'የድርጅት ዩኒት ዓይነቱን ቅድመ ኮድ መስክ ያስገባል (ካልተሞላ ዓይነቱን ኮድ ይጠቀማል)።',
+                'category' => 'Organization',
+                'requires_context' => true,
+                'context_key' => 'organization_unit_type_id',
+                'example' => 'DEPT',
+                'is_active' => true,
+                'supported_entity_types' => null,
+            ],
 
             // ── EMPLOYEE ──────────────────────────────────────────────────────
             'EMPLOYEE_NUMBER' => [

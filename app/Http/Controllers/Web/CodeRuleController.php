@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Web;
 
+use App\Actions\Audit\WriteAuditLogAction;
 use App\Actions\CodeRules\ArchiveCodeRuleAction;
 use App\Actions\CodeRules\CreateCodeRuleAction;
 use App\Actions\CodeRules\PreviewCodeRuleAction;
@@ -19,17 +20,17 @@ use App\Http\Requests\PreviewCodeForEntityRequest;
 use App\Http\Requests\PreviewCodeRuleRequest;
 use App\Http\Requests\StoreCodeRuleRequest;
 use App\Http\Requests\UpdateCodeRuleRequest;
-use App\Services\CodeGeneration\CodeFormatTokenRegistry;
-use App\Services\CodeGeneration\CodeRuleResolver;
-use App\Services\CodeGeneration\CodeGeneratorService;
-use App\Actions\Audit\WriteAuditLogAction;
 use App\Http\Resources\CodeGenerationLogResource;
 use App\Http\Resources\CodeRuleResource;
 use App\Models\CodeRule;
 use App\Models\CodeRuleSequence;
 use App\Models\Organization;
 use App\Models\OrganizationType;
+use App\Models\OrganizationUnitType;
 use App\Models\ServiceType;
+use App\Services\CodeGeneration\CodeFormatTokenRegistry;
+use App\Services\CodeGeneration\CodeGeneratorService;
+use App\Services\CodeGeneration\CodeRuleResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -171,7 +172,7 @@ class CodeRuleController extends Controller
         CodeRule $codeRule,
         CodeRuleSequence $sequence,
         WriteAuditLogAction $writeAuditLogAction,
-    ): JsonResponse {
+    ): JsonResponse|RedirectResponse {
         $this->authorize('update', $codeRule);
 
         if (! ($request->user()?->can('code-rules.resetSequence') ?? false)) {
@@ -199,6 +200,13 @@ class CodeRuleController extends Controller
             ['next_number' => $oldNextNumber],
             ['next_number' => 1, 'scope_key' => $sequence->sequence_scope_key],
         );
+
+        if ($request->header('X-Inertia')) {
+            return back()->with('flash', [
+                'message' => __('code-rules.sequence_reset_success'),
+                'type' => 'success',
+            ]);
+        }
 
         return response()->json(['message' => __('code-rules.sequence_reset_success')]);
     }
@@ -313,7 +321,7 @@ class CodeRuleController extends Controller
         $rulePayload = [
             'id' => $rule->id,
             'name' => app()->getLocale() === 'am' ? ($rule->name_am ?? $rule->name_en) : $rule->name_en,
-            'entity_type' => $rule->entity_type instanceof \App\Enums\CodeRuleEntityType
+            'entity_type' => $rule->entity_type instanceof CodeRuleEntityType
                 ? $rule->entity_type->value
                 : $rule->entity_type,
             'is_scoped' => $rule->scope_type !== null,
@@ -367,6 +375,13 @@ class CodeRuleController extends Controller
                     ->map(fn (OrganizationType $organizationType): array => [
                         'id' => $organizationType->id,
                         'label' => "{$organizationType->code} - {$organizationType->name_en}",
+                    ]),
+                CodeRuleScopeType::OrganizationUnitType->value => OrganizationUnitType::query()
+                    ->orderBy('name_en')
+                    ->get(['id', 'name_en', 'code', 'prefix'])
+                    ->map(fn (OrganizationUnitType $organizationUnitType): array => [
+                        'id' => $organizationUnitType->id,
+                        'label' => trim(($organizationUnitType->prefix ?? $organizationUnitType->code ?? '').' - '.$organizationUnitType->name_en, ' -'),
                     ]),
                 CodeRuleScopeType::ServiceType->value => ServiceType::query()
                     ->orderBy('name_en')

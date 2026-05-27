@@ -8,9 +8,9 @@ use App\Exceptions\MissingTokenContextException;
 use App\Models\CodeRule;
 use App\Models\Employee;
 use App\Models\Organization;
+use App\Models\OrganizationType;
 use App\Models\OrganizationUnit;
 use App\Models\OrganizationUnitType;
-use App\Models\OrganizationType;
 use App\Models\Position;
 use App\Models\ServiceProvider;
 use App\Models\ServiceType;
@@ -84,6 +84,7 @@ class CodeFormatTokenResolver
             'UNIT_CODE' => $this->resolveUnitCode($context),
             'UNIT_TYPE_CODE' => $this->resolveUnitTypeCode($context),
             'UNIT_PREFIX' => $this->resolveUnitPrefix($context),
+            'UNIT_TYPE_PREFIX' => $this->resolveUnitTypePrefix($context),
 
             // ── EMPLOYEE ──────────────────────────────────────────────────────
             'EMPLOYEE_NUMBER' => $this->resolveEmployeeNumber($context),
@@ -124,14 +125,23 @@ class CodeFormatTokenResolver
 
     /**
      * Strip unsafe characters, uppercase, and truncate to 50 chars.
-     * Allowed: alphanumeric, dash, underscore, dot, slash.
+     * Allowed: Unicode letters/numbers, dash, underscore, dot, slash.
      */
     public function sanitize(string $value): string
     {
-        $value = strtoupper(trim($value));
-        $value = preg_replace('/[^A-Z0-9\-_.\/]/', '', $value) ?? '';
+        $value = mb_strtoupper(trim($value));
+        $value = preg_replace('/[^\p{L}\p{N}\-_.\/]/u', '', $value) ?? '';
 
         return substr($value, 0, 50);
+    }
+
+    private function sanitizeWithFallback(?string $primary, ?string $fallback): string
+    {
+        $sanitized = $this->sanitize((string) ($primary ?? ''));
+
+        return $sanitized !== ''
+            ? $sanitized
+            : $this->sanitize((string) ($fallback ?? ''));
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -346,11 +356,19 @@ class CodeFormatTokenResolver
     /** @param array<string, mixed> $context */
     private function resolveUnitTypeCode(array $context): string
     {
+        $unitTypeId = $context['organization_unit_type_id'] ?? null;
+
+        if (! empty($unitTypeId)) {
+            $code = OrganizationUnitType::query()->whereKey($unitTypeId)->value('code');
+
+            return $this->sanitize((string) ($code ?? ''));
+        }
+
         $unitId = $context['organization_unit_id'] ?? null;
 
         if (empty($unitId)) {
             throw new MissingTokenContextException(
-                'The token {UNIT_TYPE_CODE} requires missing context: organization_unit_id'
+                'The token {UNIT_TYPE_CODE} requires missing context: organization_unit_type_id or organization_unit_id'
             );
         }
 
@@ -375,11 +393,21 @@ class CodeFormatTokenResolver
     /** @param array<string, mixed> $context */
     private function resolveUnitPrefix(array $context): string
     {
+        $unitTypeId = $context['organization_unit_type_id'] ?? null;
+
+        if (! empty($unitTypeId)) {
+            $type = OrganizationUnitType::query()->whereKey($unitTypeId)->first(['prefix', 'code']);
+
+            if ($type !== null) {
+                return $this->sanitizeWithFallback($type->prefix, $type->code);
+            }
+        }
+
         $unitId = $context['organization_unit_id'] ?? null;
 
         if (empty($unitId)) {
             throw new MissingTokenContextException(
-                'The token {UNIT_PREFIX} requires missing context: organization_unit_id'
+                'The token {UNIT_PREFIX} requires missing context: organization_unit_type_id or organization_unit_id'
             );
         }
 
@@ -390,17 +418,61 @@ class CodeFormatTokenResolver
             return '';
         }
 
-        // OrganizationUnitType does not have a prefix column — use the code first letters
         if ($unit->organization_unit_type_id !== null) {
-            $typeCode = OrganizationUnitType::query()->whereKey($unit->organization_unit_type_id)->value('code');
+            $type = OrganizationUnitType::query()->whereKey($unit->organization_unit_type_id)->first(['prefix', 'code']);
 
-            if ($typeCode !== null && $typeCode !== '') {
-                return $this->sanitize(substr(strtoupper($typeCode), 0, 5));
+            if ($type !== null) {
+                if ($type->prefix !== null && $type->prefix !== '') {
+                    return $this->sanitize($type->prefix);
+                }
+
+                if ($type->code !== null && $type->code !== '') {
+                    return $this->sanitize(substr(strtoupper($type->code), 0, 5));
+                }
             }
         }
 
         // Fall back: first letters of unit code
         return $this->sanitize(substr(preg_replace('/[^A-Z0-9]/', '', strtoupper($unit->code ?? '')), 0, 5));
+    }
+
+    /** @param array<string, mixed> $context */
+    private function resolveUnitTypePrefix(array $context): string
+    {
+        $unitTypeId = $context['organization_unit_type_id'] ?? null;
+
+        if (! empty($unitTypeId)) {
+            $type = OrganizationUnitType::query()->whereKey($unitTypeId)->first(['prefix', 'code']);
+
+            if ($type === null) {
+                return '';
+            }
+
+            return $this->sanitizeWithFallback($type->prefix, $type->code);
+        }
+
+        $unitId = $context['organization_unit_id'] ?? null;
+
+        if (empty($unitId)) {
+            throw new MissingTokenContextException(
+                'The token {UNIT_TYPE_PREFIX} requires missing context: organization_unit_type_id or organization_unit_id'
+            );
+        }
+
+        /** @var OrganizationUnit|null $unit */
+        $unit = OrganizationUnit::query()->whereKey($unitId)->first(['id', 'organization_unit_type_id']);
+
+        if ($unit === null || $unit->organization_unit_type_id === null) {
+            return '';
+        }
+
+        $type = OrganizationUnitType::query()->whereKey($unit->organization_unit_type_id)->first(['prefix', 'code']);
+
+        if ($type === null) {
+            return '';
+        }
+
+        return $this->sanitizeWithFallback($type->prefix, $type->code);
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -659,7 +731,7 @@ class CodeFormatTokenResolver
             'YEAR', 'YEAR_SHORT', 'MONTH', 'MONTH_NAME', 'DAY', 'DATE', 'TIME', 'TIMESTAMP', 'FISCAL_YEAR',
             'ORG_CODE', 'ORG_PREFIX', 'ORG_NAME', 'ORG_TYPE_CODE', 'ORG_TYPE_PREFIX', 'ORG_TYPE_NAME',
             'PARENT_ORG_CODE', 'PARENT_ORG_PREFIX',
-            'UNIT_CODE', 'UNIT_TYPE_CODE', 'UNIT_PREFIX',
+            'UNIT_CODE', 'UNIT_TYPE_CODE', 'UNIT_PREFIX', 'UNIT_TYPE_PREFIX',
             'EMPLOYEE_NUMBER', 'EMPLOYEE_INITIALS', 'EMPLOYEE_STATUS',
             'POSITION_CODE', 'JOB_POSITION_CODE', 'POSITION_PREFIX', 'POSITION_TITLE',
             'SERVICE_TYPE_CODE', 'SERVICE_TYPE_PREFIX', 'PROVIDER_CODE', 'PROVIDER_PREFIX',

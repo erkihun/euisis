@@ -5,6 +5,7 @@ import { useLocale } from '@/hooks/useLocale';
 import { useRef, useState } from 'react';
 import { toDateInput } from '@/lib/dateUtils';
 import CodeRuleField from '@/Components/code-rules/CodeRuleField';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type OrgType = { id: string; name_en: string; code: string };
 
@@ -208,19 +209,17 @@ export default function EditOrganization({
                         </Field>
 
                         <Field label={t('common.effectiveFrom')} error={form.errors.effective_from}>
-                            <input
-                                type="date"
+                            <LocalizedDatePicker
                                 className={inputCls}
                                 value={form.data.effective_from}
-                                onChange={(e) => form.setData('effective_from', e.target.value)}
+                                onChange={(iso) => form.setData('effective_from', iso)}
                             />
                         </Field>
                         <Field label={t('common.effectiveTo')} error={form.errors.effective_to}>
-                            <input
-                                type="date"
+                            <LocalizedDatePicker
                                 className={inputCls}
                                 value={form.data.effective_to}
-                                onChange={(e) => form.setData('effective_to', e.target.value)}
+                                onChange={(iso) => form.setData('effective_to', iso)}
                             />
                         </Field>
 

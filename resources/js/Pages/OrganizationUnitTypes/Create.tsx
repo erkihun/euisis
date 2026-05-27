@@ -31,6 +31,7 @@ export default function OrganizationUnitTypesCreate() {
 
     const form = useForm({
         code: '',
+        prefix: '',
         name_en: '',
         name_am: '',
         description_en: '',
@@ -71,17 +72,26 @@ export default function OrganizationUnitTypesCreate() {
                                 canManualOverride={false}
                                 error={form.errors.code}
                             />
-                            <Field label={t('organizationUnitTypes.sortOrder')} error={form.errors.sort_order}>
+                            <Field label={t('organizationUnitTypes.prefix')} error={form.errors.prefix}>
                                 <input
-                                    type="number"
                                     className={inputCls}
-                                    value={form.data.sort_order}
-                                    onChange={(e) =>
-                                        form.setData('sort_order', parseInt(e.target.value, 10) || 0)
-                                    }
+                                    value={form.data.prefix}
+                                    placeholder="e.g. DEPT"
+                                    onChange={(e) => form.setData('prefix', e.target.value)}
                                 />
                             </Field>
                         </div>
+
+                        <Field label={t('organizationUnitTypes.sortOrder')} error={form.errors.sort_order}>
+                            <input
+                                type="number"
+                                className={inputCls}
+                                value={form.data.sort_order}
+                                onChange={(e) =>
+                                    form.setData('sort_order', parseInt(e.target.value, 10) || 0)
+                                }
+                            />
+                        </Field>
 
                         <Field label={`${t('organizationUnitTypes.nameEn')} *`} error={form.errors.name_en}>
                             <input

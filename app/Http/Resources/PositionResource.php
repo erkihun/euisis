@@ -25,6 +25,18 @@ class PositionResource extends JsonResource
                 'id' => $this->organization->id,
                 'name_en' => $this->organization->name_en,
             ] : null,
+            'organization_unit_id' => $this->organization_unit_id,
+            'organization_unit' => $this->organizationUnit ? [
+                'id' => $this->organizationUnit->id,
+                'name_en' => $this->organizationUnit->name_en,
+                'code' => $this->organizationUnit->code,
+            ] : null,
+            'occupation_id' => $this->occupation_id,
+            'occupation' => $this->occupation ? [
+                'id' => $this->occupation->id,
+                'isco_code' => $this->occupation->isco_code,
+                'name_en' => $this->occupation->name_en,
+            ] : null,
             'grade_level' => $this->grade_level,
             'job_family' => $this->job_family,
             'is_active' => $this->is_active,

@@ -24,6 +24,7 @@ readonly class CreatePositionAction
             CodeRuleEntityType::Position,
             [
                 'organization_id' => $attributes['organization_id'] ?? null,
+                'organization_unit_id' => $attributes['organization_unit_id'] ?? null,
             ],
             $actor,
             $attributes['job_position_code'] ?? null,

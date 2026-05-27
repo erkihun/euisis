@@ -70,6 +70,7 @@ class DashboardDataService
             'dashboard' => $this->canViewDashboard($user),
             'employees' => $this->hasAnyPermission($user, ['employees.viewAny', 'employees.view', 'employees.manage']),
             'organizations' => $this->hasAnyPermission($user, ['organizations.viewAny', 'organizations.view', 'organizations.manage']),
+            'positions' => $this->hasAnyPermission($user, ['positions.viewAny', 'positions.view', 'positions.manage']),
             'cards' => $this->hasAnyPermission($user, ['id-cards.viewAny', 'id-cards.view', 'cards.view']),
             'verification' => $this->hasAnyPermission($user, ['id-cards.verify', 'card-verifications.viewAny', 'id-cards.viewAny', 'cards.view']),
             'entitlements' => $this->hasAnyPermission($user, ['entitlements.viewAny', 'entitlements.view', 'entitlements.manage']),

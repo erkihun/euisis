@@ -24,6 +24,8 @@ class PreviewCodeForEntityRequest extends FormRequest
 
         return $user->can('code-rules.preview')
             || $user->can('organizations.manage')
+            || $user->can('organization-units.create')
+            || $user->can('organization-units.manage')
             || $user->can('employees.manage')
             || $user->can('positions.create')
             || $user->can('service-types.create')
@@ -39,6 +41,8 @@ class PreviewCodeForEntityRequest extends FormRequest
             'context' => ['nullable', 'array'],
             'context.organization_type_id' => ['nullable', 'string', 'max:255'],
             'context.organization_id' => ['nullable', 'string', 'max:255'],
+            'context.organization_unit_id' => ['nullable', 'string', 'max:255'],
+            'context.organization_unit_type_id' => ['nullable', 'string', 'max:255'],
             'context.service_type_id' => ['nullable', 'string', 'max:255'],
         ];
     }

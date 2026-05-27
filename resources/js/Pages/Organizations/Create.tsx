@@ -5,6 +5,7 @@ import { useLocale } from '@/hooks/useLocale';
 import { toast as showToast } from '@/lib/toast';
 import { useRef, useState } from 'react';
 import CodeRuleField from '@/Components/code-rules/CodeRuleField';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type OrgType = { id: string; name_en: string; code: string };
 type HierarchyVersion = { id: string; version_name: string; status: string };
@@ -240,20 +241,18 @@ export default function CreateOrganization({
                         </Field>
 
                         <Field label={t('common.effectiveFrom')} error={form.errors.effective_from}>
-                            <input
-                                type="date"
+                            <LocalizedDatePicker
                                 className={inputCls}
                                 value={form.data.effective_from}
-                                onChange={(event) => form.setData('effective_from', event.target.value)}
+                                onChange={(iso) => form.setData('effective_from', iso)}
                             />
                         </Field>
 
                         <Field label={t('common.effectiveTo')} error={form.errors.effective_to}>
-                            <input
-                                type="date"
+                            <LocalizedDatePicker
                                 className={inputCls}
                                 value={form.data.effective_to}
-                                onChange={(event) => form.setData('effective_to', event.target.value)}
+                                onChange={(iso) => form.setData('effective_to', iso)}
                             />
                         </Field>
 

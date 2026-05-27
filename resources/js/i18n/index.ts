@@ -27,6 +27,8 @@ export * as enPermissions from './en/permissions';
 export * as enSettings from './en/settings';
 export * as enAuth from './en/auth';
 export * as enHome from './en/home';
+export * as enSecurity from './en/security';
+export * as enCafeteria from './en/cafeteria';
 
 export * as amCommon from './am/common';
 export * as amNav from './am/navigation';
@@ -52,3 +54,5 @@ export * as amPermissions from './am/permissions';
 export * as amSettings from './am/settings';
 export * as amAuth from './am/auth';
 export * as amHome from './am/home';
+export * as amSecurity from './am/security';
+export * as amCafeteria from './am/cafeteria';

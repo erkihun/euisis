@@ -5,6 +5,7 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
 import { useLocale } from '@/hooks/useLocale';
 import PageHeader from '@/Components/PageHeader';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type AuditLog = {
     id: string;
@@ -137,22 +138,20 @@ export default function AuditLogsIndex({
                             <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-slate-400">
                                 {t('common.effectiveFrom')}
                             </label>
-                            <input
-                                type="date"
+                            <LocalizedDatePicker
                                 className={inputCls}
                                 value={filterForm.data.from}
-                                onChange={(e) => filterForm.setData('from', e.target.value)}
+                                onChange={(iso) => filterForm.setData('from', iso)}
                             />
                         </div>
                         <div>
                             <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-slate-400">
                                 {t('common.effectiveTo')}
                             </label>
-                            <input
-                                type="date"
+                            <LocalizedDatePicker
                                 className={inputCls}
                                 value={filterForm.data.to}
-                                onChange={(e) => filterForm.setData('to', e.target.value)}
+                                onChange={(iso) => filterForm.setData('to', iso)}
                             />
                         </div>
                         <button

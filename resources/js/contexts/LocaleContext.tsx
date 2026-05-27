@@ -16,11 +16,11 @@ function getInitialLocale(): Locale {
     } catch {
         // localStorage unavailable (SSR / private mode)
     }
-    return 'en';
+    return 'am';
 }
 
 export const LocaleContext = createContext<LocaleContextValue>({
-    locale: 'en',
+    locale: 'am',
     setLocale: () => {},
 });
 
@@ -29,7 +29,7 @@ type LocaleProviderProps = {
     defaultLocale?: Locale;
 };
 
-export function LocaleProvider({ children, defaultLocale = 'en' }: LocaleProviderProps) {
+export function LocaleProvider({ children, defaultLocale = 'am' }: LocaleProviderProps) {
     const [locale, setLocaleState] = useState<Locale>(() => getInitialLocale() ?? defaultLocale);
 
     const setLocale = useCallback((next: Locale) => {

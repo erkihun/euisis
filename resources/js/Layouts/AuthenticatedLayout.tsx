@@ -15,9 +15,9 @@ export default function Authenticated({
     const { locale } = useLocale();
     const { getBoolean, getString } = useSystemSettings();
 
-    const primary = getString('appearance.primary_color', '#2563EB');
-    const secondary = getString('appearance.secondary_color', '#1E40AF');
-    const accent = getString('appearance.accent_color', '#F97316');
+    const primary = getString('appearance.primary_color', '#2563eb');
+    const secondary = getString('appearance.secondary_color', '#1d4ed8');
+    const accent = getString('appearance.accent_color', '#ea580c');
     const buttonStyle = getString('appearance.button_style', 'rounded');
     const cardRadius = getString('appearance.card_radius', 'xl');
     const tableDensity = getString('appearance.table_density', 'comfortable');

@@ -4,6 +4,17 @@ declare(strict_types=1);
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Web\AuditLogController;
+use App\Http\Controllers\Web\CafeteriaDashboardController;
+use App\Http\Controllers\Web\CafeteriaDayRuleController;
+use App\Http\Controllers\Web\CafeteriaProviderController;
+use App\Http\Controllers\Web\CafeteriaReportController;
+use App\Http\Controllers\Web\CafeteriaSettingController;
+use App\Http\Controllers\Web\CafeteriaSpecialDayController;
+use App\Http\Controllers\Web\CafeteriaSubsidyLedgerController;
+use App\Http\Controllers\Web\CafeteriaSubsidyRuleController;
+use App\Http\Controllers\Web\CafeteriaTransactionController;
+use App\Http\Controllers\Web\EmployeeCafeteriaExclusionController;
+use App\Http\Controllers\Web\PublicHolidayController;
 use App\Http\Controllers\Web\CardPrintBatchController;
 use App\Http\Controllers\Web\CardRequestController;
 use App\Http\Controllers\Web\CodeRuleController;
@@ -12,8 +23,10 @@ use App\Http\Controllers\Web\EmployeeController;
 use App\Http\Controllers\Web\EmployeeTransferController;
 use App\Http\Controllers\Web\EntitlementController;
 use App\Http\Controllers\Web\EntitlementRuleController;
+use App\Http\Controllers\Web\GradeLevelController;
 use App\Http\Controllers\Web\HierarchyVersionController;
 use App\Http\Controllers\Web\IdCardController;
+use App\Http\Controllers\Web\IdCardExportController;
 use App\Http\Controllers\Web\IsicActivityController;
 use App\Http\Controllers\Web\OccupationController;
 use App\Http\Controllers\Web\OrganizationController;
@@ -29,6 +42,7 @@ use App\Http\Controllers\Web\ServiceProviderController;
 use App\Http\Controllers\Web\ServiceTypeController;
 use App\Http\Controllers\Web\SystemSettingController;
 use App\Http\Controllers\Web\UserController;
+use App\Http\Controllers\Web\CardPublicVerifyController;
 use App\Http\Controllers\Web\UserOrganizationScopeController;
 use App\Models\IdCard;
 use Illuminate\Http\Request;
@@ -39,7 +53,12 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 });
 
-Route::middleware(['auth', 'verified'])->group(function (): void {
+// Public card verification — QR gateway, no auth required
+Route::get('/verify/card/{publicCardUuid}', CardPublicVerifyController::class)
+    ->name('id-cards.verify.public')
+    ->middleware('throttle:30,1');
+
+Route::middleware(['auth', 'verified', 'mfa'])->group(function (): void {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     // Organizations
@@ -140,6 +159,16 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::delete('/positions/{position}', [PositionController::class, 'archive'])->name('positions.archive');
     Route::post('/positions/{position}/restore', [PositionController::class, 'restore'])->name('positions.restore');
 
+    // Grade Levels
+    Route::get('/grade-levels', [GradeLevelController::class, 'index'])->name('grade-levels.index');
+    Route::get('/grade-levels/create', [GradeLevelController::class, 'create'])->name('grade-levels.create');
+    Route::post('/grade-levels', [GradeLevelController::class, 'store'])->name('grade-levels.store');
+    Route::get('/grade-levels/{gradeLevel}', [GradeLevelController::class, 'show'])->name('grade-levels.show');
+    Route::get('/grade-levels/{gradeLevel}/edit', [GradeLevelController::class, 'edit'])->name('grade-levels.edit');
+    Route::patch('/grade-levels/{gradeLevel}', [GradeLevelController::class, 'update'])->name('grade-levels.update');
+    Route::delete('/grade-levels/{gradeLevel}', [GradeLevelController::class, 'archive'])->name('grade-levels.archive');
+    Route::post('/grade-levels/{gradeLevel}/restore', [GradeLevelController::class, 'restore'])->name('grade-levels.restore');
+
     // Employee Transfers
     Route::get('/employee-transfers', [EmployeeTransferController::class, 'index'])->name('employee-transfers.index');
     Route::get('/employee-transfers/pending', [EmployeeTransferController::class, 'pending'])->name('employee-transfers.pending');
@@ -167,6 +196,13 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('/id-cards/{card}/replace', [IdCardController::class, 'replace'])->name('id-cards.replace');
     Route::post('/id-cards/{card}/revoke', [IdCardController::class, 'revoke'])->name('id-cards.revoke');
     Route::post('/id-cards/{card}/export/audit', [IdCardController::class, 'exportAudit'])->name('id-cards.export.audit');
+
+    // Server-side SVG preview + PNG export (no status change, all actions audited)
+    Route::get('/id-cards/{card}/preview/svg/front', [IdCardExportController::class, 'previewFrontSvg'])->name('id-cards.preview.svg.front');
+    Route::get('/id-cards/{card}/preview/svg/back', [IdCardExportController::class, 'previewBackSvg'])->name('id-cards.preview.svg.back');
+    Route::get('/id-cards/{card}/export/png/front', [IdCardExportController::class, 'exportFrontPng'])->name('id-cards.export.png.front');
+    Route::get('/id-cards/{card}/export/png/back', [IdCardExportController::class, 'exportBackPng'])->name('id-cards.export.png.back');
+    Route::get('/id-cards/{card}/export/png/both', [IdCardExportController::class, 'exportBothPng'])->name('id-cards.export.png.both');
 
     // Card Requests
     Route::get('/card-requests', [CardRequestController::class, 'index'])->name('card-requests.index');
@@ -207,7 +243,12 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('/service-types/{serviceType}/restore', [ServiceTypeController::class, 'restore'])->name('service-types.restore');
 
     Route::get('/service-providers', [ServiceProviderController::class, 'index'])->name('service-providers.index');
+    Route::get('/service-providers/create', [ServiceProviderController::class, 'create'])->name('service-providers.create');
+    Route::post('/service-providers', [ServiceProviderController::class, 'store'])->name('service-providers.store');
     Route::get('/service-providers/{serviceProvider}', [ServiceProviderController::class, 'show'])->name('service-providers.show');
+    Route::get('/service-providers/{serviceProvider}/edit', [ServiceProviderController::class, 'edit'])->name('service-providers.edit');
+    Route::patch('/service-providers/{serviceProvider}', [ServiceProviderController::class, 'update'])->name('service-providers.update');
+    Route::delete('/service-providers/{serviceProvider}', [ServiceProviderController::class, 'destroy'])->name('service-providers.destroy');
     Route::get('/entitlement-rules', [EntitlementRuleController::class, 'index'])->name('entitlement-rules.index');
     Route::get('/entitlement-rules/create', [EntitlementRuleController::class, 'create'])->name('entitlement-rules.create');
     Route::post('/entitlement-rules', [EntitlementRuleController::class, 'store'])->name('entitlement-rules.store');
@@ -290,6 +331,84 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('/system-settings/test-telegram', [SystemSettingController::class, 'testTelegram'])->name('system-settings.test-telegram');
     Route::post('/system-settings/clear-cache', [SystemSettingController::class, 'clearCache'])->name('system-settings.clear-cache');
     Route::patch('/system-settings/{setting}', [SystemSettingController::class, 'update'])->name('system-settings.update');
+
+    // Cafeteria Subsidy Module
+    Route::prefix('cafeteria')->name('cafeteria.')->group(function (): void {
+        Route::get('/', [CafeteriaDashboardController::class, 'index'])->name('dashboard');
+
+        // QR Scan terminal
+        Route::get('/scan', [CafeteriaTransactionController::class, 'scan'])->name('scan');
+        Route::get('/scan/mobile', [CafeteriaTransactionController::class, 'scanMobile'])->name('scan.mobile');
+        Route::get('/scan/calendar', [CafeteriaTransactionController::class, 'calendar'])->name('scan.calendar');
+        Route::get('/scan/today', [CafeteriaTransactionController::class, 'today'])->name('scan.today');
+        Route::post('/scan', [CafeteriaTransactionController::class, 'processScan'])->middleware('throttle:60,1')->name('scan.process');
+
+        // Transactions
+        Route::get('/transactions', [CafeteriaTransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transactions/{cafeteriaTransaction}', [CafeteriaTransactionController::class, 'show'])->name('transactions.show');
+        Route::post('/transactions/{cafeteriaTransaction}/reverse', [CafeteriaTransactionController::class, 'reverse'])->name('transactions.reverse');
+
+        // Ledger
+        Route::get('/ledger', [CafeteriaSubsidyLedgerController::class, 'index'])->name('ledger.index');
+
+        // Reports
+        Route::get('/reports', [CafeteriaReportController::class, 'index'])->name('reports.index');
+        Route::post('/reports/generate', [CafeteriaReportController::class, 'generate'])->name('reports.generate');
+        Route::get('/reports/{cafeteriaReport}', [CafeteriaReportController::class, 'show'])->name('reports.show');
+
+        // Providers
+        Route::get('/providers', [CafeteriaProviderController::class, 'index'])->name('providers.index');
+        Route::get('/providers/create', [CafeteriaProviderController::class, 'create'])->name('providers.create');
+        Route::post('/providers', [CafeteriaProviderController::class, 'store'])->name('providers.store');
+        Route::get('/providers/{cafeteriaProvider}', [CafeteriaProviderController::class, 'show'])->name('providers.show');
+        Route::get('/providers/{cafeteriaProvider}/edit', [CafeteriaProviderController::class, 'edit'])->name('providers.edit');
+        Route::patch('/providers/{cafeteriaProvider}', [CafeteriaProviderController::class, 'update'])->name('providers.update');
+        Route::delete('/providers/{cafeteriaProvider}', [CafeteriaProviderController::class, 'archive'])->name('providers.archive');
+        Route::post('/providers/{cafeteriaProvider}/restore', [CafeteriaProviderController::class, 'restore'])->name('providers.restore');
+
+        // Subsidy Rules
+        Route::get('/subsidy-rules', [CafeteriaSubsidyRuleController::class, 'index'])->name('subsidy-rules.index');
+        Route::get('/subsidy-rules/create', [CafeteriaSubsidyRuleController::class, 'create'])->name('subsidy-rules.create');
+        Route::post('/subsidy-rules', [CafeteriaSubsidyRuleController::class, 'store'])->name('subsidy-rules.store');
+        Route::get('/subsidy-rules/{cafeteriaSubsidyRule}/edit', [CafeteriaSubsidyRuleController::class, 'edit'])->name('subsidy-rules.edit');
+        Route::patch('/subsidy-rules/{cafeteriaSubsidyRule}', [CafeteriaSubsidyRuleController::class, 'update'])->name('subsidy-rules.update');
+        Route::delete('/subsidy-rules/{cafeteriaSubsidyRule}', [CafeteriaSubsidyRuleController::class, 'archive'])->name('subsidy-rules.archive');
+
+        // Public Holidays
+        Route::get('/holidays', [PublicHolidayController::class, 'index'])->name('holidays.index');
+        Route::get('/holidays/create', [PublicHolidayController::class, 'create'])->name('holidays.create');
+        Route::post('/holidays', [PublicHolidayController::class, 'store'])->name('holidays.store');
+        Route::get('/holidays/{publicHoliday}/edit', [PublicHolidayController::class, 'edit'])->name('holidays.edit');
+        Route::patch('/holidays/{publicHoliday}', [PublicHolidayController::class, 'update'])->name('holidays.update');
+        Route::delete('/holidays/{publicHoliday}', [PublicHolidayController::class, 'archive'])->name('holidays.archive');
+
+        // Cafeteria Settings
+        Route::get('/settings', [CafeteriaSettingController::class, 'index'])->name('settings.index');
+        Route::put('/settings', [CafeteriaSettingController::class, 'update'])->name('settings.update');
+
+        // Day Rules
+        Route::get('/day-rules', [CafeteriaDayRuleController::class, 'index'])->name('day-rules.index');
+        Route::patch('/day-rules/{cafeteriaDayRule}', [CafeteriaDayRuleController::class, 'update'])->name('day-rules.update');
+
+        // Special Days
+        Route::get('/special-days', [CafeteriaSpecialDayController::class, 'index'])->name('special-days.index');
+        Route::get('/special-days/create', [CafeteriaSpecialDayController::class, 'create'])->name('special-days.create');
+        Route::post('/special-days', [CafeteriaSpecialDayController::class, 'store'])->name('special-days.store');
+        Route::get('/special-days/{cafeteriaSpecialDay}/edit', [CafeteriaSpecialDayController::class, 'edit'])->name('special-days.edit');
+        Route::patch('/special-days/{cafeteriaSpecialDay}', [CafeteriaSpecialDayController::class, 'update'])->name('special-days.update');
+        Route::delete('/special-days/{cafeteriaSpecialDay}', [CafeteriaSpecialDayController::class, 'archive'])->name('special-days.archive');
+        Route::post('/special-days/{cafeteriaSpecialDay}/restore', [CafeteriaSpecialDayController::class, 'restore'])->name('special-days.restore');
+
+        // Employee Cafeteria Exclusions
+        Route::get('/employee-exclusions', [EmployeeCafeteriaExclusionController::class, 'index'])->name('employee-exclusions.index');
+        Route::get('/employee-exclusions/create', [EmployeeCafeteriaExclusionController::class, 'create'])->name('employee-exclusions.create');
+        Route::post('/employee-exclusions', [EmployeeCafeteriaExclusionController::class, 'store'])->name('employee-exclusions.store');
+        Route::get('/employee-exclusions/{employeeCafeteriaExclusion}', [EmployeeCafeteriaExclusionController::class, 'show'])->name('employee-exclusions.show');
+        Route::get('/employee-exclusions/{employeeCafeteriaExclusion}/edit', [EmployeeCafeteriaExclusionController::class, 'edit'])->name('employee-exclusions.edit');
+        Route::patch('/employee-exclusions/{employeeCafeteriaExclusion}', [EmployeeCafeteriaExclusionController::class, 'update'])->name('employee-exclusions.update');
+        Route::post('/employee-exclusions/{employeeCafeteriaExclusion}/end', [EmployeeCafeteriaExclusionController::class, 'end'])->name('employee-exclusions.end');
+        Route::delete('/employee-exclusions/{employeeCafeteriaExclusion}', [EmployeeCafeteriaExclusionController::class, 'archive'])->name('employee-exclusions.archive');
+    });
 });
 
 Route::middleware('auth')->group(function () {

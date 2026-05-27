@@ -3,6 +3,7 @@ import PageHeader from '@/Components/PageHeader';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent, useMemo } from 'react';
 import { useLocale } from '@/hooks/useLocale';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type EmployeeOption = {
     id: string;
@@ -62,7 +63,7 @@ export default function TransfersCreate({
                         <option value="">{t('transfers.selectPosition')}</option>
                         {positions.map((position) => <option key={position.id} value={position.id}>{position.job_position_code} · {position.title_en}</option>)}
                     </select>
-                    <input className={inputCls} type="date" value={form.data.effective_date} onChange={(event) => form.setData('effective_date', event.target.value)} />
+                    <LocalizedDatePicker className={inputCls} value={form.data.effective_date} onChange={(iso) => form.setData('effective_date', iso)} />
                 </div>
                 <textarea className={`${inputCls} min-h-28`} value={form.data.transfer_reason} placeholder={t('transfers.transferReason')} onChange={(event) => form.setData('transfer_reason', event.target.value)} />
                 <div className="flex gap-3">

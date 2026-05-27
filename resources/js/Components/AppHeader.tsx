@@ -18,12 +18,12 @@ export default function AppHeader({ onMenuClick }: Props) {
     const { t } = useLocale();
 
     return (
-        <header className="flex h-14 shrink-0 items-center border-b border-gray-200 bg-white px-4 sm:px-6 dark:border-slate-800 dark:bg-slate-900">
+        <header className="flex h-14 shrink-0 items-center border-b border-gray-200 bg-white px-4 sm:px-6 dark:border-slate-800 dark:bg-slate-900" style={{ borderTop: '3px solid var(--color-accent)' }}>
             {/* Mobile menu button */}
             <button
                 type="button"
                 onClick={onMenuClick}
-                className="mr-3 rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 lg:hidden"
+                className="mr-3 rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 lg:hidden"
                 aria-label="Open sidebar"
             >
                 <MenuIcon className="h-5 w-5" aria-hidden="true" />
@@ -85,7 +85,8 @@ export default function AppHeader({ onMenuClick }: Props) {
                                     {roles.map((role) => (
                                         <span
                                             key={role}
-                                            className="inline-block rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                                            className="inline-block rounded px-1.5 py-0.5 text-[10px] font-medium"
+                                            style={{ background: 'color-mix(in srgb, var(--color-primary) 12%, transparent)', color: 'var(--color-primary)' }}
                                         >
                                             {role}
                                         </span>

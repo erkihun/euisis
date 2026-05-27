@@ -19,6 +19,9 @@ const common = {
     status: 'ሁኔታ',
     createdAt: 'የተፈጠረበት ቀን',
     updatedAt: 'የተዘመነበት ቀን',
+    generatedAt: 'የተዘጋጀበት ቀን',
+    date: 'ቀን',
+    amount: 'መጠን',
     effectiveFrom: 'ከ',
     effectiveTo: 'እስከ',
     noRecords: 'ምንም መዝገብ አልተገኘም',
@@ -82,6 +85,7 @@ const common = {
     dismiss: 'አሰናብት',
     remove: 'አስወግድ',
     user: 'ተጠቃሚ',
+    optional: 'አማራጭ',
 } as const;
 
 export default common;

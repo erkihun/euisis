@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import LanguageSwitcher from '@/Components/LanguageSwitcher';
 import ThemeToggle from '@/Components/ThemeToggle';
@@ -77,6 +77,23 @@ function UserShieldIcon(p: IconProps) {
     );
 }
 
+// ─── Scroll-triggered visibility hook ───────────────────────────────────────
+function useInView(threshold = 0.12) {
+    const ref = useRef<HTMLDivElement>(null);
+    const [inView, setInView] = useState(false);
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const obs = new IntersectionObserver(
+            ([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } },
+            { threshold },
+        );
+        obs.observe(el);
+        return () => obs.disconnect();
+    }, [threshold]);
+    return { ref, inView };
+}
+
 // ─── Platform module card data ───────────────────────────────────────────────
 const MODULE_ICON_MAP = [
     Building2, Users, CreditCard, Store, Layers, Users, ScrollText, BarChart2Icon,
@@ -88,6 +105,23 @@ const MODULE_KEY_LIST = [
 
 const TRUST_ICON_MAP = [QrCodeIcon, UserShieldIcon, ScrollText, LockIcon];
 const TRUST_KEY_LIST = ['trust1', 'trust2', 'trust3', 'trust4'] as const;
+
+// KPI-card tone palette (mirrors dashboard/KpiCard.tsx)
+type Tone = 'primary' | 'success' | 'warning' | 'neutral';
+const TONE_ICON: Record<Tone, string> = {
+    primary: 'bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)] ring-[color:var(--color-primary)]/15',
+    success: 'bg-emerald-50 text-emerald-700 ring-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-300 dark:ring-emerald-900/50',
+    warning: 'bg-[color:var(--color-accent)]/10 text-[color:var(--color-accent)] ring-[color:var(--color-accent)]/15',
+    neutral: 'bg-slate-100 text-slate-700 ring-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-700',
+};
+const TONE_GLOW: Record<Tone, string> = {
+    primary: 'bg-[color:var(--color-primary)]/10',
+    success:  'bg-emerald-500/10',
+    warning:  'bg-[color:var(--color-accent)]/10',
+    neutral:  'bg-slate-500/10',
+};
+const TRUST_TONES:  Tone[] = ['primary', 'success',  'warning', 'neutral'];
+const MODULE_TONES: Tone[] = ['primary', 'success',  'warning', 'neutral', 'primary', 'success', 'neutral', 'warning'];
 
 const STEP_COUNT = 7;
 
@@ -104,6 +138,9 @@ export default function Welcome() {
     const { t } = useLocale();
     const { getString } = useSystemSettings();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const { ref: trustRef,   inView: trustInView   } = useInView();
+    const { ref: modulesRef, inView: modulesInView } = useInView();
+    const { ref: stepsRef,   inView: stepsInView   } = useInView();
 
     const appNameEn = getString('app.short_name', getString('app.name', 'AA Employee ID'));
     const orgName = getString('general.organization_name', t('home.footerCopyright'));
@@ -120,7 +157,7 @@ export default function Welcome() {
             <Head title={appNameEn} />
 
             {/* ───────────────────────── PUBLIC HEADER ───────────────────────── */}
-            <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/95 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/95">
+            <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/95 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/95" style={{ borderTop: '3px solid #ea580c' }}>
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                     {/* Logo + name */}
                     <div className="flex items-center gap-3">
@@ -128,11 +165,11 @@ export default function Welcome() {
                             {logoUrl ? (
                                 <img src={logoUrl} alt="" className="h-11 w-auto max-w-[100px] object-contain" />
                             ) : (
-                                <CreditCard className="h-10 w-10 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+                                <CreditCard className="h-10 w-10 text-orange-600 dark:text-orange-400" aria-hidden="true" />
                             )}
                         </div>
                         <div className="hidden sm:block">
-                            <p className="text-[10px] font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400">
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-600 dark:text-orange-400">
                                 {t('home.headerTagline')}
                             </p>
                             <p className="text-sm font-bold leading-tight text-gray-900 dark:text-slate-100">
@@ -230,7 +267,7 @@ export default function Welcome() {
                     />
                     {/* Glow blob */}
                     <div
-                        className="pointer-events-none absolute -top-24 right-0 h-96 w-96 rounded-full bg-white/10 blur-3xl"
+                        className="pointer-events-none absolute -top-24 right-0 h-96 w-96 rounded-full bg-white/10 blur-3xl animate-orb-drift"
                         aria-hidden="true"
                     />
 
@@ -238,19 +275,20 @@ export default function Welcome() {
                         <div className="grid items-center gap-12 lg:grid-cols-2">
                             {/* Text */}
                             <div className="text-center lg:text-left">
-                                <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-blue-100">
+                                <span className="inline-block rounded-full bg-orange-500/20 border border-orange-400/30 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-orange-200 animate-fade-up">
                                     {t('home.headerTagline')}
                                 </span>
                                 <h1
                                     id="hero-heading"
-                                    className="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl xl:text-5xl"
+                                    className="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl xl:text-5xl animate-fade-up"
+                                    style={{ animationDelay: '0.12s' }}
                                 >
                                     {t('home.heroTitle')}
                                 </h1>
-                                <p className="mt-5 text-lg text-blue-100 sm:text-xl">
+                                <p className="mt-5 text-lg text-blue-100 sm:text-xl animate-fade-up" style={{ animationDelay: '0.24s' }}>
                                     {t('home.heroSubtitle')}
                                 </p>
-                                <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
+                                <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start animate-fade-up" style={{ animationDelay: '0.36s' }}>
                                     {isAuthenticated ? (
                                         <Link
                                             href={route('dashboard')}
@@ -277,6 +315,7 @@ export default function Welcome() {
                             <div
                                 className="mx-auto w-full max-w-sm lg:max-w-none"
                                 aria-label={t('home.platformOverview')}
+                                style={{ animation: 'fade-in-right 0.7s ease-out 0.2s both, float-y 5s ease-in-out 0.9s infinite' }}
                             >
                                 <div className="rounded-2xl border border-white/20 bg-white/10 p-5 shadow-2xl backdrop-blur-sm">
                                     <p className="mb-4 text-center text-xs font-semibold uppercase tracking-widest text-blue-200">
@@ -302,7 +341,10 @@ export default function Welcome() {
                                     <div className="mt-4 flex items-center justify-between rounded-lg bg-white/10 px-3 py-2">
                                         <span className="text-xs text-blue-200">System Status</span>
                                         <span className="flex items-center gap-1.5 text-xs font-semibold text-green-300">
-                                            <span className="h-2 w-2 rounded-full bg-green-400" aria-hidden="true" />
+                                            <span className="relative flex h-2 w-2" aria-hidden="true">
+                                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                                                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+                                            </span>
                                             Operational
                                         </span>
                                     </div>
@@ -317,35 +359,47 @@ export default function Welcome() {
                     aria-labelledby="trust-heading"
                     className="bg-gray-50 py-16 sm:py-20 dark:bg-slate-900"
                 >
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div ref={trustRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mb-12 text-center">
                             <h2
                                 id="trust-heading"
                                 className="text-2xl font-bold text-gray-900 sm:text-3xl dark:text-slate-100"
+                                style={trustInView ? { animation: 'fade-up 0.65s ease-out both' } : { opacity: 0 }}
                             >
                                 {t('home.trustSectionTitle')}
                             </h2>
-                            <p className="mt-3 text-base text-gray-500 dark:text-slate-400">
+                            <p
+                                className="mt-3 text-base text-gray-500 dark:text-slate-400"
+                                style={trustInView ? { animation: 'fade-up 0.65s ease-out 0.1s both' } : { opacity: 0 }}
+                            >
                                 {t('home.trustSectionSubtitle')}
                             </p>
                         </div>
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             {TRUST_KEY_LIST.map((key, idx) => {
                                 const Icon = TRUST_ICON_MAP[idx];
+                                const tone = TRUST_TONES[idx];
                                 return (
                                     <div
                                         key={key}
-                                        className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+                                        className="group relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/95 p-5 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] transition duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-[0_24px_55px_-30px_rgba(15,23,42,0.65)] dark:border-slate-800/80 dark:bg-slate-900/95 dark:hover:border-slate-700"
+                                        style={trustInView ? { animation: `fade-up 0.6s ease-out ${0.15 + idx * 0.1}s both` } : { opacity: 0 }}
                                     >
-                                        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/30">
-                                            <Icon className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+                                        <div className="absolute left-0 top-0 h-1 w-1/2 bg-gradient-to-r from-[var(--color-primary)] via-[color:var(--color-primary)]/45 to-transparent" style={{ borderTopLeftRadius: 'inherit' }} />
+                                        <div className={`pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full blur-3xl ${TONE_GLOW[tone]}`} />
+                                        <div className="relative flex items-start justify-between gap-3">
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-medium text-gray-500 dark:text-slate-400">
+                                                    {t(`home.${key}Title`)}
+                                                </p>
+                                                <p className="mt-3 text-xs leading-relaxed text-gray-600 dark:text-slate-300">
+                                                    {t(`home.${key}Desc`)}
+                                                </p>
+                                            </div>
+                                            <div className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1 shadow-sm transition duration-200 group-hover:scale-105 ${TONE_ICON[tone]}`}>
+                                                <Icon className="h-5 w-5" aria-hidden="true" />
+                                            </div>
                                         </div>
-                                        <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-slate-100">
-                                            {t(`home.${key}Title`)}
-                                        </h3>
-                                        <p className="text-sm leading-relaxed text-gray-500 dark:text-slate-400">
-                                            {t(`home.${key}Desc`)}
-                                        </p>
                                     </div>
                                 );
                             })}
@@ -358,35 +412,47 @@ export default function Welcome() {
                     aria-labelledby="modules-heading"
                     className="bg-white py-16 sm:py-20 dark:bg-slate-950"
                 >
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div ref={modulesRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mb-12 text-center">
                             <h2
                                 id="modules-heading"
                                 className="text-2xl font-bold text-gray-900 sm:text-3xl dark:text-slate-100"
+                                style={modulesInView ? { animation: 'fade-up 0.65s ease-out both' } : { opacity: 0 }}
                             >
                                 {t('home.modulesSectionTitle')}
                             </h2>
-                            <p className="mt-3 text-base text-gray-500 dark:text-slate-400">
+                            <p
+                                className="mt-3 text-base text-gray-500 dark:text-slate-400"
+                                style={modulesInView ? { animation: 'fade-up 0.65s ease-out 0.1s both' } : { opacity: 0 }}
+                            >
                                 {t('home.modulesSectionSubtitle')}
                             </p>
                         </div>
-                        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             {MODULE_KEY_LIST.map((key, idx) => {
                                 const Icon = MODULE_ICON_MAP[idx];
+                                const tone = MODULE_TONES[idx];
                                 return (
                                     <div
                                         key={key}
-                                        className="group rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                                        className="group relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/95 p-5 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] transition duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-[0_24px_55px_-30px_rgba(15,23,42,0.65)] dark:border-slate-800/80 dark:bg-slate-900/95 dark:hover:border-slate-700"
+                                        style={modulesInView ? { animation: `fade-up 0.6s ease-out ${0.1 + idx * 0.08}s both` } : { opacity: 0 }}
                                     >
-                                        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white transition-colors group-hover:bg-orange-500 dark:bg-blue-500 dark:group-hover:bg-orange-500">
-                                            <Icon className="h-5 w-5" aria-hidden="true" />
+                                        <div className="absolute left-0 top-0 h-1 w-1/2 bg-gradient-to-r from-[var(--color-primary)] via-[color:var(--color-primary)]/45 to-transparent" style={{ borderTopLeftRadius: 'inherit' }} />
+                                        <div className={`pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full blur-3xl ${TONE_GLOW[tone]}`} />
+                                        <div className="relative flex items-start justify-between gap-3">
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+                                                    {t(`home.${key}Title`)}
+                                                </p>
+                                                <p className="mt-2 text-xs leading-relaxed text-gray-500 dark:text-slate-400">
+                                                    {t(`home.${key}Desc`)}
+                                                </p>
+                                            </div>
+                                            <div className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1 shadow-sm transition duration-200 group-hover:scale-105 ${TONE_ICON[tone]}`}>
+                                                <Icon className="h-5 w-5" aria-hidden="true" />
+                                            </div>
                                         </div>
-                                        <h3 className="mb-1.5 text-sm font-semibold text-gray-900 dark:text-slate-100">
-                                            {t(`home.${key}Title`)}
-                                        </h3>
-                                        <p className="text-xs leading-relaxed text-gray-500 dark:text-slate-400">
-                                            {t(`home.${key}Desc`)}
-                                        </p>
                                     </div>
                                 );
                             })}
@@ -399,11 +465,12 @@ export default function Welcome() {
                     aria-labelledby="how-it-works-heading"
                     className="bg-gray-50 py-16 sm:py-20 dark:bg-slate-900"
                 >
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div ref={stepsRef} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mb-12 text-center">
                             <h2
                                 id="how-it-works-heading"
                                 className="text-2xl font-bold text-gray-900 sm:text-3xl dark:text-slate-100"
+                                style={stepsInView ? { animation: 'fade-up 0.65s ease-out both' } : { opacity: 0 }}
                             >
                                 {t('home.howItWorksSectionTitle')}
                             </h2>
@@ -415,21 +482,36 @@ export default function Welcome() {
                         {/* Desktop: horizontal stepper */}
                         <div className="hidden md:block">
                             <div className="relative">
-                                {/* Connecting line */}
-                                <div
-                                    className="absolute left-0 right-0 top-5 h-0.5 bg-blue-100 dark:bg-slate-700"
-                                    aria-hidden="true"
-                                />
+                                {/* Connecting line — grows from left when in view */}
+                                <div className="absolute left-0 right-0 top-5 h-0.5 bg-blue-100 dark:bg-slate-700 overflow-hidden" aria-hidden="true">
+                                    <div
+                                        className="h-full bg-blue-400 dark:bg-blue-500"
+                                        style={stepsInView
+                                            ? { animation: 'step-line-grow 1.4s ease-out 0.2s both', transformOrigin: 'left' }
+                                            : { transform: 'scaleX(0)', transformOrigin: 'left' }}
+                                    />
+                                </div>
                                 <ol className="relative grid grid-cols-7 gap-3">
                                     {steps.map((stepNum) => (
                                         <li key={stepNum} className="flex flex-col items-center text-center">
-                                            <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-blue-600 bg-white font-bold text-blue-600 text-sm dark:border-blue-400 dark:bg-slate-900 dark:text-blue-400">
+                                            <div
+                                                className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-blue-600 bg-white font-bold text-blue-600 text-sm dark:border-blue-400 dark:bg-slate-900 dark:text-blue-400"
+                                                style={stepsInView
+                                                    ? { animation: `pop-in 0.4s ease-out ${0.2 + stepNum * 0.12}s both` }
+                                                    : { opacity: 0 }}
+                                            >
                                                 {stepNum}
                                             </div>
-                                            <h3 className="mt-3 text-xs font-semibold text-gray-900 dark:text-slate-100">
+                                            <h3
+                                                className="mt-3 text-xs font-semibold text-gray-900 dark:text-slate-100"
+                                                style={stepsInView ? { animation: `fade-up 0.5s ease-out ${0.3 + stepNum * 0.12}s both` } : { opacity: 0 }}
+                                            >
                                                 {t(`home.step${stepNum}Title`)}
                                             </h3>
-                                            <p className="mt-1 text-[11px] leading-snug text-gray-500 dark:text-slate-400">
+                                            <p
+                                                className="mt-1 text-[11px] leading-snug text-gray-500 dark:text-slate-400"
+                                                style={stepsInView ? { animation: `fade-up 0.5s ease-out ${0.35 + stepNum * 0.12}s both` } : { opacity: 0 }}
+                                            >
                                                 {t(`home.step${stepNum}Desc`)}
                                             </p>
                                         </li>
@@ -444,6 +526,7 @@ export default function Welcome() {
                                 <li
                                     key={stepNum}
                                     className="flex gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+                                    style={stepsInView ? { animation: `fade-up 0.5s ease-out ${idx * 0.07}s both` } : { opacity: 0 }}
                                 >
                                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white dark:bg-blue-500">
                                         {stepNum}
@@ -495,7 +578,7 @@ export default function Welcome() {
                     <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
                         {/* Left: logo + org name */}
                         <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-600 dark:bg-blue-500">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md" style={{ background: 'var(--color-accent, #ea580c)' }}>
                                 <CreditCard className="h-4 w-4 text-white" aria-hidden="true" />
                             </div>
                             <div>

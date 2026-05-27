@@ -24,6 +24,7 @@ readonly class CreateOrganizationUnitAction
             CodeRuleEntityType::OrganizationUnit,
             [
                 'organization_id' => $attributes['organization_id'] ?? null,
+                'organization_unit_type_id' => $attributes['organization_unit_type_id'] ?? null,
             ],
             $actor,
             $attributes['code'] ?? null,

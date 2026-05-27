@@ -12,6 +12,11 @@ return [
     'exists' => 'The selected :attribute is invalid.',
     'image' => 'The :attribute must be an image.',
     'integer' => 'The :attribute must be an integer.',
+    'min' => [
+        'file' => 'The :attribute must be at least :min kilobytes.',
+        'numeric' => 'The :attribute must be at least :min.',
+        'string' => 'The :attribute must be at least :min characters.',
+    ],
     'max' => [
         'file' => 'The :attribute must not be greater than :max kilobytes.',
         'numeric' => 'The :attribute must not be greater than :max.',
@@ -38,4 +43,5 @@ return [
         'branding_primary_color' => 'primary color',
         'branding_secondary_color' => 'secondary color',
     ],
+    'position_already_occupied' => 'This position is already assigned to another employee.',
 ];

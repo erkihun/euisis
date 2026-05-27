@@ -7,6 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useLocale } from '@/hooks/useLocale';
 import CodeRuleField from '@/Components/code-rules/CodeRuleField';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 interface UnitTypeOption {
     id: string;
@@ -184,6 +185,7 @@ export default function OrganizationUnitsCreate({
                                 entityType="organization_unit"
                                 context={{
                                     organization_id: data.organization_id || undefined,
+                                    organization_unit_type_id: data.organization_unit_type_id || undefined,
                                 }}
                                 value={data.code}
                                 onChange={(v) => setData('code', v)}
@@ -249,11 +251,10 @@ export default function OrganizationUnitsCreate({
                         {/* Effective From */}
                         <div>
                             <InputLabel value={t('organizationUnits.effectiveFrom')} />
-                            <TextInput
-                                type="date"
+                            <LocalizedDatePicker
                                 className="w-full"
                                 value={data.effective_from}
-                                onChange={(e) => setData('effective_from', e.target.value)}
+                                onChange={(iso) => setData('effective_from', iso)}
                             />
                             <InputError message={errors.effective_from} />
                         </div>
@@ -261,11 +262,10 @@ export default function OrganizationUnitsCreate({
                         {/* Effective To */}
                         <div>
                             <InputLabel value={t('organizationUnits.effectiveTo')} />
-                            <TextInput
-                                type="date"
+                            <LocalizedDatePicker
                                 className="w-full"
                                 value={data.effective_to}
-                                onChange={(e) => setData('effective_to', e.target.value)}
+                                onChange={(iso) => setData('effective_to', iso)}
                             />
                             <InputError message={errors.effective_to} />
                         </div>

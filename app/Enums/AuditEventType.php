@@ -30,6 +30,8 @@ enum AuditEventType: string
     case CardPrinted = 'card_printed';
     case CardPrintedAnytime = 'card.printed_anytime';
     case CardExportedPng = 'card.exported_png';
+    case CardPreviewedSvg = 'card.previewed_svg';
+    case CardExportedPngServer = 'card.exported_png_server';
     case CardIssued = 'card_issued';
     case CardActivated = 'card_activated';
     case CardLost = 'card_lost';
@@ -131,4 +133,59 @@ enum AuditEventType: string
     case IsicActivityUpdated = 'isic_activity_updated';
     case IsicActivityArchived = 'isic_activity_archived';
     case IsicActivityRestored = 'isic_activity_restored';
+
+    case GradeLevelCreated = 'grade_level_created';
+    case GradeLevelUpdated = 'grade_level_updated';
+    case GradeLevelArchived = 'grade_level_archived';
+    case GradeLevelRestored = 'grade_level_restored';
+
+    // ── Cafeteria ──────────────────────────────────────────────────────────
+    case CafeteriaProviderCreated = 'cafeteria_provider_created';
+    case CafeteriaProviderUpdated = 'cafeteria_provider_updated';
+    case CafeteriaProviderArchived = 'cafeteria_provider_archived';
+    case CafeteriaProviderRestored = 'cafeteria_provider_restored';
+    case CafeteriaProviderInstitutionAssigned = 'cafeteria_provider.institution_assigned';
+    case CafeteriaProviderInstitutionChanged = 'cafeteria_provider.institution_changed';
+    case CafeteriaScanRejectedWrongInstitution = 'cafeteria_scan.rejected_wrong_institution';
+    case CafeteriaSubsidyRuleCreated = 'cafeteria_subsidy_rule_created';
+    case CafeteriaSubsidyRuleUpdated = 'cafeteria_subsidy_rule_updated';
+    case CafeteriaSubsidyRuleArchived = 'cafeteria_subsidy_rule_archived';
+    case PublicHolidayCreated = 'public_holiday_created';
+    case PublicHolidayUpdated = 'public_holiday_updated';
+    case PublicHolidayArchived = 'public_holiday_archived';
+    case CafeteriaTransactionScanned = 'cafeteria_transaction_scanned';
+    case CafeteriaTransactionWeeklyUsage = 'cafeteria_transaction_weekly_usage';
+    case CafeteriaTransactionExtraScan = 'cafeteria_transaction_extra_scan';
+    case CafeteriaTransactionEmployeePayable = 'cafeteria_transaction_employee_payable';
+    case CafeteriaTransactionWeekendRejected = 'cafeteria_transaction_weekend_rejected';
+    case CafeteriaTransactionHolidayRejected = 'cafeteria_transaction_holiday_rejected';
+    case CafeteriaTransactionHolidayScan = 'cafeteria_transaction_holiday_scan';
+    case CafeteriaTransactionReversed = 'cafeteria_transaction_reversed';
+    case CafeteriaScanProcessed = 'cafeteria_scan.processed';
+    case CafeteriaScanDuplicateBlocked = 'cafeteria_scan.duplicate_blocked';
+    case CafeteriaScanProviderAccessDenied = 'cafeteria_scan.provider_access_denied';
+    case CafeteriaScanDaysConsumed = 'cafeteria_scan.days_consumed';
+    case CafeteriaScanUpfrontUsage = 'cafeteria_scan.upfront_usage';
+    case CafeteriaScanCalendarGenerated = 'cafeteria_scan.calendar_generated';
+    case CafeteriaReportGenerated = 'cafeteria_report_generated';
+    case CafeteriaReportExported = 'cafeteria_report_exported';
+    case CafeteriaSettingsUpdated = 'cafeteria_settings_updated';
+    case CafeteriaDayRuleUpdated = 'cafeteria_day_rule_updated';
+    case CafeteriaSpecialDayCreated = 'cafeteria_special_day_created';
+    case CafeteriaSpecialDayUpdated = 'cafeteria_special_day_updated';
+    case CafeteriaSpecialDayArchived = 'cafeteria_special_day_archived';
+    case CafeteriaSpecialDayRestored = 'cafeteria_special_day_restored';
+    case EmployeeCafeteriaExclusionCreated = 'employee_cafeteria_exclusion_created';
+    case EmployeeCafeteriaExclusionUpdated = 'employee_cafeteria_exclusion_updated';
+    case EmployeeCafeteriaExclusionEnded = 'employee_cafeteria_exclusion_ended';
+    case EmployeeCafeteriaExclusionArchived = 'employee_cafeteria_exclusion_archived';
+    case EmployeeCafeteriaExclusionRestored = 'employee_cafeteria_exclusion_restored';
+
+    // ── MFA (TOTP) ─────────────────────────────────────────────────────────
+    case MfaSetupStarted = 'mfa.setup_started';
+    case MfaEnabled = 'mfa.enabled';
+    case MfaChallengeSucceeded = 'mfa.challenge_succeeded';
+    case MfaChallengeFailed = 'mfa.challenge_failed';
+    case MfaDisabled = 'mfa.disabled';
+    case MfaRecoveryCodeUsed = 'mfa.recovery_code_used';
 }

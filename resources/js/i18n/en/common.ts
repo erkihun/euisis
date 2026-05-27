@@ -19,6 +19,9 @@ const common = {
     status: 'Status',
     createdAt: 'Created At',
     updatedAt: 'Updated At',
+    generatedAt: 'Generated At',
+    date: 'Date',
+    amount: 'Amount',
     effectiveFrom: 'Effective From',
     effectiveTo: 'Effective To',
     noRecords: 'No records found',
@@ -82,6 +85,7 @@ const common = {
     dismiss: 'Dismiss',
     remove: 'Remove',
     user: 'User',
+    optional: 'Optional',
 } as const;
 
 export default common;

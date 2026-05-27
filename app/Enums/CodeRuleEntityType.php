@@ -26,5 +26,9 @@ enum CodeRuleEntityType: string
     case ApiClient = 'api_client';
     case DeviceBinding = 'device_binding';
     case SupportTicket = 'support_ticket';
-    case Occupation = 'occupation';
+    case Occupation         = 'occupation';
+    case CafeteriaProvider  = 'cafeteria_provider';
+    case CafeteriaSubsidyRule = 'cafeteria_subsidy_rule';
+    case CafeteriaTransaction = 'cafeteria_transaction';
+    case CafeteriaReport    = 'cafeteria_report';
 }

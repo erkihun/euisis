@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import { useLocale } from '@/hooks/useLocale';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type OrganizationScope = {
     id: string;
@@ -287,22 +288,20 @@ export default function OrganizationScopesCard({ userId, scopes, organizations, 
                             <div>
                                 <label className={labelCls}>{t('users.userOrganizationScopes.effectiveFrom')}</label>
                                 <div className="mt-1">
-                                    <input
-                                        type="date"
+                                    <LocalizedDatePicker
                                         className={inputCls}
                                         value={form.effective_from}
-                                        onChange={(e) => setForm((f) => ({ ...f, effective_from: e.target.value }))}
+                                        onChange={(iso) => setForm((f) => ({ ...f, effective_from: iso }))}
                                     />
                                 </div>
                             </div>
                             <div>
                                 <label className={labelCls}>{t('users.userOrganizationScopes.effectiveTo')}</label>
                                 <div className="mt-1">
-                                    <input
-                                        type="date"
+                                    <LocalizedDatePicker
                                         className={inputCls}
                                         value={form.effective_to}
-                                        onChange={(e) => setForm((f) => ({ ...f, effective_to: e.target.value }))}
+                                        onChange={(iso) => setForm((f) => ({ ...f, effective_to: iso }))}
                                     />
                                 </div>
                             </div>

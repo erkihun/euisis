@@ -17,8 +17,10 @@ class ProfileUpdateRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $nid = filled($this->input('national_id')) ? trim((string) $this->input('national_id')) : null;
         $this->merge([
-            'national_id' => filled($this->input('national_id')) ? trim((string) $this->input('national_id')) : null,
+            'national_id' => $nid,
+            'national_id_hash' => $nid !== null ? hash('sha256', $nid) : null,
             'phone_number' => filled($this->input('phone_number')) ? trim((string) $this->input('phone_number')) : null,
             'gender' => filled($this->input('gender')) ? $this->input('gender') : null,
         ]);
@@ -39,7 +41,11 @@ class ProfileUpdateRequest extends FormRequest
                 Rule::unique(User::class)->ignore($userId),
             ],
             'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-            'national_id' => ['nullable', 'string', 'max:100', Rule::unique('users', 'national_id')->ignore($userId)],
+            'national_id' => ['nullable', 'string', 'max:100'],
+            'national_id_hash' => [
+                'nullable', 'string', 'size:64',
+                Rule::unique('users', 'national_id_hash')->ignore($userId),
+            ],
             'phone_number' => ['nullable', 'string', 'max:30', 'regex:/^[+\d\s\-()]+$/'],
             'gender' => ['nullable', 'string', Rule::in(['male', 'female', 'other', 'not_specified'])],
         ];

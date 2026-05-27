@@ -17,20 +17,31 @@ class StoreOccupationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'isco_code' => ['required', 'string', 'max:10', 'regex:/^[A-Za-z0-9]+$/', 'unique:occupations,isco_code'],
-            'isco_major_group_code' => ['nullable', 'string', 'max:1'],
-            'isco_sub_major_group_code' => ['nullable', 'string', 'max:2'],
-            'isco_minor_group_code' => ['nullable', 'string', 'max:3'],
-            'isco_unit_group_code' => ['nullable', 'string', 'max:4'],
-            'skill_specialization' => ['nullable', 'string', 'max:255'],
+            'isco_code' => ['required', 'string', 'max:4', 'regex:/^[0-9]{1,4}$/', 'unique:occupations,isco_code'],
             'name_en' => ['nullable', 'string', 'max:255', 'required_without:name_am'],
             'name_am' => ['nullable', 'string', 'max:255', 'required_without:name_en'],
-            'description_en' => ['nullable', 'string'],
-            'description_am' => ['nullable', 'string'],
-            'skill_level' => ['nullable', 'string', 'max:100'],
-            'is_active' => ['required', 'boolean'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            'metadata' => ['nullable', 'array'],
+            'skill_specialization' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:2000'],
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'isco_code' => __('occupations.isco_code'),
+            'name_en' => __('occupations.name_en'),
+            'name_am' => __('occupations.name_am'),
+            'skill_specialization' => __('occupations.skill_specialization'),
+            'description' => __('occupations.description'),
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'isco_code.required' => __('occupations.isco_code_required'),
+            'isco_code.regex' => __('occupations.isco_code_digits'),
+            'isco_code.unique' => __('occupations.isco_code_unique'),
         ];
     }
 }

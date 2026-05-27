@@ -20,6 +20,7 @@ use App\Models\Entitlement;
 use App\Models\HierarchyVersion;
 use App\Models\IdCard;
 use App\Models\Organization;
+use App\Models\Position;
 use App\Models\ServiceProvider;
 use App\Models\ServiceTransaction;
 use App\Models\User;
@@ -49,6 +50,27 @@ class DashboardMetricService
                 $this->organizationQuery($scope)->where('organizations.status', 'active')->count(),
                 'building',
                 'neutral',
+            );
+        }
+
+        if ($can['positions'] ?? false) {
+            $kpis[] = $this->kpi(
+                'totalPositions',
+                $this->positionQuery($scope)->count(),
+                'layers',
+                'primary',
+            );
+            $kpis[] = $this->kpi(
+                'activePositions',
+                $this->positionQuery($scope)->where('positions.is_active', true)->count(),
+                'layers',
+                'success',
+            );
+            $kpis[] = $this->kpi(
+                'vacantPositions',
+                $this->vacantPositionsCount($scope),
+                'alert',
+                'warning',
             );
         }
 
@@ -144,6 +166,17 @@ class DashboardMetricService
                         $query->whereNull('organizations.legal_basis_ref')
                             ->orWhereNull('organizations.name_am');
                     })->count(),
+            ];
+        }
+
+        if ($can['positions'] ?? false) {
+            $cards['positions'] = [
+                'totalPositions' => $this->positionQuery($scope)->count(),
+                'activePositions' => $this->positionQuery($scope)->where('positions.is_active', true)->count(),
+                'vacantPositions' => $this->vacantPositionsCount($scope),
+                'positionsWithOccupation' => $this->positionQuery($scope)
+                    ->whereNotNull('positions.occupation_id')
+                    ->count(),
             ];
         }
 
@@ -432,6 +465,15 @@ class DashboardMetricService
             ->count();
     }
 
+    private function vacantPositionsCount(array $scope): int
+    {
+        return $this->positionQuery($scope)
+            ->withCount('assignments')
+            ->get()
+            ->where('assignments_count', 0)
+            ->count();
+    }
+
     private function severityForAuditEvent(string $event): string
     {
         if (str_contains($event, 'rejected') || str_contains($event, 'denied')) {
@@ -470,6 +512,19 @@ class DashboardMetricService
             )
             ->when(
                 ! $scope['global_access'] && $scope['organization_ids'] === [],
+                fn (Builder $query) => $query->whereRaw('1 = 0')
+            );
+    }
+
+    public function positionQuery(array $scope): Builder
+    {
+        return Position::query()
+            ->when(
+                ! $scope['global_access'] && ! empty($scope['organization_ids']),
+                fn (Builder $query) => $query->whereIn('positions.organization_id', $scope['organization_ids'])
+            )
+            ->when(
+                ! $scope['global_access'] && empty($scope['organization_ids']),
                 fn (Builder $query) => $query->whereRaw('1 = 0')
             );
     }

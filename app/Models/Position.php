@@ -18,6 +18,8 @@ class Position extends Model
 
     protected $fillable = [
         'organization_id',
+        'organization_unit_id',
+        'occupation_id',
         'job_position_code',
         'title_en',
         'title_am',
@@ -47,6 +49,16 @@ class Position extends Model
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
+    }
+
+    public function organizationUnit(): BelongsTo
+    {
+        return $this->belongsTo(OrganizationUnit::class);
+    }
+
+    public function occupation(): BelongsTo
+    {
+        return $this->belongsTo(Occupation::class);
     }
 
     public function assignments(): HasMany

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Enums\CalendarSystem;
 use App\Models\User;
+use App\Services\Calendar\CalendarService;
 use App\Services\SystemSettings\SystemSettingsService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -26,6 +28,10 @@ class HandleInertiaRequests extends Middleware
         $settings = $this->publicSettings();
         $defaultLocale = (string) ($settings['localization.default_locale'] ?? config('app.locale', 'en'));
 
+        $locale = session('locale', $defaultLocale);
+        $calendarMode = (string) ($settings['localization.calendar_system_mode'] ?? 'locale_based');
+        $calendarSystem = $this->resolveCalendarSystem($locale, $calendarMode);
+
         return [
             ...parent::share($request),
 
@@ -43,7 +49,11 @@ class HandleInertiaRequests extends Middleware
                 'isSuperAdmin' => $user?->hasRole('Super Admin') ?? false,
             ],
 
-            'locale' => session('locale', $defaultLocale),
+            'locale' => $locale,
+            'calendar' => [
+                'system' => $calendarSystem->value,
+                'mode'   => $calendarMode,
+            ],
             'settings' => $settings,
             'flash' => [
                 // Individual-key form (preferred) — set via session('success'), etc.
@@ -56,6 +66,15 @@ class HandleInertiaRequests extends Middleware
                 'type'    => session('flash.type'),
             ],
         ];
+    }
+
+    private function resolveCalendarSystem(string $locale, string $mode): CalendarSystem
+    {
+        return match ($mode) {
+            'gregorian_only' => CalendarSystem::Gregorian,
+            'ethiopian_only' => CalendarSystem::Ethiopian,
+            default          => app(CalendarService::class)->calendarSystemForLocale($locale),
+        };
     }
 
     private function publicSettings(): array

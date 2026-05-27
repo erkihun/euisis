@@ -76,6 +76,8 @@ class IdCardController extends Controller
 
         $user = request()->user();
 
+        $card->makeVisible('qr_payload');
+
         return Inertia::render('IdCards/Show', [
             'card' => $card,
             'can' => [
@@ -90,6 +92,7 @@ class IdCardController extends Controller
                 'revoke' => ! in_array($card->status, [CardStatus::Revoked, CardStatus::Replaced, CardStatus::Expired], true) && $user?->can('revoke', $card),
                 'printAnytime' => $user?->can('printAnytime', $card),
                 'exportPng' => $user?->can('exportPng', $card),
+                'previewSvg' => $user?->can('previewSvg', $card),
             ],
         ]);
     }
@@ -100,10 +103,14 @@ class IdCardController extends Controller
 
         $card->load(['employee.currentAssignment.organization', 'employee.currentAssignment.position', 'cardRequest']);
 
+        $user = request()->user();
+
+        $card->makeVisible('qr_payload');
+
         return Inertia::render('IdCards/Preview', [
             'card' => $card,
             'can' => [
-                'print' => request()->user()?->can('print', $card),
+                'print' => $user?->can('print', $card),
             ],
         ]);
     }

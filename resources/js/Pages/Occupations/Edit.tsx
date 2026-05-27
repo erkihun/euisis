@@ -2,28 +2,37 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import InputLabel from '@/Components/InputLabel';
 import PageHeader from '@/Components/PageHeader';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEvent } from 'react';
+import { FormEvent, ReactNode } from 'react';
 import { useLocale } from '@/hooks/useLocale';
 
-export default function OccupationsEdit({ occupation }: { occupation: any }) {
+type Occupation = {
+    id: string;
+    isco_code: string;
+    name_en: string | null;
+    name_am: string | null;
+    skill_specialization: string | null;
+    description: string | null;
+};
+
+type OccupationFormData = {
+    isco_code: string;
+    name_en: string;
+    name_am: string;
+    skill_specialization: string;
+    description: string;
+};
+
+export default function OccupationsEdit({ occupation }: { occupation: Occupation }) {
     const { t } = useLocale();
-    const form = useForm({
+    const form = useForm<OccupationFormData>({
         isco_code: occupation.isco_code ?? '',
-        isco_major_group_code: occupation.isco_major_group_code ?? '',
-        isco_sub_major_group_code: occupation.isco_sub_major_group_code ?? '',
-        isco_minor_group_code: occupation.isco_minor_group_code ?? '',
-        isco_unit_group_code: occupation.isco_unit_group_code ?? '',
         name_en: occupation.name_en ?? '',
         name_am: occupation.name_am ?? '',
-        skill_level: occupation.skill_level ?? '',
         skill_specialization: occupation.skill_specialization ?? '',
-        description_en: occupation.description_en ?? '',
-        description_am: occupation.description_am ?? '',
-        sort_order: String(occupation.sort_order ?? 0),
-        is_active: occupation.is_active ?? true,
+        description: occupation.description ?? '',
     });
 
-    const inputCls =
+    const inputClassName =
         'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100';
 
     function submit(event: FormEvent<HTMLFormElement>) {
@@ -34,151 +43,94 @@ export default function OccupationsEdit({ occupation }: { occupation: any }) {
     return (
         <AuthenticatedLayout header={<PageHeader title={t('occupations.editOccupation')} />}>
             <Head title={t('occupations.editOccupation')} />
+
             <form
-                className="space-y-6 rounded-2xl border border-gray-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+                className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
                 onSubmit={submit}
             >
-                <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="isco_code" value={t('occupations.iscoCode')} />
+                <div className="border-b border-gray-200 px-6 py-4 dark:border-slate-800">
+                    <h2 className="text-base font-semibold text-gray-900 dark:text-slate-100">
+                        {t('occupations.occupationDetails')}
+                    </h2>
+                </div>
+
+                <div className="grid gap-5 p-6 md:grid-cols-2">
+                    <FormField error={form.errors.isco_code} label={t('occupations.iscoCode')}>
                         <input
                             id="isco_code"
-                            className={inputCls}
-                            value={form.data.isco_code}
-                            onChange={(e) => form.setData('isco_code', e.target.value.toUpperCase())}
-                        />
-                        {form.errors.isco_code && <p className="text-xs text-red-600">{form.errors.isco_code}</p>}
-                    </div>
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="skill_level" value={t('occupations.skillLevel')} />
-                        <input
-                            id="skill_level"
-                            className={inputCls}
-                            value={form.data.skill_level}
-                            onChange={(e) => form.setData('skill_level', e.target.value)}
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="isco_major_group_code" value={t('occupations.majorGroup')} />
-                        <input
-                            id="isco_major_group_code"
-                            maxLength={1}
-                            className={inputCls}
-                            value={form.data.isco_major_group_code}
-                            onChange={(e) => form.setData('isco_major_group_code', e.target.value)}
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="isco_sub_major_group_code" value={t('occupations.subMajorGroup')} />
-                        <input
-                            id="isco_sub_major_group_code"
-                            maxLength={2}
-                            className={inputCls}
-                            value={form.data.isco_sub_major_group_code}
-                            onChange={(e) => form.setData('isco_sub_major_group_code', e.target.value)}
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="isco_minor_group_code" value={t('occupations.minorGroup')} />
-                        <input
-                            id="isco_minor_group_code"
-                            maxLength={3}
-                            className={inputCls}
-                            value={form.data.isco_minor_group_code}
-                            onChange={(e) => form.setData('isco_minor_group_code', e.target.value)}
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="isco_unit_group_code" value={t('occupations.unitGroup')} />
-                        <input
-                            id="isco_unit_group_code"
+                            className={inputClassName}
                             maxLength={4}
-                            className={inputCls}
-                            value={form.data.isco_unit_group_code}
-                            onChange={(e) => form.setData('isco_unit_group_code', e.target.value)}
+                            inputMode="numeric"
+                            value={form.data.isco_code}
+                            onChange={(event) => form.setData('isco_code', event.target.value.replace(/\D/g, ''))}
                         />
-                    </div>
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="name_en" value={t('occupations.nameEn')} />
-                        <input
-                            id="name_en"
-                            className={inputCls}
-                            value={form.data.name_en}
-                            onChange={(e) => form.setData('name_en', e.target.value)}
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="name_am" value={t('occupations.nameAm')} />
-                        <input
-                            id="name_am"
-                            className={inputCls}
-                            value={form.data.name_am}
-                            onChange={(e) => form.setData('name_am', e.target.value)}
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="skill_specialization" value={t('occupations.skillSpecialization')} />
+                    </FormField>
+
+                    <FormField error={form.errors.skill_specialization} label={t('occupations.skillSpecialization')}>
                         <input
                             id="skill_specialization"
-                            className={inputCls}
+                            className={inputClassName}
                             value={form.data.skill_specialization}
-                            onChange={(e) => form.setData('skill_specialization', e.target.value)}
+                            onChange={(event) => form.setData('skill_specialization', event.target.value)}
                         />
-                    </div>
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="sort_order" value={t('occupations.sortOrder')} />
+                    </FormField>
+
+                    <FormField error={form.errors.name_en} label={t('occupations.nameEn')}>
                         <input
-                            id="sort_order"
-                            type="number"
-                            min="0"
-                            className={inputCls}
-                            value={form.data.sort_order}
-                            onChange={(e) => form.setData('sort_order', e.target.value)}
+                            id="name_en"
+                            className={inputClassName}
+                            value={form.data.name_en}
+                            onChange={(event) => form.setData('name_en', event.target.value)}
                         />
+                    </FormField>
+
+                    <FormField error={form.errors.name_am} label={t('occupations.nameAm')}>
+                        <input
+                            id="name_am"
+                            className={inputClassName}
+                            value={form.data.name_am}
+                            onChange={(event) => form.setData('name_am', event.target.value)}
+                        />
+                    </FormField>
+
+                    <div className="md:col-span-2">
+                        <FormField error={form.errors.description} label={t('occupations.description')}>
+                            <textarea
+                                id="description"
+                                className={`${inputClassName} min-h-32 resize-y`}
+                                value={form.data.description}
+                                onChange={(event) => form.setData('description', event.target.value)}
+                            />
+                        </FormField>
                     </div>
                 </div>
-                <div className="space-y-1.5">
-                    <InputLabel htmlFor="description_en" value={t('occupations.descriptionEn')} />
-                    <textarea
-                        id="description_en"
-                        className={`${inputCls} min-h-28`}
-                        value={form.data.description_en}
-                        onChange={(e) => form.setData('description_en', e.target.value)}
-                    />
-                </div>
-                <div className="space-y-1.5">
-                    <InputLabel htmlFor="description_am" value={t('occupations.descriptionAm')} />
-                    <textarea
-                        id="description_am"
-                        className={`${inputCls} min-h-28`}
-                        value={form.data.description_am}
-                        onChange={(e) => form.setData('description_am', e.target.value)}
-                    />
-                </div>
-                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-slate-300">
-                    <input
-                        type="checkbox"
-                        checked={form.data.is_active}
-                        onChange={(e) => form.setData('is_active', e.target.checked)}
-                    />
-                    {t('occupations.activeOccupation')}
-                </label>
-                <div className="flex gap-3">
+
+                <div className="flex justify-end gap-3 border-t border-gray-200 px-6 py-4 dark:border-slate-800">
+                    <Link
+                        href={route('occupations.show', occupation.id)}
+                        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                    >
+                        {t('common.cancel')}
+                    </Link>
                     <button
-                        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
                         type="submit"
                         disabled={form.processing}
                     >
                         {t('common.save')}
                     </button>
-                    <Link
-                        href={route('occupations.show', occupation.id)}
-                        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 dark:border-slate-700 dark:text-slate-200"
-                    >
-                        {t('common.cancel')}
-                    </Link>
                 </div>
             </form>
         </AuthenticatedLayout>
+    );
+}
+
+function FormField({ children, error, label }: { children: ReactNode; error?: string; label: string }) {
+    return (
+        <div className="space-y-1.5">
+            <InputLabel value={label} />
+            {children}
+            {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+        </div>
     );
 }

@@ -5,12 +5,23 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\AuditLog;
+use App\Models\CafeteriaDayRule;
+use App\Models\CafeteriaSetting;
+use App\Models\CafeteriaProvider;
+use App\Models\CafeteriaReportRun;
+use App\Models\CafeteriaSpecialDay;
+use App\Models\CafeteriaSubsidyLedger;
+use App\Models\CafeteriaSubsidyRule;
+use App\Models\CafeteriaTransaction;
 use App\Models\CardRequest;
+use App\Models\EmployeeCafeteriaExclusion;
+use App\Models\PublicHoliday;
 use App\Models\CodeRule;
 use App\Models\Employee;
 use App\Models\EmployeeTransfer;
 use App\Models\Entitlement;
 use App\Models\EntitlementRule;
+use App\Models\GradeLevel;
 use App\Models\IdCard;
 use App\Models\IsicActivity;
 use App\Models\Occupation;
@@ -21,6 +32,7 @@ use App\Models\OrganizationUnit;
 use App\Models\OrganizationUnitType;
 use App\Models\Permission;
 use App\Models\Position;
+use App\Models\ServiceProvider as ServiceProviderModel; // alias to avoid clash with Illuminate\Support\ServiceProvider
 use App\Models\ServiceTransaction;
 use App\Models\ServiceType;
 use App\Models\SystemSetting;
@@ -33,6 +45,7 @@ use App\Policies\EmployeePolicy;
 use App\Policies\EmployeeTransferPolicy;
 use App\Policies\EntitlementPolicy;
 use App\Policies\EntitlementRulePolicy;
+use App\Policies\GradeLevelPolicy;
 use App\Policies\IdCardPolicy;
 use App\Policies\IsicActivityPolicy;
 use App\Policies\OccupationPolicy;
@@ -45,8 +58,19 @@ use App\Policies\PermissionPolicy;
 use App\Policies\PositionPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\ServiceTransactionPolicy;
+use App\Policies\CafeteriaDayRulePolicy;
+use App\Policies\CafeteriaProviderPolicy;
+use App\Policies\CafeteriaReportRunPolicy;
+use App\Policies\CafeteriaSettingPolicy;
+use App\Policies\CafeteriaSpecialDayPolicy;
+use App\Policies\CafeteriaSubsidyLedgerPolicy;
+use App\Policies\CafeteriaSubsidyRulePolicy;
+use App\Policies\CafeteriaTransactionPolicy;
+use App\Policies\EmployeeCafeteriaExclusionPolicy;
+use App\Policies\PublicHolidayPolicy;
 use App\Policies\ServiceTypePolicy;
 use App\Policies\SystemSettingPolicy;
+use App\Policies\ServiceProviderPolicy;
 use App\Policies\UserOrganizationScopePolicy;
 use App\Policies\UserPolicy;
 use App\Services\SystemSettings\SystemSettingsService;
@@ -68,7 +92,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(\App\Services\Calendar\EthiopianCalendarService::class);
+        $this->app->singleton(\App\Services\Calendar\CalendarService::class);
     }
 
     /**
@@ -89,6 +114,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Entitlement::class, EntitlementPolicy::class);
         Gate::policy(EntitlementRule::class, EntitlementRulePolicy::class);
         Gate::policy(ServiceTransaction::class, ServiceTransactionPolicy::class);
+        Gate::policy(ServiceProviderModel::class, ServiceProviderPolicy::class);
         Gate::policy(ServiceType::class, ServiceTypePolicy::class);
         Gate::policy(AuditLog::class, AuditLogPolicy::class);
         Gate::policy(OrganizationType::class, OrganizationTypePolicy::class);
@@ -96,12 +122,23 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(OrganizationUnitType::class, OrganizationUnitTypePolicy::class);
         Gate::policy(Occupation::class, OccupationPolicy::class);
         Gate::policy(IsicActivity::class, IsicActivityPolicy::class);
+        Gate::policy(GradeLevel::class, GradeLevelPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(UserOrganizationScope::class, UserOrganizationScopePolicy::class);
         Gate::policy(Permission::class, PermissionPolicy::class);
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(SystemSetting::class, SystemSettingPolicy::class);
+        Gate::policy(CafeteriaProvider::class, CafeteriaProviderPolicy::class);
+        Gate::policy(CafeteriaSubsidyRule::class, CafeteriaSubsidyRulePolicy::class);
+        Gate::policy(PublicHoliday::class, PublicHolidayPolicy::class);
+        Gate::policy(CafeteriaTransaction::class, CafeteriaTransactionPolicy::class);
+        Gate::policy(CafeteriaSubsidyLedger::class, CafeteriaSubsidyLedgerPolicy::class);
+        Gate::policy(CafeteriaReportRun::class, CafeteriaReportRunPolicy::class);
+        Gate::policy(CafeteriaSetting::class, CafeteriaSettingPolicy::class);
+        Gate::policy(CafeteriaDayRule::class, CafeteriaDayRulePolicy::class);
+        Gate::policy(CafeteriaSpecialDay::class, CafeteriaSpecialDayPolicy::class);
+        Gate::policy(EmployeeCafeteriaExclusion::class, EmployeeCafeteriaExclusionPolicy::class);
 
         Gate::before(static fn ($user, string $_ability) => $user->hasRole('Super Admin') ? true : null);
 

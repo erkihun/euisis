@@ -21,6 +21,8 @@ class StorePositionRequest extends FormRequest
             'title_en' => ['nullable', 'string', 'max:255', 'required_without:title_am'],
             'title_am' => ['nullable', 'string', 'max:255', 'required_without:title_en'],
             'organization_id' => ['nullable', 'uuid', 'exists:organizations,id'],
+            'organization_unit_id' => ['required', 'uuid', 'exists:organization_units,id'],
+            'occupation_id' => ['required', 'uuid', 'exists:occupations,id'],
             'description_en' => ['nullable', 'string'],
             'description_am' => ['nullable', 'string'],
             'grade_level' => ['nullable', 'string', 'max:255'],

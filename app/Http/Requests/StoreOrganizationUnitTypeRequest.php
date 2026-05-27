@@ -18,14 +18,15 @@ class StoreOrganizationUnitTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code'           => ['nullable', 'string', 'max:64', Rule::unique('organization_unit_types', 'code')],
-            'name_en'        => ['required', 'string', 'max:255'],
-            'name_am'        => ['nullable', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:64', Rule::unique('organization_unit_types', 'code')],
+            'prefix' => ['nullable', 'string', 'max:64'],
+            'name_en' => ['required', 'string', 'max:255'],
+            'name_am' => ['nullable', 'string', 'max:255'],
             'description_en' => ['nullable', 'string', 'max:2000'],
             'description_am' => ['nullable', 'string', 'max:2000'],
-            'sort_order'     => ['nullable', 'integer', 'min:0'],
-            'is_active'      => ['boolean'],
-            'metadata'       => ['nullable', 'array'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['boolean'],
+            'metadata' => ['nullable', 'array'],
         ];
     }
 }

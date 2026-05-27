@@ -20,6 +20,9 @@ class DashboardChartService
             'employeeRegistrationsTrend' => $can['employees'] ? $this->employeeRegistrationsTrend($scope) : [],
             'organizationsByType' => $can['organizations'] ? $this->organizationsByType($scope) : [],
             'organizationsByStatus' => $can['organizations'] ? $this->organizationsByStatus($scope) : [],
+            'positionsByGradeLevel' => ($can['positions'] ?? false) ? $this->positionsByGradeLevel($scope) : [],
+            'positionsByJobFamily' => ($can['positions'] ?? false) ? $this->positionsByJobFamily($scope) : [],
+            'positionsByOrganization' => ($can['positions'] ?? false) ? $this->positionsByOrganization($scope) : [],
             'cardsByStatus' => $can['cards'] ? $this->cardsByStatus($scope) : [],
             'cardRequestsByStatus' => $can['cards'] ? $this->cardRequestsByStatus($scope) : [],
             'cardLifecycleFunnel' => $can['cards'] ? $this->cardLifecycleFunnel($scope) : [],
@@ -96,6 +99,45 @@ class DashboardChartService
             ->selectRaw('organizations.status as `key`, COUNT(*) as `value`')
             ->groupBy('organizations.status')
             ->orderBy('organizations.status')
+            ->get()
+            ->map(fn ($row): array => ['key' => $row->key, 'value' => (int) $row->value])
+            ->all();
+    }
+
+    private function positionsByGradeLevel(array $scope): array
+    {
+        return $this->metrics->positionQuery($scope)
+            ->whereNotNull('positions.grade_level')
+            ->selectRaw('positions.grade_level as `key`, COUNT(*) as `value`')
+            ->groupBy('positions.grade_level')
+            ->orderByDesc('value')
+            ->limit($scope['top_limit'])
+            ->get()
+            ->map(fn ($row): array => ['key' => $row->key, 'value' => (int) $row->value])
+            ->all();
+    }
+
+    private function positionsByJobFamily(array $scope): array
+    {
+        return $this->metrics->positionQuery($scope)
+            ->whereNotNull('positions.job_family')
+            ->selectRaw('positions.job_family as `key`, COUNT(*) as `value`')
+            ->groupBy('positions.job_family')
+            ->orderByDesc('value')
+            ->limit($scope['top_limit'])
+            ->get()
+            ->map(fn ($row): array => ['key' => $row->key, 'value' => (int) $row->value])
+            ->all();
+    }
+
+    private function positionsByOrganization(array $scope): array
+    {
+        return $this->metrics->positionQuery($scope)
+            ->join('organizations', 'organizations.id', '=', 'positions.organization_id')
+            ->selectRaw('organizations.name_en as `key`, COUNT(*) as `value`')
+            ->groupBy('organizations.name_en')
+            ->orderByDesc('value')
+            ->limit($scope['top_limit'])
             ->get()
             ->map(fn ($row): array => ['key' => $row->key, 'value' => (int) $row->value])
             ->all();

@@ -1,10 +1,14 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PageHeader from '@/Components/PageHeader';
+import LocalizedDateDisplay from '@/Components/Calendar/LocalizedDateDisplay';
 import CardStatusBadge from '@/Components/IdCards/CardStatusBadge';
 import CardLifecycleTimeline from '@/Components/IdCards/CardLifecycleTimeline';
 import IdCardFront from '@/Components/IdCards/IdCardFront';
 import IdCardBack from '@/Components/IdCards/IdCardBack';
+import IdCardPortraitFront from '@/Components/IdCards/IdCardPortraitFront';
+import IdCardPortraitBack from '@/Components/IdCards/IdCardPortraitBack';
 import CardPrintExportModal from '@/Components/IdCards/CardPrintExportModal';
+import CardPortraitPrintExportModal from '@/Components/IdCards/CardPortraitPrintExportModal';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useLocale } from '@/hooks/useLocale';
 import { useState } from 'react';
@@ -19,6 +23,7 @@ type CardData = {
     revoked_at?: string | null;
     revoke_reason?: string | null;
     notes?: string | null;
+    qr_payload?: string | null;
     employee?: {
         full_name: string;
         employee_number: string;
@@ -242,6 +247,10 @@ export default function IdCardShow({ card, can }: PageProps) {
     const { t } = useLocale();
     const { errors } = usePage().props as { errors: Record<string, string> };
     const [modal, setModal] = useState<string | null>(null);
+    const [cardDesign, setCardDesign] = useState<'landscape' | 'portrait'>('landscape');
+    const [portraitModal, setPortraitModal] = useState<{ open: boolean; action: 'print' | 'export_png' }>({
+        open: false, action: 'export_png',
+    });
     const [exportModal, setExportModal] = useState<{ open: boolean; action: 'print' | 'export_png' }>({
         open: false,
         action: 'export_png',
@@ -255,7 +264,7 @@ export default function IdCardShow({ card, can }: PageProps) {
     const revokeForm   = useForm({ reason: '' });
 
     const fmtDate = (v?: string | null) =>
-        v ? new Date(v).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+        v ? v.slice(0, 10) : '—';
 
     const hasAnyAction = can.issue || can.activate || can.reportLost || can.reportDamaged || can.replace || can.revoke;
 
@@ -332,26 +341,114 @@ export default function IdCardShow({ card, can }: PageProps) {
                             <h2 className="text-sm font-semibold text-gray-700 dark:text-slate-300">
                                 {t('common.preview')}
                             </h2>
-                            <CardStatusBadge status={card.status} />
+                            <div className="flex items-center gap-3">
+                                {/* Design toggle */}
+                                <div className="flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-slate-700 dark:bg-slate-800">
+                                    <button
+                                        type="button"
+                                        onClick={() => setCardDesign('landscape')}
+                                        className={[
+                                            'flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
+                                            cardDesign === 'landscape'
+                                                ? 'bg-white text-gray-900 shadow-sm dark:bg-slate-700 dark:text-slate-100'
+                                                : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200',
+                                        ].join(' ')}
+                                    >
+                                        {/* landscape icon */}
+                                        <svg className="h-3.5 w-3.5" viewBox="0 0 16 10" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                                            <rect x="0.75" y="0.75" width="14.5" height="8.5" rx="1.5" />
+                                        </svg>
+                                        Landscape
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setCardDesign('portrait')}
+                                        className={[
+                                            'flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
+                                            cardDesign === 'portrait'
+                                                ? 'bg-white text-gray-900 shadow-sm dark:bg-slate-700 dark:text-slate-100'
+                                                : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200',
+                                        ].join(' ')}
+                                    >
+                                        {/* portrait icon */}
+                                        <svg className="h-3.5 w-3.5" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                                            <rect x="0.75" y="0.75" width="8.5" height="14.5" rx="1.5" />
+                                        </svg>
+                                        Portrait
+                                    </button>
+                                </div>
+                                <CardStatusBadge status={card.status} />
+                            </div>
                         </div>
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <IdCardFront
-                                cardNumber={card.card_number}
-                                fullName={card.employee?.full_name}
-                                employeeNumber={card.employee?.employee_number}
-                                organizationName={card.employee?.current_assignment?.organization?.name_en}
-                                organizationLogoUrl={card.employee?.current_assignment?.organization?.logo_url}
-                                positionTitle={card.employee?.current_assignment?.position?.title_en}
-                                photoUrl={card.employee?.photo_url}
-                                issueDate={fmtDate(card.issued_at)}
-                                expiryDate={fmtDate(card.expires_at)}
-                                status={card.status}
-                            />
-                            <IdCardBack
-                                cardNumber={card.card_number}
-                                qrValue={route('id-cards.show', card.id)}
-                            />
-                        </div>
+
+                        {cardDesign === 'landscape' ? (
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <IdCardFront
+                                    cardNumber={card.card_number}
+                                    fullName={card.employee?.full_name}
+                                    employeeNumber={card.employee?.employee_number}
+                                    organizationName={card.employee?.current_assignment?.organization?.name_en}
+                                    organizationLogoUrl={card.employee?.current_assignment?.organization?.logo_url}
+                                    positionTitle={card.employee?.current_assignment?.position?.title_en}
+                                    photoUrl={card.employee?.photo_url}
+                                    issueDate={fmtDate(card.issued_at)}
+                                    expiryDate={fmtDate(card.expires_at)}
+                                    status={card.status}
+                                />
+                                <IdCardBack
+                                    cardNumber={card.card_number}
+                                    qrValue={card.qr_payload || route('id-cards.show', card.id)}
+                                />
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="flex flex-wrap justify-center gap-6">
+                                    <IdCardPortraitFront
+                                        cardNumber={card.card_number}
+                                        fullName={card.employee?.full_name}
+                                        employeeNumber={card.employee?.employee_number}
+                                        organizationName={card.employee?.current_assignment?.organization?.name_en}
+                                        organizationLogoUrl={card.employee?.current_assignment?.organization?.logo_url}
+                                        positionTitle={card.employee?.current_assignment?.position?.title_en}
+                                        photoUrl={card.employee?.photo_url}
+                                        issueDate={fmtDate(card.issued_at)}
+                                        expiryDate={fmtDate(card.expires_at)}
+                                        status={card.status}
+                                    />
+                                    <IdCardPortraitBack
+                                        cardNumber={card.card_number}
+                                        qrValue={card.qr_payload || route('id-cards.show', card.id)}
+                                    />
+                                </div>
+                                {/* Portrait print / export actions */}
+                                <div className="flex justify-center gap-2 pt-1">
+                                    {can.printAnytime && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setPortraitModal({ open: true, action: 'print' })}
+                                            className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                                        >
+                                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.056 48.056 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5z" />
+                                            </svg>
+                                            {t('idCards.printCard')}
+                                        </button>
+                                    )}
+                                    {can.exportPng && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setPortraitModal({ open: true, action: 'export_png' })}
+                                            className="flex items-center gap-1.5 rounded-lg border border-indigo-300 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 dark:border-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
+                                        >
+                                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                            </svg>
+                                            {t('idCards.exportPng')}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </section>
 
                     {/* Card details */}
@@ -367,21 +464,21 @@ export default function IdCardShow({ card, can }: PageProps) {
                                 <CardStatusBadge status={card.status} />
                             </Field>
                             <Field label={t('idCards.expiryDate')}>
-                                {fmtDate(card.expires_at)}
+                                <LocalizedDateDisplay value={card.expires_at} />
                             </Field>
                             {card.issued_at && (
                                 <Field label={t('idCards.issuedAt')}>
-                                    {fmtDate(card.issued_at)}
+                                    <LocalizedDateDisplay value={card.issued_at} withTime />
                                 </Field>
                             )}
                             {card.activated_at && (
                                 <Field label={t('idCards.activatedAt')}>
-                                    {fmtDate(card.activated_at)}
+                                    <LocalizedDateDisplay value={card.activated_at} withTime />
                                 </Field>
                             )}
                             {card.revoked_at && (
                                 <Field label={t('idCards.revokedAt')}>
-                                    <span className="text-red-600 dark:text-red-400">{fmtDate(card.revoked_at)}</span>
+                                    <span className="text-red-600 dark:text-red-400"><LocalizedDateDisplay value={card.revoked_at} withTime /></span>
                                 </Field>
                             )}
                             <Field label={t('employees.columnPosition')}>
@@ -718,6 +815,36 @@ export default function IdCardShow({ card, can }: PageProps) {
                     </FormField>
                 </Modal>
             )}
+
+            <CardPortraitPrintExportModal
+                card={{
+                    id: card.id,
+                    card_number: card.card_number,
+                    status: card.status,
+                    issued_at: card.issued_at,
+                    expires_at: card.expires_at,
+                    can: {
+                        printAnytime: can.printAnytime,
+                        exportPng: can.exportPng,
+                    },
+                    employee: card.employee ? {
+                        full_name: card.employee.full_name,
+                        employee_number: card.employee.employee_number,
+                        photo_url: card.employee.photo_url,
+                        current_assignment: card.employee.current_assignment ? {
+                            organization: card.employee.current_assignment.organization
+                                ? { name_en: card.employee.current_assignment.organization.name_en, logo_url: card.employee.current_assignment.organization.logo_url }
+                                : null,
+                            position: card.employee.current_assignment.position
+                                ? { title_en: card.employee.current_assignment.position.title_en }
+                                : null,
+                        } : null,
+                    } : null,
+                }}
+                isOpen={portraitModal.open}
+                initialAction={portraitModal.action}
+                onClose={() => setPortraitModal((prev) => ({ ...prev, open: false }))}
+            />
 
             <CardPrintExportModal
                 card={{

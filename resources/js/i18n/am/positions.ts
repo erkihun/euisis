@@ -17,6 +17,10 @@ const positions = {
     description: 'የመደብ መግለጫ',
     positionDescription: 'የመደብ መግለጫ',
     organization: 'ድርጅት',
+    organizationUnit: 'የድርጅት ዩኒት',
+    selectOrganizationUnit: 'የድርጅት ዩኒት ይምረጡ',
+    occupation: 'ሙያ',
+    selectOccupation: 'ሙያ ይምረጡ',
     statusActive: 'ንቁ',
     statusInactive: 'ንቁ ያልሆነ',
     activePosition: 'ንቁ መደብ',
@@ -35,6 +39,11 @@ const positions = {
     updateSuccess: 'የስራ መደብ በተሳካ ሁኔታ ተዘምኗል',
     archiveSuccess: 'የስራ መደብ በተሳካ ሁኔታ ተሰርዟል',
     restoreSuccess: 'የስራ መደብ በተሳካ ሁኔታ ተመልሷል',
+    selectOrganizationToViewPositions: 'ቦታዎቹን ለማየት ድርጅቱን ይምረጡ',
+    selectGradeLevel: 'የደረጃ ደረጃ ይምረጡ',
+    noOrganizationUnits: 'ለዚህ ድርጅት ምንም የድርጅት ዩኒቶች አልተገኙም።',
+    noOrganizationUnitsHint: 'ቦታዎችን ከማከልዎ በፊት እባክዎ የድርጅት ዩኒቶችን ይፍጠሩ።',
+    selectUnitToViewPositions: 'ቦታዎቹን ለማየት የድርጅት ዩኒቱን ይምረጡ።',
 } as const;
 
 export default positions;

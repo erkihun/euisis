@@ -8,5 +8,6 @@ enum CodeRuleScopeType: string
 {
     case Organization = 'organization';
     case OrganizationType = 'organization_type';
+    case OrganizationUnitType = 'organization_unit_type';
     case ServiceType = 'service_type';
 }

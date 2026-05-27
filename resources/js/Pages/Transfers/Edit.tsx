@@ -4,6 +4,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import { useLocale } from '@/hooks/useLocale';
 import { toDateInput } from '@/lib/dateUtils';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 export default function TransfersEdit({ transfer, organizations, positions }: { transfer: any; organizations: Array<{ id: string; name_en: string }>; positions: Array<{ id: string; job_position_code: string; title_en: string; organization_id: string | null }> }) {
     const { t } = useLocale();
@@ -35,7 +36,7 @@ export default function TransfersEdit({ transfer, organizations, positions }: { 
                         <option value="">{t('transfers.selectPosition')}</option>
                         {positions.map((position) => <option key={position.id} value={position.id}>{position.job_position_code} · {position.title_en}</option>)}
                     </select>
-                    <input className={inputCls} type="date" value={form.data.effective_date} onChange={(event) => form.setData('effective_date', event.target.value)} />
+                    <LocalizedDatePicker className={inputCls} value={form.data.effective_date} onChange={(iso) => form.setData('effective_date', iso)} />
                 </div>
                 <textarea className={`${inputCls} min-h-28`} value={form.data.transfer_reason} placeholder={t('transfers.transferReason')} onChange={(event) => form.setData('transfer_reason', event.target.value)} />
                 <div className="flex gap-3">

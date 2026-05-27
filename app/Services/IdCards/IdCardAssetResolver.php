@@ -1,0 +1,76 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services\IdCards;
+
+use Illuminate\Support\Facades\Storage;
+
+/**
+ * Resolves storage paths and remote-safe URLs to base64 data URIs
+ * suitable for embedding inside an SVG <image> element.
+ *
+ * Rules:
+ * - Only reads files from the public disk (storage/app/public).
+ * - Refuses to read private paths or paths outside the storage root.
+ * - Returns null on any error so the renderer can show a placeholder.
+ */
+final class IdCardAssetResolver
+{
+    private const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+
+    private const MAX_BYTES = 2 * 1024 * 1024; // 2 MB guard
+
+    /**
+     * Resolve a public-disk storage path (e.g. "photos/abc.jpg") to a data URI.
+     * The path must not be absolute; it is relative to storage/app/public.
+     */
+    public function resolveStoragePath(?string $relativePath): ?string
+    {
+        if ($relativePath === null || $relativePath === '') {
+            return null;
+        }
+
+        // Strip leading /storage/ prefix that the model appends for web URLs
+        $path = ltrim($relativePath, '/');
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, 8);
+        }
+
+        try {
+            if (! Storage::disk('public')->exists($path)) {
+                return null;
+            }
+
+            $size = Storage::disk('public')->size($path);
+            if ($size > self::MAX_BYTES) {
+                return null;
+            }
+
+            $bytes = Storage::disk('public')->get($path);
+            $mimeType = Storage::disk('public')->mimeType($path);
+
+            if (! in_array($mimeType, self::ALLOWED_MIME, true)) {
+                return null;
+            }
+
+            return 'data:'.$mimeType.';base64,'.base64_encode((string) $bytes);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Resolve a model's photo_path or logo_path to a data URI.
+     * Accepts either a bare storage-relative path or the "/storage/..." web URL form.
+     */
+    public function resolvePhotoPath(?string $photoPath): ?string
+    {
+        return $this->resolveStoragePath($photoPath);
+    }
+
+    public function resolveLogoPath(?string $logoPath): ?string
+    {
+        return $this->resolveStoragePath($logoPath);
+    }
+}

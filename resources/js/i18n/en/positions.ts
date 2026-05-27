@@ -17,6 +17,10 @@ const positions = {
     description: 'Position Description',
     positionDescription: 'Position Description',
     organization: 'Organization',
+    organizationUnit: 'Organization Unit',
+    selectOrganizationUnit: 'Select Organization Unit',
+    occupation: 'Occupation',
+    selectOccupation: 'Select Occupation',
     statusActive: 'Active',
     statusInactive: 'Inactive',
     activePosition: 'Active Position',
@@ -35,6 +39,11 @@ const positions = {
     updateSuccess: 'Position updated successfully',
     archiveSuccess: 'Position deleted successfully',
     restoreSuccess: 'Position restored successfully',
+    selectOrganizationToViewPositions: 'Select an organization to view its positions',
+    selectGradeLevel: 'Select Grade Level',
+    noOrganizationUnits: 'No organizational units found for this organization.',
+    noOrganizationUnitsHint: 'Please create organizational units before adding positions.',
+    selectUnitToViewPositions: 'Select an organizational unit to view its positions.',
 } as const;
 
 export default positions;

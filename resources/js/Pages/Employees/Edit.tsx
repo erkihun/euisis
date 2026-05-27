@@ -4,6 +4,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import { useLocale } from '@/hooks/useLocale';
 import { toDateInput } from '@/lib/dateUtils';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type Employee = {
     id: string;
@@ -219,11 +220,10 @@ export default function EmployeesEdit({
 
                     {/* Date of birth */}
                     <Field label={t('employees.dateOfBirth')}>
-                        <input
+                        <LocalizedDatePicker
                             className={inputCls}
-                            type="date"
                             value={form.data.date_of_birth}
-                            onChange={(e) => form.setData('date_of_birth', e.target.value)}
+                            onChange={(iso) => form.setData('date_of_birth', iso)}
                         />
                     </Field>
 

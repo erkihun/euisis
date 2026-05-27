@@ -250,3 +250,114 @@
 - Position catalog ownership must be confirmed: citywide master catalog, organization-local catalogs, or a hybrid model.
 - PostgreSQL-specific features such as partial indexes and generated UUIDv7 defaults need environment confirmation during deployment.
 - Some local tests may require PostgreSQL rather than SQLite because of stricter indexing and partial-constraint behavior.
+
+---
+
+## Security Hardening Pass — 2026-05-25
+
+### Scope
+
+1. Production env documentation + Sanctum token expiry.
+2. Gating of public `/register` route.
+3. TOTP multi-factor authentication for privileged roles.
+4. Encryption-at-rest for `users.national_id`, `users.phone_number`,
+   `employees.national_id`, plus hash columns for unique lookups.
+
+Out of scope (carried in "Next steps"): API rate-limit tuning, HTTPS-only
+enforcement at the load balancer, container hardening, secret rotation
+policy.
+
+### Phase 1 — Production env hardening
+
+- `.env.example` now opens with a security banner and explicit guidance for
+  `APP_DEBUG`, `SESSION_SECURE_COOKIE`, `SESSION_HTTP_ONLY`,
+  `SESSION_SAME_SITE`, `SANCTUM_TOKEN_EXPIRATION_MINUTES`,
+  `REGISTRATION_ENABLED`, `MFA_REQUIRED_ROLES`.
+- `config/sanctum.php` — `expiration` reads `SANCTUM_TOKEN_EXPIRATION_MINUTES`
+  (default 30 days). Previously `null` (never expire).
+- `docs/production-security-checklist.md` extended with MFA, PII encryption,
+  Sanctum, and registration items.
+
+### Phase 2 — `/register` gate
+
+- New `config/security.php` centralises `registration_enabled`,
+  `mfa_required_roles`, `mfa_enforce`, `mfa_session_lifetime_minutes`,
+  `mfa_recovery_code_count`.
+- `RegisteredUserController::create()` / `store()` short-circuit to a
+  `/login` redirect with `security.registration_disabled` flash when the
+  flag is off. Routes remain registered so `route('register')` and
+  reverse-routing never break.
+- i18n keys added to `resources/js/i18n/{en,am}/auth.ts`,
+  `resources/js/i18n/{en,am}/security.ts`, and `lang/{en,am}/security.php`.
+
+### Phase 3 — TOTP MFA
+
+Backend:
+
+- `composer require pragmarx/google2fa-qrcode bacon/bacon-qr-code`.
+- Migration `2026_05_25_000000_add_two_factor_to_users_table.php`.
+- `User` model: encrypted secret + recovery columns, MFA helper methods,
+  hidden columns updated.
+- `MfaController` (setup, setup-confirm, challenge, verify, disable) with
+  throttles `throttle:5,1` and `throttle:10,1`.
+- `RequireMfa` + `EnsureMfaNotRequired` middleware; aliases `mfa` and
+  `mfa.setup` in `bootstrap/app.php`.
+- `AuditEventType` extended with 6 MFA cases.
+- Dashboard middleware now `['auth', 'verified', 'mfa']`.
+
+Frontend:
+
+- `resources/js/Pages/Auth/MfaSetup.tsx`, `MfaChallenge.tsx` — QR code,
+  recovery codes one-time view, dark/light Tailwind classes, i18n-driven.
+- `resources/js/hooks/useLocale.ts` extended to merge `auth` and `security`
+  namespaces.
+
+Test bypass: `config('security.mfa_enforce')` defaults `true` outside
+`APP_ENV=testing`, so existing factory-user tests keep passing.
+
+### Phase 4 — PII encryption + hash columns
+
+- Migration `2026_05_25_000001_add_hash_columns_to_users_and_employees.php`
+  adds indexed `national_id_hash` columns (SHA-256, 64 chars).
+- `User`/`Employee` `booted()` hooks recompute the hash whenever
+  `national_id` is dirty on save.
+- Casts: `users.national_id`, `users.phone_number`, `employees.national_id`
+  → encrypted. `employees.phone` left plain (used by
+  `DetectDuplicateEmployeeAction` for direct equality lookups).
+- Form requests (User/Profile/Employee store + update) compute the hash in
+  `prepareForValidation()` and validate uniqueness against the hash column.
+- `app/Console/Commands/EncryptExistingSensitiveData.php` — one-shot
+  migration command with `--dry-run`, detects already-encrypted payloads
+  by the Laravel ciphertext prefix `eyJ`.
+
+### Verification
+
+- `php artisan migrate` — three migrations applied cleanly.
+- `php artisan route:list` — 5 new MFA routes; `/register` resolves under
+  the gated controller closure when disabled.
+- `php artisan test` — 347 passing, 7 pre-existing failures (Position,
+  CodeRule, Occupation, OrganizationUnit, PermissionDescription,
+  ErrorHandling locale leak). None introduced by this pass.
+- `npm run build` — clean, no TypeScript errors.
+- `composer audit` — could not reach packagist (network timeout). Re-run on
+  a network-attached host before the cutover.
+
+### Known blockers
+
+1. `composer audit` could not reach `packagist.org` during this pass.
+2. Pre-existing test failures listed above should be cleared before
+   tagging a release.
+
+### Next recommended security step
+
+Roll out a content-security-policy review against the existing
+`SecurityHeaders` middleware: confirm CSP is `enforce` (not report-only),
+HSTS is uncommented, run an external scan with securityheaders.com, and
+capture the report in `docs/infrastructure-security.md`.
+# Cafeteria Scan Hardening
+
+- Added provider-specific access service and assignment table for cafeteria operators.
+- Added scan nonce/idempotency fields and consumed-day persistence.
+- Removed Custom Amount from scan/settings validation and frontend controls.
+- Added backend-driven scan calendar metadata for day rules, holidays, special days, exclusions, and consumed days.
+- Updated Today’s Scans toward identifiable provider-scoped employee scan logs.

@@ -16,6 +16,7 @@ class OrganizationUnitType extends Model
 
     protected $fillable = [
         'code',
+        'prefix',
         'name_en',
         'name_am',
         'description_en',
@@ -33,7 +34,7 @@ class OrganizationUnitType extends Model
     {
         return [
             'is_active' => 'bool',
-            'metadata'  => 'array',
+            'metadata' => 'array',
         ];
     }
 

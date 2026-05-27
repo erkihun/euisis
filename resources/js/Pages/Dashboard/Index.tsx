@@ -143,6 +143,11 @@ export default function Dashboard({
 
     const employeeStatusLabel = keyLabel(t, 'status');
     const chartLabel = keyLabel(t, 'dashboard.verificationResults');
+    const positionStats: Array<[string, string | number | null]> = [
+        ['totalPositions', cards.positions?.totalPositions ?? 0],
+        ['activePositions', cards.positions?.activePositions ?? 0],
+        ['vacantPositions', cards.positions?.vacantPositions ?? 0],
+    ];
 
     return (
         <AuthenticatedLayout
@@ -246,6 +251,40 @@ export default function Dashboard({
                                         <StatusDistribution
                                             data={(charts.organizationsByStatus as KeyValueDatum[]) ?? []}
                                             labelFor={employeeStatusLabel}
+                                        />
+                                    </ChartCard>
+                                </div>
+                            </DashboardSection>
+                        )}
+
+                        {can.positions && (
+                            <DashboardSection title={t('dashboard.sections.positionsOverview')}>
+                                <div className="grid gap-6 xl:grid-cols-3">
+                                    {positionStats.map(([key, value]) => (
+                                        <div
+                                            key={key}
+                                            className="rounded-xl bg-gray-50 p-4 dark:bg-slate-950"
+                                        >
+                                            <p className="text-sm text-gray-500 dark:text-slate-400">
+                                                {t(`dashboard.kpis.${key}`)}
+                                            </p>
+                                            <p className="mt-2 text-2xl font-semibold text-gray-900 dark:text-slate-100">
+                                                {Number(value).toLocaleString()}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="grid gap-6 xl:grid-cols-2">
+                                    <ChartCard title={t('dashboard.positionsByGradeLevel')}>
+                                        <SimpleBarChart
+                                            data={(charts.positionsByGradeLevel as KeyValueDatum[]) ?? []}
+                                            labelFor={(value) => value}
+                                        />
+                                    </ChartCard>
+                                    <ChartCard title={t('dashboard.positionsByJobFamily')}>
+                                        <SimpleBarChart
+                                            data={(charts.positionsByJobFamily as KeyValueDatum[]) ?? []}
+                                            labelFor={(value) => value}
                                         />
                                     </ChartCard>
                                 </div>

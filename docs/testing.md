@@ -69,3 +69,10 @@ Current automated suite runs against SQLite in memory through `phpunit.xml.dist`
 ## Recycle Bin
 
 Recycle Bin coverage verifies protected access, soft-delete metadata, restore behavior, and record_deleted / record_restored audit events for supported configuration records.
+# Cafeteria Scan Checks
+
+- Provider operators must only receive assigned cafeteria providers in scan provider lists.
+- Scan requests require `scan_nonce`; replayed fulfilled nonces must not create another transaction.
+- `custom_amount` and requested subsidy amount inputs are rejected by backend validation.
+- Remaining-week scans must persist consumed dates and the calendar response must mark those dates consumed.
+- Today’s Scans must include employee identity fields and must not expose national ID, raw QR token, or QR hashes.

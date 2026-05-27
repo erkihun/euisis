@@ -27,16 +27,30 @@ export default function ServiceProvidersIndex({
     serviceTypes,
     providers,
     transactions,
+    can,
 }: {
     serviceTypes: ServiceTypeRow[];
     providers: ProviderRow[];
     transactions: TransactionRow[];
+    can: { create: boolean };
 }) {
     const { t } = useLocale();
 
     return (
         <AuthenticatedLayout
-            header={<PageHeader title={t('providers.title')} description="" />}
+            header={
+                <div className="flex items-center justify-between gap-4">
+                    <PageHeader title={t('providers.title')} description="" />
+                    {can.create && (
+                        <Link
+                            href={route('service-providers.create')}
+                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            + {t('providers.addProvider')}
+                        </Link>
+                    )}
+                </div>
+            }
         >
             <Head title={t('providers.title')} />
 

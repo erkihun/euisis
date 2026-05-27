@@ -7,6 +7,9 @@ export interface User {
     initials?: string;
 }
 
+export type CalendarSystem = 'gregorian' | 'ethiopian';
+export type CalendarMode = 'locale_based' | 'gregorian_only' | 'ethiopian_only';
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
@@ -16,4 +19,9 @@ export type PageProps<
         permissions?: string[];
         isSuperAdmin?: boolean;
     };
+    calendar?: {
+        system: CalendarSystem;
+        mode: CalendarMode;
+    };
+    locale?: string;
 };

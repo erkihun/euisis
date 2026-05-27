@@ -135,7 +135,7 @@ export default function IdCardFront({
             )}
 
             {/* Header band */}
-            <div className="absolute inset-x-0 top-0 flex items-center gap-2 bg-white/10 px-3 py-1.5 backdrop-blur-[1px]">
+            <div className="absolute inset-x-0 top-0 flex items-center gap-2 bg-white/15 px-3 py-1.5">
                 {/* City logo or org logo */}
                 {showLogo && (cityLogoUrl || organizationLogoUrl) ? (
                     <img

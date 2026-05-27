@@ -102,7 +102,7 @@ class OrganizationScopeService
 
         $organizations = Organization::query()
             ->whereIn('id', $allOrgIds)
-            ->with('type:id,name_en,code')
+            ->with('type:id,name_en,name_am,code')
             ->get()
             ->keyBy('id');
 
@@ -135,6 +135,7 @@ class OrganizationScopeService
                 'children_count' => $childEdges->count(),
                 'type' => $org->type ? [
                     'name_en' => $org->type->name_en,
+                    'name_am' => $org->type->name_am,
                     'code' => $org->type->code,
                 ] : null,
                 'branding_primary_color' => $org->branding_primary_color,

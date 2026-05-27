@@ -33,7 +33,7 @@ export default function OrganizationTreePreviewNode({
             <div
                 className={`flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 transition-colors ${
                     isSelected
-                        ? 'bg-blue-50 ring-1 ring-blue-200 dark:bg-blue-900/20 dark:ring-blue-700'
+                        ? 'bg-blue-100 ring-2 ring-blue-400 dark:bg-blue-900/30 dark:ring-blue-500'
                         : 'hover:bg-gray-50 dark:hover:bg-slate-800/40'
                 }`}
                 style={{ paddingLeft: `${indentPx + 8}px` }}
@@ -84,7 +84,7 @@ export default function OrganizationTreePreviewNode({
                         <span
                             className={`truncate text-sm font-medium ${
                                 isSelected
-                                    ? 'text-blue-700 dark:text-blue-300'
+                                    ? 'text-blue-800 dark:text-blue-200'
                                     : 'text-gray-900 dark:text-slate-100'
                             }`}
                         >

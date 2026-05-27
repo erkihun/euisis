@@ -19,12 +19,12 @@ class SequenceScopeResolver
      */
     private const AUTO_SCOPE_TOKENS = [
         'Organization' => ['ORG_TYPE_PREFIX', 'ORG_TYPE_CODE', 'ORG_PREFIX', 'ORG_CODE', 'PARENT_ORG_PREFIX', 'PARENT_ORG_CODE'],
-        'Employee'     => ['ORG_TYPE_PREFIX', 'ORG_TYPE_CODE', 'ORG_CODE', 'EMPLOYEE_STATUS', 'UNIT_CODE', 'POSITION_CODE'],
-        'Position'     => ['ORG_CODE', 'UNIT_CODE', 'POSITION_PREFIX'],
-        'Service'      => ['SERVICE_TYPE_PREFIX', 'SERVICE_TYPE_CODE', 'PROVIDER_PREFIX', 'PROVIDER_CODE'],
-        'Location'     => ['CITY_CODE', 'SUB_CITY_CODE', 'WOREDA_CODE'],
-        'DateAndTime'  => ['YEAR', 'YEAR_SHORT', 'MONTH', 'DAY', 'FISCAL_YEAR'],
-        'Unit'         => ['UNIT_TYPE_CODE', 'UNIT_PREFIX', 'UNIT_CODE'],
+        'Employee' => ['ORG_TYPE_PREFIX', 'ORG_TYPE_CODE', 'ORG_CODE', 'EMPLOYEE_STATUS', 'UNIT_CODE', 'POSITION_CODE'],
+        'Position' => ['ORG_CODE', 'UNIT_CODE', 'POSITION_PREFIX'],
+        'Service' => ['SERVICE_TYPE_PREFIX', 'SERVICE_TYPE_CODE', 'PROVIDER_PREFIX', 'PROVIDER_CODE'],
+        'Location' => ['CITY_CODE', 'SUB_CITY_CODE', 'WOREDA_CODE'],
+        'DateAndTime' => ['YEAR', 'YEAR_SHORT', 'MONTH', 'DAY', 'FISCAL_YEAR'],
+        'Unit' => ['UNIT_TYPE_PREFIX', 'UNIT_TYPE_CODE', 'UNIT_PREFIX', 'UNIT_CODE'],
     ];
 
     /**

@@ -92,13 +92,28 @@ readonly class IdCardPolicy
 
     public function printAnytime(User $user, IdCard $idCard): bool
     {
-        return $user->can('id-cards.printAnytime')
-            && $this->organizationScopeService->canAccessEmployee($user, $idCard->employee);
+        $employee = $idCard->employee;
+
+        return $employee !== null
+            && $user->can('id-cards.printAnytime')
+            && $this->organizationScopeService->canAccessEmployee($user, $employee);
     }
 
     public function exportPng(User $user, IdCard $idCard): bool
     {
-        return $user->can('id-cards.exportPng')
-            && $this->organizationScopeService->canAccessEmployee($user, $idCard->employee);
+        $employee = $idCard->employee;
+
+        return $employee !== null
+            && $user->can('id-cards.exportPng')
+            && $this->organizationScopeService->canAccessEmployee($user, $employee);
+    }
+
+    public function previewSvg(User $user, IdCard $idCard): bool
+    {
+        $employee = $idCard->employee;
+
+        return $employee !== null
+            && ($user->can('id-cards.previewSvg') || $user->can('id-cards.exportPng') || $user->can('id-cards.printAnytime') || $user->can('cards.manage'))
+            && $this->organizationScopeService->canAccessEmployee($user, $employee);
     }
 }

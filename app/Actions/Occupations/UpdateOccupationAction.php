@@ -15,26 +15,47 @@ readonly class UpdateOccupationAction
 
     public function execute(Occupation $occupation, array $attributes, User $actor): Occupation
     {
-        $oldValues = $occupation->toArray();
+        $oldValues = $this->activeAttributes($occupation->only([
+            'isco_code',
+            'name_en',
+            'name_am',
+            'skill_specialization',
+            'description',
+        ]));
 
-        if (isset($attributes['isco_code']) && $attributes['isco_code'] !== '') {
-            $attributes['isco_code'] = strtoupper(trim($attributes['isco_code']));
-            $attributes['code'] = $attributes['isco_code'];
-        }
+        $activeAttributes = $this->activeAttributes($attributes);
 
-        $attributes['updated_by'] = $actor->getKey();
+        $occupation->fill($activeAttributes);
+        $occupation->forceFill([
+            'code' => $activeAttributes['isco_code'],
+            'updated_by' => $actor->getKey(),
+        ])->save();
 
-        $occupation->update($attributes);
+        $freshOccupation = $occupation->fresh();
 
         $this->writeAuditLogAction->execute(
             AuditEventType::OccupationUpdated,
             $actor,
-            $occupation->fresh(),
+            $freshOccupation,
             null,
             oldValues: $oldValues,
-            newValues: $occupation->fresh()->toArray(),
+            newValues: $activeAttributes,
         );
 
-        return $occupation->fresh();
+        return $freshOccupation;
+    }
+
+    /**
+     * @return array{isco_code: string, name_en?: string|null, name_am?: string|null, skill_specialization?: string|null, description?: string|null}
+     */
+    private function activeAttributes(array $attributes): array
+    {
+        return [
+            'isco_code' => trim((string) $attributes['isco_code']),
+            'name_en' => $attributes['name_en'] ?? null,
+            'name_am' => $attributes['name_am'] ?? null,
+            'skill_specialization' => $attributes['skill_specialization'] ?? null,
+            'description' => $attributes['description'] ?? null,
+        ];
     }
 }

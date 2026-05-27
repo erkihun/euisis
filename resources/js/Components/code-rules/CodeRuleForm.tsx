@@ -120,6 +120,12 @@ export default function CodeRuleForm({
                     next_number: form.data.next_number,
                     reset_frequency: form.data.reset_frequency,
                     year_format: form.data.year_format || null,
+                    organization_id: form.data.scope_type === 'organization' ? form.data.scope_id || null : null,
+                    organization_type_id: form.data.scope_type === 'organization_type' ? form.data.scope_id || null : null,
+                    organization_unit_type_id: form.data.scope_type === 'organization_unit_type' ? form.data.scope_id || null : null,
+                    service_type_id: form.data.scope_type === 'service_type' ? form.data.scope_id || null : null,
+                    sequence_scope_strategy: form.data.sequence_scope_strategy,
+                    sequence_scope_tokens: form.data.sequence_scope_tokens,
                 });
 
                 setPreview(response.data.preview ?? '');
@@ -145,6 +151,8 @@ export default function CodeRuleForm({
         form.data.next_number,
         form.data.reset_frequency,
         form.data.year_format,
+        form.data.sequence_scope_strategy,
+        form.data.sequence_scope_tokens,
     ]);
 
     function handleInsertToken(tokenOrExample: string) {

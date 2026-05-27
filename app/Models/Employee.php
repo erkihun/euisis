@@ -23,6 +23,7 @@ class Employee extends Model
         'last_name',
         'full_name',
         'national_id',
+        'national_id_hash',
         'date_of_birth',
         'gender',
         'phone',
@@ -35,17 +36,39 @@ class Employee extends Model
         'is_demo',
     ];
 
+    protected $hidden = [
+        'national_id',
+        'national_id_hash',
+    ];
+
     protected $appends = ['photo_url'];
 
     protected function casts(): array
     {
         return [
-            'date_of_birth' => 'date',
-            'status' => EmployeeStatus::class,
+            'date_of_birth'      => 'date',
+            'status'             => EmployeeStatus::class,
             'data_quality_score' => 'float',
-            'metadata' => 'array',
-            'is_demo' => 'bool',
+            'metadata'           => 'array',
+            'is_demo'            => 'bool',
         ];
+    }
+
+    public function getNationalIdAttribute(mixed $value): ?string
+    {
+        if ($value === null) return null;
+        try {
+            return decrypt($value);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException) {
+            return (string) $value;
+        }
+    }
+
+    public function setNationalIdAttribute(mixed $value): void
+    {
+        $plain = ($value !== null && $value !== '') ? (string) $value : null;
+        $this->attributes['national_id']      = $plain !== null ? encrypt($plain) : null;
+        $this->attributes['national_id_hash'] = $plain !== null ? hash('sha256', $plain) : null;
     }
 
     public function getPhotoUrlAttribute(): ?string

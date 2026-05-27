@@ -150,7 +150,7 @@ class CodeGeneratorService
             $formatted = preg_replace('/(?:'.$sep.'){2,}/', $rule->separator, $formatted) ?? $formatted;
         }
 
-        $formatted = (string) preg_replace('/[^A-Za-z0-9\-_.\\/]/', '', $formatted);
+        $formatted = (string) preg_replace('/[^\p{L}\p{N}\-_.\\/]/u', '', $formatted);
         $formatted = substr($formatted, 0, 100);
 
         return trim($formatted, ($rule->separator ?? '').' ');

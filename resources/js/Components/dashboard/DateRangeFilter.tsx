@@ -1,6 +1,7 @@
 import { router, useForm } from '@inertiajs/react';
 import Button from '@/Components/Button';
 import { RefreshIcon } from '@/Components/Icons';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 interface OrganizationOption {
     id: string;
@@ -54,20 +55,18 @@ export default function DateRangeFilter({ filters, t }: Props) {
 
                 <label className="text-sm">
                     <span className="mb-1 block text-gray-600 dark:text-slate-300">{t('common.effectiveFrom')}</span>
-                    <input
-                        type="date"
+                    <LocalizedDatePicker
                         value={form.data.date_from}
-                        onChange={(event) => form.setData('date_from', event.target.value)}
+                        onChange={(iso) => form.setData('date_from', iso)}
                         className="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
                     />
                 </label>
 
                 <label className="text-sm">
                     <span className="mb-1 block text-gray-600 dark:text-slate-300">{t('common.effectiveTo')}</span>
-                    <input
-                        type="date"
+                    <LocalizedDatePicker
                         value={form.data.date_to}
-                        onChange={(event) => form.setData('date_to', event.target.value)}
+                        onChange={(iso) => form.setData('date_to', iso)}
                         className="w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
                     />
                 </label>

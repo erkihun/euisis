@@ -24,40 +24,23 @@ class OccupationController extends Controller
     {
         $this->authorize('viewAny', Occupation::class);
 
+        $isActiveFilter = $request->string('is_active')->toString();
+
         $query = Occupation::query()
+            ->when($isActiveFilter === '0', fn ($q) => $q->onlyTrashed())
+            ->when($isActiveFilter === '', fn ($q) => $q->withoutTrashed())
             ->when($request->string('search')->toString() !== '', function ($q) use ($request): void {
                 $search = $request->string('search')->toString();
                 $q->where(function ($nested) use ($search): void {
                     $nested->where('isco_code', 'like', "%{$search}%")
-                        ->orWhere('code', 'like', "%{$search}%")
                         ->orWhere('name_en', 'like', "%{$search}%")
                         ->orWhere('name_am', 'like', "%{$search}%")
                         ->orWhere('skill_specialization', 'like', "%{$search}%");
                 });
             })
-            ->when($request->filled('isco_major_group_code'), fn ($q) => $q->where('isco_major_group_code', $request->string('isco_major_group_code')->toString()))
-            ->when($request->filled('skill_level'), fn ($q) => $q->where('skill_level', $request->string('skill_level')->toString()))
-            ->when($request->filled('is_active'), fn ($q) => $q->where('is_active', $request->boolean('is_active')))
-            ->orderBy('sort_order')
             ->orderBy('isco_code');
 
         $occupations = $query->paginate(30)->withQueryString();
-
-        $majorGroups = Occupation::query()
-            ->whereNotNull('isco_major_group_code')
-            ->distinct()
-            ->orderBy('isco_major_group_code')
-            ->pluck('isco_major_group_code')
-            ->values()
-            ->all();
-
-        $skillLevels = Occupation::query()
-            ->whereNotNull('skill_level')
-            ->distinct()
-            ->orderBy('skill_level')
-            ->pluck('skill_level')
-            ->values()
-            ->all();
 
         return Inertia::render('Occupations/Index', [
             'occupations' => OccupationResource::collection($occupations)->resolve(),
@@ -67,9 +50,7 @@ class OccupationController extends Controller
                 'total' => $occupations->total(),
                 'per_page' => $occupations->perPage(),
             ],
-            'filters' => $request->only(['search', 'isco_major_group_code', 'skill_level', 'is_active']),
-            'majorGroups' => $majorGroups,
-            'skillLevels' => $skillLevels,
+            'filters' => $request->only(['search', 'is_active']),
             'can' => [
                 'create' => $request->user()?->can('create', Occupation::class) ?? false,
             ],

@@ -515,3 +515,71 @@ export function UserCogIcon(p: IconProps) {
         </svg>
     );
 }
+
+/** TrendingUp — Grade Levels (progression/ranking) */
+export function TrendingUpIcon(p: IconProps) {
+    return (
+        <svg {...base} {...p}>
+            <path d="m22 7-8.5 8.5-5-5L2 17" />
+            <path d="M16 7h6v6" />
+        </svg>
+    );
+}
+
+/** HardHat — Occupations (work/trade category) */
+export function HardHatIcon(p: IconProps) {
+    return (
+        <svg {...base} {...p}>
+            <path d="M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v2z" />
+            <path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5" />
+            <path d="M4 15v-3a6 6 0 0 1 6-6h0" />
+            <path d="M14 6h0a6 6 0 0 1 6 6v3" />
+        </svg>
+    );
+}
+
+/** Activity — ISIC Activities (industrial/economic activity) */
+export function ActivityIcon(p: IconProps) {
+    return (
+        <svg {...base} {...p}>
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+        </svg>
+    );
+}
+
+/** ListOrdered — Organization Types (categorized list) */
+export function ListOrderedIcon(p: IconProps) {
+    return (
+        <svg {...base} {...p}>
+            <path d="M10 12H3" />
+            <path d="M10 18H3" />
+            <path d="M10 6H3" />
+            <path d="M21 12h-6" />
+            <path d="M15 10l2 2-2 2" />
+            <path d="M21 6h-6" />
+            <path d="M15 4l2 2-2 2" />
+            <path d="M21 18h-6" />
+            <path d="M15 16l2 2-2 2" />
+        </svg>
+    );
+}
+
+/** Boxes — Organization Unit Types (grouped components) */
+export function BoxesIcon(p: IconProps) {
+    return (
+        <svg {...base} {...p}>
+            <path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z" />
+            <path d="m7 16.5-4.74-2.85" />
+            <path d="m7 16.5 5-3" />
+            <path d="M7 16.5v5.17" />
+            <path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z" />
+            <path d="m17 16.5-5-3" />
+            <path d="m17 16.5 4.74-2.85" />
+            <path d="M17 16.5v5.17" />
+            <path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z" />
+            <path d="M12 8 7.26 5.15" />
+            <path d="m12 8 4.74-2.85" />
+            <path d="M12 13.5V8" />
+        </svg>
+    );
+}

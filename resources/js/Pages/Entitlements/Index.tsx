@@ -19,6 +19,15 @@ type EntitlementRow = {
 type EmployeeOption = { id: string; employee_number: string; full_name: string };
 type ServiceTypeOption = { id: string; name_en: string };
 type ProviderOption = { id: string; name: string; service_type_id: string };
+type CafeteriaProviderRow = {
+    id: string;
+    code: string;
+    name_en: string;
+    name_am?: string | null;
+    is_active: boolean;
+    location?: string | null;
+    organization?: { name_en: string } | null;
+};
 
 const WARN_STATUSES = new Set(['paused', 'revoked', 'expired', 'exhausted']);
 
@@ -45,11 +54,13 @@ export default function EntitlementsIndex({
     employees,
     serviceTypes,
     providers,
+    cafeteriaProviders,
 }: {
     entitlements: EntitlementRow[];
     employees: EmployeeOption[];
     serviceTypes: ServiceTypeOption[];
     providers: ProviderOption[];
+    cafeteriaProviders: CafeteriaProviderRow[];
 }) {
     const { t } = useLocale();
 
@@ -68,6 +79,57 @@ export default function EntitlementsIndex({
             header={<PageHeader title={t('entitlements.title')} description="" />}
         >
             <Head title={t('entitlements.title')} />
+
+            {/* Cafeteria Providers */}
+            <section className="mb-6 rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                <h3 className="font-semibold text-gray-900 dark:text-slate-100">
+                    {t('entitlements.cafeteriaProviders')}
+                </h3>
+                <div className="mt-4">
+                    {cafeteriaProviders.length === 0 ? (
+                        <p className="text-sm text-gray-500 dark:text-slate-400">
+                            {t('entitlements.noCafeteriaProviders')}
+                        </p>
+                    ) : (
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            {cafeteriaProviders.map((cp) => (
+                                <div
+                                    key={cp.id}
+                                    className="flex items-start justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-slate-800 dark:bg-slate-950"
+                                >
+                                    <div className="min-w-0">
+                                        <p className="truncate font-medium text-gray-900 dark:text-slate-100">
+                                            {cp.name_en}
+                                        </p>
+                                        <p className="mt-0.5 font-mono text-xs text-gray-400 dark:text-slate-500">
+                                            {t('entitlements.code')}: {cp.code}
+                                        </p>
+                                        {cp.organization && (
+                                            <p className="mt-0.5 text-xs text-gray-500 dark:text-slate-400">
+                                                {cp.organization.name_en}
+                                            </p>
+                                        )}
+                                        {cp.location && (
+                                            <p className="mt-0.5 text-xs text-gray-500 dark:text-slate-400">
+                                                {t('entitlements.location')}: {cp.location}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <span
+                                        className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+                                            cp.is_active
+                                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                                : 'bg-gray-100 text-gray-500 dark:bg-slate-800 dark:text-slate-400'
+                                        }`}
+                                    >
+                                        {cp.is_active ? t('entitlements.active') : t('entitlements.inactive')}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </section>
 
             <div className="grid gap-6 xl:grid-cols-[1.3fr_1fr]">
                 <section className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">

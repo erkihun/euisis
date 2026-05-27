@@ -15,6 +15,8 @@ class IdCard extends Model
 {
     use HasUuidPrimaryKey;
 
+    protected $hidden = ['token_hash', 'qr_payload'];
+
     protected $fillable = [
         'employee_id',
         'card_request_id',
@@ -34,6 +36,11 @@ class IdCard extends Model
         'display_snapshot',
         'notes',
         'is_current',
+        'qr_payload',
+        'public_card_uuid',
+        'qr_status',
+        'qr_issued_at',
+        'qr_rotated_at',
     ];
 
     protected function casts(): array
@@ -48,7 +55,10 @@ class IdCard extends Model
             'expires_at' => 'datetime',
             'revoked_at' => 'datetime',
             'display_snapshot' => 'array',
-            'is_current' => 'bool',
+            'is_current'  => 'bool',
+            'qr_payload'  => 'encrypted',
+            'qr_issued_at'  => 'datetime',
+            'qr_rotated_at' => 'datetime',
         ];
     }
 

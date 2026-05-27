@@ -2,10 +2,15 @@ import { usePage } from '@inertiajs/react';
 import { useCallback, useMemo } from 'react';
 import { useLocaleContext } from '@/contexts/LocaleContext';
 import am from '@/i18n/am';
+import amCalendar from '@/i18n/am/calendar';
+import amCafeteria from '@/i18n/am/cafeteria';
 import amCommon from '@/i18n/am/common';
+import amAuth from '@/i18n/am/auth';
 import amConfirmations from '@/i18n/am/confirmations';
+import amSecurity from '@/i18n/am/security';
 import amCodeRules from '@/i18n/am/codeRules';
 import amDashboard from '@/i18n/am/dashboard';
+import amEmployees from '@/i18n/am/employees';
 import amEntitlementRules from '@/i18n/am/entitlementRules';
 import amHome from '@/i18n/am/home';
 import amHierarchyVersions from '@/i18n/am/hierarchyVersions';
@@ -21,10 +26,15 @@ import amOrganizationUnitTypes from '@/i18n/am/organizationUnitTypes';
 import amTransfers from '@/i18n/am/transfers';
 import amUsers from '@/i18n/am/users';
 import en from '@/i18n/en';
+import enCalendar from '@/i18n/en/calendar';
+import enCafeteria from '@/i18n/en/cafeteria';
 import enCommon from '@/i18n/en/common';
+import enAuth from '@/i18n/en/auth';
 import enConfirmations from '@/i18n/en/confirmations';
+import enSecurity from '@/i18n/en/security';
 import enCodeRules from '@/i18n/en/codeRules';
 import enDashboard from '@/i18n/en/dashboard';
+import enEmployees from '@/i18n/en/employees';
 import enEntitlementRules from '@/i18n/en/entitlementRules';
 import enHome from '@/i18n/en/home';
 import enHierarchyVersions from '@/i18n/en/hierarchyVersions';
@@ -47,9 +57,11 @@ type TranslationTree = Record<string, unknown>;
 const translations: Record<Locale, TranslationTree> = {
     en: {
         ...en,
+        calendar: enCalendar,
         common: { ...((en.common as TranslationTree | undefined) ?? {}), ...enCommon },
         nav: { ...en.nav, ...enNavigation },
         dashboard: { ...((en.dashboard as TranslationTree | undefined) ?? {}), ...enDashboard },
+        employees: { ...((en.employees as TranslationTree | undefined) ?? {}), ...enEmployees },
         organizations: { ...((en.organizations as TranslationTree | undefined) ?? {}), ...enOrganizations },
         organizationUnits: enOrganizationUnits,
         organizationUnitTypes: enOrganizationUnitTypes,
@@ -60,17 +72,22 @@ const translations: Record<Locale, TranslationTree> = {
         recycleBin: enRecycleBin,
         serviceTypes: enServiceTypes,
         entitlementRules: enEntitlementRules,
+        cafeteria: { ...((en.cafeteria as TranslationTree | undefined) ?? {}), ...enCafeteria },
         codeRules: enCodeRules,
         settings: enSettings,
         home: enHome,
         users: { ...((en.users as TranslationTree | undefined) ?? {}), ...enUsers },
         confirmations: enConfirmations,
+        auth: enAuth,
+        security: enSecurity,
     },
     am: {
         ...(am as TranslationTree),
+        calendar: amCalendar,
         common: { ...(((am as { common?: TranslationTree }).common) ?? {}), ...amCommon },
         nav: { ...(((am as { nav?: TranslationTree }).nav) ?? {}), ...amNavigation },
         dashboard: { ...(((am as { dashboard?: TranslationTree }).dashboard) ?? {}), ...amDashboard },
+        employees: { ...(((am as { employees?: TranslationTree }).employees) ?? {}), ...amEmployees },
         organizations: { ...(((am as { organizations?: TranslationTree }).organizations) ?? {}), ...amOrganizations },
         organizationUnits: amOrganizationUnits,
         organizationUnitTypes: amOrganizationUnitTypes,
@@ -81,11 +98,14 @@ const translations: Record<Locale, TranslationTree> = {
         recycleBin: amRecycleBin,
         serviceTypes: amServiceTypes,
         entitlementRules: amEntitlementRules,
+        cafeteria: { ...(((am as { cafeteria?: TranslationTree }).cafeteria) ?? {}), ...amCafeteria },
         codeRules: amCodeRules,
         settings: amSettings,
         home: amHome,
         users: { ...(((am as { users?: TranslationTree }).users) ?? {}), ...amUsers },
         confirmations: amConfirmations,
+        auth: amAuth,
+        security: amSecurity,
     },
 };
 

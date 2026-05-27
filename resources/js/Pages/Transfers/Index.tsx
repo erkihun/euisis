@@ -6,6 +6,7 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import { Plus } from '@/Components/Icons';
 import { useLocale } from '@/hooks/useLocale';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type TransferRow = {
     id: string;
@@ -89,9 +90,9 @@ export default function TransfersIndex({
                             <option value="">{t('transfers.requestedBy')}</option>
                             {users.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}
                         </select>
-                        <input className={inputCls} type="date" value={form.data.date_from} onChange={(event) => form.setData('date_from', event.target.value)} />
+                        <LocalizedDatePicker className={inputCls} value={form.data.date_from} onChange={(iso) => form.setData('date_from', iso)} />
                         <div className="flex gap-3">
-                            <input className={`${inputCls} flex-1`} type="date" value={form.data.date_to} onChange={(event) => form.setData('date_to', event.target.value)} />
+                            <LocalizedDatePicker className={`${inputCls} flex-1`} value={form.data.date_to} onChange={(iso) => form.setData('date_to', iso)} />
                             <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700" type="submit">{t('common.filter')}</button>
                         </div>
                     </form>

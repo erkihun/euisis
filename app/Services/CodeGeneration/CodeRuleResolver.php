@@ -6,6 +6,7 @@ namespace App\Services\CodeGeneration;
 
 use App\Enums\CodeRuleEntityType;
 use App\Models\CodeRule;
+use App\Models\OrganizationUnit;
 
 class CodeRuleResolver
 {
@@ -53,6 +54,13 @@ class CodeRuleResolver
     public function buildScopeCandidates(array $context): array
     {
         $candidates = [];
+        $organizationUnitTypeId = $context['organization_unit_type_id'] ?? null;
+
+        if (($organizationUnitTypeId === null || $organizationUnitTypeId === '') && ! empty($context['organization_unit_id'])) {
+            $organizationUnitTypeId = OrganizationUnit::query()
+                ->whereKey($context['organization_unit_id'])
+                ->value('organization_unit_type_id');
+        }
 
         if (($context['scope_candidates'] ?? null) !== null) {
             foreach ((array) $context['scope_candidates'] as $candidate) {
@@ -70,6 +78,7 @@ class CodeRuleResolver
         foreach ([
             'organization' => $context['organization_id'] ?? null,
             'organization_type' => $context['organization_type_id'] ?? null,
+            'organization_unit_type' => $organizationUnitTypeId,
             'service_type' => $context['service_type_id'] ?? null,
         ] as $scopeType => $scopeId) {
             if ($scopeId !== null && $scopeId !== '') {

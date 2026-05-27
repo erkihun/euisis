@@ -1,5 +1,6 @@
 import { Link, useForm } from '@inertiajs/react';
 import { useLocale } from '@/hooks/useLocale';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 const inputCls =
     'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder-slate-500';
@@ -86,22 +87,20 @@ export default function HierarchyVersionForm({
                 </Field>
 
                 <Field label={t('hierarchyVersions.effectiveFrom')} error={form.errors.effective_from}>
-                    <input
-                        type="date"
+                    <LocalizedDatePicker
                         className={inputCls}
                         disabled={readonly}
                         value={form.data.effective_from}
-                        onChange={(event) => form.setData('effective_from', event.target.value)}
+                        onChange={(iso) => form.setData('effective_from', iso)}
                     />
                 </Field>
 
                 <Field label={t('hierarchyVersions.effectiveTo')} error={form.errors.effective_to}>
-                    <input
-                        type="date"
+                    <LocalizedDatePicker
                         className={inputCls}
                         disabled={readonly}
                         value={form.data.effective_to}
-                        onChange={(event) => form.setData('effective_to', event.target.value)}
+                        onChange={(iso) => form.setData('effective_to', iso)}
                     />
                 </Field>
             </div>

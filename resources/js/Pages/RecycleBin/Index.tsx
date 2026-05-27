@@ -6,6 +6,7 @@ import type { FormEvent } from 'react';
 import { TrashIcon } from '@/Components/Icons';
 import { useLocale } from '@/hooks/useLocale';
 import { useConfirm } from '@/hooks/useConfirm';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type RecycleBinRecord = {
     type: string;
@@ -92,8 +93,8 @@ export default function RecycleBinIndex({ records, filters, types }: Props) {
                                 </option>
                             ))}
                         </select>
-                        <input className={inputClassName} type="date" value={form.data.deleted_from} onChange={(event) => form.setData('deleted_from', event.target.value)} aria-label={t('recycleBin.deletedFrom')} />
-                        <input className={inputClassName} type="date" value={form.data.deleted_to} onChange={(event) => form.setData('deleted_to', event.target.value)} aria-label={t('recycleBin.deletedTo')} />
+                        <LocalizedDatePicker className={inputClassName} value={form.data.deleted_from} onChange={(iso) => form.setData('deleted_from', iso)} aria-label={t('recycleBin.deletedFrom')} />
+                        <LocalizedDatePicker className={inputClassName} value={form.data.deleted_to} onChange={(iso) => form.setData('deleted_to', iso)} aria-label={t('recycleBin.deletedTo')} />
                         <button type="submit" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
                             {t('common.filter')}
                         </button>

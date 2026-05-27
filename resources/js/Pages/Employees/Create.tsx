@@ -4,23 +4,38 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent, useRef, useState } from 'react';
 import { useLocale } from '@/hooks/useLocale';
 import CodeRuleField from '@/Components/code-rules/CodeRuleField';
+import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type Option = {
     id: string;
     name_en?: string;
+    name_am?: string | null;
     title_en?: string;
+    title_am?: string | null;
+    job_position_code?: string;
+    code?: string | null;
+    organization_id?: string | null;
+    organization_unit_id?: string | null;
     version_name?: string;
     status?: string;
 };
 
 export default function EmployeesCreate({
     organizations,
+    organizationUnits,
     hierarchyVersions,
     positions,
+    selectedOrganizationId,
+    selectedOrganizationUnitId,
+    selectedPositionId,
 }: {
     organizations: Option[];
+    organizationUnits: Option[];
     hierarchyVersions: Option[];
     positions: Option[];
+    selectedOrganizationId: string | null;
+    selectedOrganizationUnitId: string | null;
+    selectedPositionId: string | null;
 }) {
     const { t } = useLocale();
 
@@ -36,6 +51,7 @@ export default function EmployeesCreate({
         gender: string;
         status: string;
         organization_id: string;
+        organization_unit_id: string;
         hierarchy_version_id: string;
         position_id: string;
         position_title: string;
@@ -53,9 +69,10 @@ export default function EmployeesCreate({
         date_of_birth: '',
         gender: '',
         status: 'active',
-        organization_id: organizations[0]?.id ?? '',
+        organization_id: selectedOrganizationId ?? organizations[0]?.id ?? '',
+        organization_unit_id: selectedOrganizationUnitId ?? '',
         hierarchy_version_id: hierarchyVersions[0]?.id ?? '',
-        position_id: '',
+        position_id: selectedPositionId ?? '',
         position_title: '',
         effective_from: new Date().toISOString().slice(0, 10),
         reason: '',
@@ -82,6 +99,42 @@ export default function EmployeesCreate({
 
     const inputCls =
         'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder-slate-500';
+    const selectedOrg = organizations.find((organization) => organization.id === form.data.organization_id);
+    const filteredOrganizationUnits = organizationUnits.filter((unit) => unit.organization_id === form.data.organization_id);
+    const filteredPositions = positions.filter((position) => {
+        if (position.organization_id !== form.data.organization_id) {
+            return false;
+        }
+
+        return form.data.organization_unit_id === '' || position.organization_unit_id === form.data.organization_unit_id;
+    });
+
+    function changeOrganization(organizationId: string) {
+        form.setData({
+            ...form.data,
+            organization_id: organizationId,
+            organization_unit_id: '',
+            position_id: '',
+        });
+    }
+
+    function changeOrganizationUnit(organizationUnitId: string) {
+        form.setData({
+            ...form.data,
+            organization_unit_id: organizationUnitId,
+            position_id: '',
+        });
+    }
+
+    function changePosition(positionId: string) {
+        const position = positions.find((candidate) => candidate.id === positionId);
+
+        form.setData({
+            ...form.data,
+            position_id: positionId,
+            organization_unit_id: form.data.organization_unit_id || position?.organization_unit_id || '',
+        });
+    }
 
     function submit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -116,6 +169,7 @@ export default function EmployeesCreate({
                             entityType="employee"
                             context={{
                                 organization_id: form.data.organization_id || undefined,
+                                organization_unit_id: form.data.organization_unit_id || undefined,
                             }}
                             value={form.data.employee_number}
                             onChange={(v) => form.setData('employee_number', v)}
@@ -263,11 +317,10 @@ export default function EmployeesCreate({
                         <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
                             {t('employees.dateOfBirth')}
                         </label>
-                        <input
+                        <LocalizedDatePicker
                             className={inputCls}
-                            type="date"
                             value={form.data.date_of_birth}
-                            onChange={(e) => form.setData('date_of_birth', e.target.value)}
+                            onChange={(iso) => form.setData('date_of_birth', iso)}
                         />
                     </div>
 
@@ -293,15 +346,44 @@ export default function EmployeesCreate({
                         <select
                             className={inputCls}
                             value={form.data.organization_id}
-                            onChange={(e) => form.setData('organization_id', e.target.value)}
+                            onChange={(e) => changeOrganization(e.target.value)}
+                            disabled={selectedOrganizationId !== null}
                         >
-                            <option value="">{t('common.unassigned')}</option>
-                            {organizations.map((o) => (
-                                <option key={o.id} value={o.id}>{o.name_en}</option>
-                            ))}
+                            {selectedOrganizationId ? (
+                                <option value={form.data.organization_id}>{selectedOrg?.name_en ?? t('employees.selectedOrganization')}</option>
+                            ) : (
+                                <>
+                                    <option value="">{t('common.unassigned')}</option>
+                                    {organizations.map((o) => (
+                                        <option key={o.id} value={o.id}>{o.name_en}</option>
+                                    ))}
+                                </>
+                            )}
                         </select>
                         {form.errors.organization_id && (
                             <p className="mt-1 text-xs text-red-600">{form.errors.organization_id}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
+                            {t('positions.organizationUnit')}
+                        </label>
+                        <select
+                            className={inputCls}
+                            value={form.data.organization_unit_id}
+                            onChange={(e) => changeOrganizationUnit(e.target.value)}
+                            disabled={!form.data.organization_id}
+                        >
+                            <option value="">{t('positions.selectOrganizationUnit')}</option>
+                            {filteredOrganizationUnits.map((unit) => (
+                                <option key={unit.id} value={unit.id}>
+                                    {unit.code ? `${unit.code} - ` : ''}{unit.name_en}
+                                </option>
+                            ))}
+                        </select>
+                        {form.errors.organization_unit_id && (
+                            <p className="mt-1 text-xs text-red-600">{form.errors.organization_unit_id}</p>
                         )}
                     </div>
 
@@ -330,11 +412,14 @@ export default function EmployeesCreate({
                         <select
                             className={inputCls}
                             value={form.data.position_id}
-                            onChange={(e) => form.setData('position_id', e.target.value)}
+                            onChange={(e) => changePosition(e.target.value)}
+                            disabled={!form.data.organization_id}
                         >
                             <option value="">{t('employees.selectPosition')}</option>
-                            {positions.map((pos) => (
-                                <option key={pos.id} value={pos.id}>{pos.title_en}</option>
+                            {filteredPositions.map((pos) => (
+                                <option key={pos.id} value={pos.id}>
+                                    {pos.job_position_code ? `${pos.job_position_code} - ` : ''}{pos.title_en}
+                                </option>
                             ))}
                         </select>
                     </div>
@@ -370,11 +455,10 @@ export default function EmployeesCreate({
                         <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
                             {t('common.effectiveFrom')}
                         </label>
-                        <input
+                        <LocalizedDatePicker
                             className={inputCls}
-                            type="date"
                             value={form.data.effective_from}
-                            onChange={(e) => form.setData('effective_from', e.target.value)}
+                            onChange={(iso) => form.setData('effective_from', iso)}
                         />
                     </div>
 

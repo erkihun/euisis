@@ -69,6 +69,7 @@ const codeRules = {
         support_ticket: 'የድጋፍ ቲኬት ቁጥር',
     },
     scopeTypes: {
+        organization_unit_type: 'የድርጅት ዩኒት ዓይነት',
         organization: 'ድርጅት',
         organization_type: 'የድርጅት ዓይነት',
         service_type: 'የአገልግሎት ዓይነት',

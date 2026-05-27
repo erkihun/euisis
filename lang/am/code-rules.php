@@ -15,6 +15,7 @@ return [
     'no_active_rule' => 'ለዚህ አካል ንቁ የኮድ ደንብ አልተዘጋጀም።',
     'scope_type_organization' => 'ድርጅት',
     'scope_type_organization_type' => 'የድርጅት አይነት',
+    'scope_type_organization_unit_type' => 'የድርጅት ዩኒት ዓይነት',
     'scope_type_service_type' => 'የአገልግሎት አይነት',
     // የቅርጸት ቶከን UI
     'format_tokens' => 'የቅርጸት ቶከኖች',
