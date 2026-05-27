@@ -15,7 +15,9 @@ class EmployeeDetailResource extends EmployeeResource
         $data['first_name'] = $this->first_name;
         $data['middle_name'] = $this->middle_name;
         $data['last_name'] = $this->last_name;
-        $data['national_id'] = $this->national_id;
+        // national_id is encrypted PII — only exposed to users with the
+        // employees.viewPii permission (or Super Admin via Gate::before).
+        $data['national_id'] = $request->user()?->can('employees.viewPii') ? $this->national_id : null;
         $data['photo_path'] = $this->photo_path;
         $data['photo_url'] = $this->photo_url;
         $data['date_of_birth'] = $this->date_of_birth?->toDateString();

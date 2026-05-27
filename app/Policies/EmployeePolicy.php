@@ -36,4 +36,10 @@ readonly class EmployeePolicy
     {
         return $this->update($user, $employee);
     }
+
+    public function viewPii(User $user, Employee $employee): bool
+    {
+        return $user->can('employees.viewPii')
+            && $this->organizationScopeService->canAccessEmployee($user, $employee);
+    }
 }

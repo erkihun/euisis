@@ -16,8 +16,10 @@ use App\Models\CardRequest;
 use App\Models\CodeRule;
 use App\Models\Employee;
 use App\Models\EmployeeAssignment;
+use App\Models\Occupation;
 use App\Models\Organization;
 use App\Models\OrganizationType;
+use App\Models\OrganizationUnit;
 use App\Models\Position;
 use App\Models\User;
 use App\Services\CodeGeneration\CodeGeneratorService;
@@ -392,10 +394,27 @@ it('generates position code when omitted on create', function (): void {
         'active_scope_key' => CodeRule::buildActiveScopeKey(CodeRuleEntityType::Position),
     ]);
 
+    $type = makeOrganizationType('unit-test');
+    $org  = makeOrganization($type, 'ORG-POS-TEST');
+    $unit = OrganizationUnit::query()->create([
+        'organization_id' => $org->id,
+        'unit_type'       => 'department',
+        'code'            => 'UNIT-POS-01',
+        'name_en'         => 'Test Unit',
+        'status'          => 'active',
+    ]);
+    $occupation = (new Occupation())->forceFill([
+        'code'    => 'OCC-TEST-RULE-01',
+        'name_en' => 'Test Occupation',
+    ]);
+    $occupation->save();
+
     $this->actingAs($user)
         ->post(route('positions.store'), [
-            'title_en' => 'Systems Analyst',
-            'is_active' => true,
+            'title_en'             => 'Systems Analyst',
+            'is_active'            => true,
+            'organization_unit_id' => $unit->id,
+            'occupation_id'        => $occupation->id,
         ])
         ->assertRedirect();
 

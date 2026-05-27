@@ -22,6 +22,22 @@ const security = {
     mfaSetupRequired: 'ለመቀጠል እባክዎ የብዙ-ደረጃ ማረጋገጫ ቅንብርን ያጠናቅቁ።',
     mfaChallengeRequired: 'ለመቀጠል እባክዎ የማረጋገጫ ኮድዎን ያረጋግጡ።',
     mfaRecoveryCodesNote: 'እነዚህን የመልሶ ማግኛ ኮዶች በደህንነቱ በተጠበቀ ቦታ ያስቀምጡ። እያንዳንዱ ኮድ አንድ ጊዜ ብቻ ይጠቀምበት ይችላል።',
+
+    // INSA-required የደህንነት መልዕክቶች
+    uploadRejected: 'ፋይል መጫን ተከልክሏል።',
+    unsafeFileType: 'የፋይሉ አይነት አይፈቀድም። የተፈቀዱ አይነቶች ብቻ መጫን ይቻላል።',
+    rateLimitExceeded: 'የጥያቄ ገደቡ ተሻገረ። እባክዎ ጥቂት ጠብቀው እንደገና ይሞክሩ።',
+    sensitiveInfoProtected: 'ሚስጥራዊ መረጃ ተጠብቋል እና ሊወጣ አይችልም።',
+    orgScopeDenied: 'የድርጅት ወሰንዎ ይህን መዝገብ አይጨምርም።',
+    actionNotPermitted: 'ይህ ድርጊት ለመለያዎ አይፈቀድም።',
+    securityHeadersEnabled: 'የደህንነት ራስጌዎች ነቅተዋል።',
+    secureConfigRequired: 'ለዚህ አካባቢ ደህንነቱ የተጠበቀ ቅንብር ያስፈልጋል።',
+    invalidRequest: 'ትክክል ያልሆነ ጥያቄ። እባክዎ ግቤቱን ያረጋግጡና እንደገና ይሞክሩ።',
+    unauthorized: 'ይህን ሀብት ለማግኘት ወደ ስርዓቱ መግባት አለቦት።',
+    forbidden: 'ይህን ድርጊት ለመፈጸም ፈቃድ የለዎትም።',
+    securityPolicy: 'የደህንነት ፖሊሲ',
+    piiViewDenied: 'ሚስጥራዊ የግል መረጃ ለማየት ፈቃድ የለዎትም።',
+    securityAudit: 'የደህንነት ምርመራ',
 } as const;
 
 export default security;

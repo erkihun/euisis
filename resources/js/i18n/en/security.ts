@@ -22,6 +22,22 @@ const security = {
     mfaSetupRequired: 'Please complete multi-factor authentication setup to continue.',
     mfaChallengeRequired: 'Please verify your authentication code to continue.',
     mfaRecoveryCodesNote: 'Save these recovery codes in a safe place. Each code can only be used once.',
+
+    // INSA-required security messages
+    uploadRejected: 'File upload rejected.',
+    unsafeFileType: 'The file type is not permitted. Only allowed types may be uploaded.',
+    rateLimitExceeded: 'Rate limit exceeded. Please wait and try again.',
+    sensitiveInfoProtected: 'Sensitive information is protected and cannot be disclosed.',
+    orgScopeDenied: 'Your organization scope does not include this record.',
+    actionNotPermitted: 'This action is not permitted for your account.',
+    securityHeadersEnabled: 'Security headers are enabled.',
+    secureConfigRequired: 'A secure configuration is required for this environment.',
+    invalidRequest: 'Invalid request. Please check your input and try again.',
+    unauthorized: 'You must be signed in to access this resource.',
+    forbidden: 'You do not have permission to perform this action.',
+    securityPolicy: 'Security Policy',
+    piiViewDenied: 'You do not have permission to view sensitive personal information.',
+    securityAudit: 'Security Audit',
 } as const;
 
 export default security;

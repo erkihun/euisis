@@ -260,6 +260,8 @@ test('amharic errors translation file exists and has required keys', function ()
 });
 
 test('validation errors still return field-level messages', function () {
+    app()->setLocale('en');
+
     Route::middleware('web')->post('/test-validation', static function (Request $req) {
         $req->validate(['name' => 'required|string']);
     });
