@@ -11,13 +11,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('employees', function (Blueprint $table): void {
-            $table->dropUnique(['national_id']);
-            $table->text('national_id')->nullable()->change();
+            if (Schema::hasColumn('employees', 'national_id')) {
+                try { $table->dropUnique(['national_id']); } catch (\Throwable) {}
+                $table->text('national_id')->nullable()->change();
+            }
         });
 
         Schema::table('users', function (Blueprint $table): void {
-            $table->dropUnique(['national_id']);
-            $table->text('national_id')->nullable()->change();
+            if (Schema::hasColumn('users', 'national_id')) {
+                try { $table->dropUnique(['national_id']); } catch (\Throwable) {}
+                $table->text('national_id')->nullable()->change();
+            }
         });
     }
 

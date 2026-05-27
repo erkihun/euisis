@@ -11,16 +11,32 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table): void {
-            $table->string('status')->default('active')->after('is_demo');
-            $table->timestamp('last_login_at')->nullable()->after('status');
+            if (! Schema::hasColumn('users', 'status')) {
+                $table->string('status')->default('active');
+            }
+            if (! Schema::hasColumn('users', 'last_login_at')) {
+                $table->timestamp('last_login_at')->nullable();
+            }
         });
 
         Schema::table('organization_types', function (Blueprint $table): void {
-            $table->boolean('is_active')->default(true)->after('description');
-            $table->integer('sort_order')->default(0)->after('is_active');
-            $table->text('description_en')->nullable()->after('sort_order');
-            $table->text('description_am')->nullable()->after('description_en');
+            if (! Schema::hasColumn('organization_types', 'is_active')) {
+                $table->boolean('is_active')->default(true);
+            }
+            if (! Schema::hasColumn('organization_types', 'sort_order')) {
+                $table->integer('sort_order')->default(0);
+            }
+            if (! Schema::hasColumn('organization_types', 'description_en')) {
+                $table->text('description_en')->nullable();
+            }
+            if (! Schema::hasColumn('organization_types', 'description_am')) {
+                $table->text('description_am')->nullable();
+            }
         });
+
+        if (Schema::hasTable('system_settings')) {
+            return;
+        }
 
         Schema::create('system_settings', function (Blueprint $table): void {
             $table->uuid('id')->primary();

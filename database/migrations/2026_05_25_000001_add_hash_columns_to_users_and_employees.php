@@ -23,13 +23,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table): void {
-            $table->string('national_id_hash', 64)->nullable()->after('national_id');
-            $table->index('national_id_hash', 'users_national_id_hash_index');
+            if (! Schema::hasColumn('users', 'national_id_hash')) {
+                $table->string('national_id_hash', 64)->nullable();
+                $table->index('national_id_hash', 'users_national_id_hash_index');
+            }
         });
 
         Schema::table('employees', function (Blueprint $table): void {
-            $table->string('national_id_hash', 64)->nullable()->after('national_id');
-            $table->index('national_id_hash', 'employees_national_id_hash_index');
+            if (! Schema::hasColumn('employees', 'national_id_hash')) {
+                $table->string('national_id_hash', 64)->nullable();
+                $table->index('national_id_hash', 'employees_national_id_hash_index');
+            }
         });
     }
 
