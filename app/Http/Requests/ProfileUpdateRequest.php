@@ -17,12 +17,19 @@ class ProfileUpdateRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $nid = filled($this->input('national_id')) ? trim((string) $this->input('national_id')) : null;
+        // Strip spaces from national_id so XXXX XXXX XXXX XXXX → 16 raw digits
+        $rawNid = preg_replace('/\s+/', '', trim((string) ($this->input('national_id') ?? '')));
+        $nid = filled($rawNid) ? $rawNid : null;
+
+        // Strip spaces/dashes from phone but keep leading +
+        $rawPhone = preg_replace('/[\s\-()]/', '', trim((string) ($this->input('phone_number') ?? '')));
+        $phone = filled($rawPhone) ? $rawPhone : null;
+
         $this->merge([
-            'national_id' => $nid,
+            'national_id'      => $nid,
             'national_id_hash' => $nid !== null ? hash('sha256', $nid) : null,
-            'phone_number' => filled($this->input('phone_number')) ? trim((string) $this->input('phone_number')) : null,
-            'gender' => filled($this->input('gender')) ? $this->input('gender') : null,
+            'phone_number'     => $phone,
+            'gender'           => filled($this->input('gender')) ? $this->input('gender') : null,
         ]);
     }
 
@@ -41,13 +48,13 @@ class ProfileUpdateRequest extends FormRequest
                 Rule::unique(User::class)->ignore($userId),
             ],
             'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-            'national_id' => ['nullable', 'string', 'max:100'],
+            'national_id' => ['nullable', 'string', 'regex:/^\d{16}$/'],
             'national_id_hash' => [
                 'nullable', 'string', 'size:64',
                 Rule::unique('users', 'national_id_hash')->ignore($userId),
             ],
-            'phone_number' => ['nullable', 'string', 'max:30', 'regex:/^[+\d\s\-()]+$/'],
-            'gender' => ['nullable', 'string', Rule::in(['male', 'female', 'other', 'not_specified'])],
+            'phone_number' => ['nullable', 'string', 'regex:/^\+?[1-9]\d{9,13}$/'],
+            'gender' => ['nullable', 'string', Rule::in(['male', 'female'])],
         ];
     }
 
