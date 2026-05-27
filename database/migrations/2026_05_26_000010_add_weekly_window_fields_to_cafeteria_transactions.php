@@ -15,13 +15,13 @@ return new class extends Migration
         }
 
         Schema::table('cafeteria_transactions', function (Blueprint $table): void {
-            $table->string('usage_mode')->default('single_day')->after('is_working_day');
-            $table->decimal('available_amount_before', 12, 2)->default(0)->after('usage_mode');
-            $table->date('week_start_date')->nullable()->after('available_amount_before');
-            $table->date('week_end_date')->nullable()->after('week_start_date');
-            $table->unsignedSmallInteger('available_days_count')->default(0)->after('week_end_date');
-            $table->unsignedSmallInteger('consumed_days_count')->default(0)->after('available_days_count');
-            $table->string('blocked_reason')->nullable()->after('consumed_days_count');
+            $table->string('usage_mode')->default('single_day');
+            $table->decimal('available_amount_before', 12, 2)->default(0);
+            $table->date('week_start_date')->nullable();
+            $table->date('week_end_date')->nullable();
+            $table->unsignedSmallInteger('available_days_count')->default(0);
+            $table->unsignedSmallInteger('consumed_days_count')->default(0);
+            $table->string('blocked_reason')->nullable();
         });
     }
 

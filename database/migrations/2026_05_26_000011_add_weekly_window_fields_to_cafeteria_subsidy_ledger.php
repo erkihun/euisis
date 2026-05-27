@@ -15,10 +15,10 @@ return new class extends Migration
         }
 
         Schema::table('cafeteria_subsidy_ledger', function (Blueprint $table): void {
-            $table->date('allocated_for_date')->nullable()->after('ledger_date')->index();
-            $table->date('week_start_date')->nullable()->after('allocated_for_date');
-            $table->date('week_end_date')->nullable()->after('week_start_date');
-            $table->string('usage_mode')->nullable()->after('week_end_date');
+            $table->date('allocated_for_date')->nullable()->index();
+            $table->date('week_start_date')->nullable();
+            $table->date('week_end_date')->nullable();
+            $table->string('usage_mode')->nullable();
         });
     }
 

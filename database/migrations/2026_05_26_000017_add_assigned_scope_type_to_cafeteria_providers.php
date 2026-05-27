@@ -14,7 +14,6 @@ return new class extends Migration
             if (! Schema::hasColumn('cafeteria_providers', 'assigned_scope_type')) {
                 $table->string('assigned_scope_type', 20)
                     ->default('self')
-                    ->after('organization_id')
                     ->comment('self=exact org match; subtree=org or any descendant');
             }
         });

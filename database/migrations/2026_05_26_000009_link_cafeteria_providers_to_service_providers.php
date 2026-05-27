@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignUuid('service_provider_id')
                 ->nullable()
                 ->unique()
-                ->after('id')
                 ->constrained('service_providers')
                 ->nullOnDelete();
         });
