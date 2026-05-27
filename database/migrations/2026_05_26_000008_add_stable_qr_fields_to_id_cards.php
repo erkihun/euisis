@@ -11,14 +11,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('id_cards', function (Blueprint $table): void {
-            // Stable public reference printed on the physical card.
-            // Generated once; never regenerated when services are added.
-            // Changes only when the card is replaced/reissued.
-            $table->uuid('public_card_uuid')->nullable()->unique()->after('id');
-
-            $table->string('qr_status', 16)->default('active')->after('qr_payload');
-            $table->timestamp('qr_issued_at')->nullable()->after('qr_status');
-            $table->timestamp('qr_rotated_at')->nullable()->after('qr_issued_at');
+            if (! Schema::hasColumn('id_cards', 'public_card_uuid')) {
+                $table->uuid('public_card_uuid')->nullable()->unique();
+            }
+            if (! Schema::hasColumn('id_cards', 'qr_status')) {
+                $table->string('qr_status', 16)->default('active');
+            }
+            if (! Schema::hasColumn('id_cards', 'qr_issued_at')) {
+                $table->timestamp('qr_issued_at')->nullable();
+            }
+            if (! Schema::hasColumn('id_cards', 'qr_rotated_at')) {
+                $table->timestamp('qr_rotated_at')->nullable();
+            }
         });
     }
 

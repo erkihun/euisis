@@ -36,15 +36,15 @@ return new class extends Migration
 
         Schema::table('cafeteria_transactions', function (Blueprint $table): void {
             if (! Schema::hasColumn('cafeteria_transactions', 'scan_nonce')) {
-                $table->uuid('scan_nonce')->nullable()->unique()->after('qr_reference');
+                $table->uuid('scan_nonce')->nullable()->unique();
             }
 
             if (! Schema::hasColumn('cafeteria_transactions', 'scan_request_hash')) {
-                $table->string('scan_request_hash', 64)->nullable()->unique()->after('scan_nonce');
+                $table->string('scan_request_hash', 64)->nullable()->unique();
             }
 
             if (! Schema::hasColumn('cafeteria_transactions', 'fulfilled_at')) {
-                $table->timestamp('fulfilled_at')->nullable()->after('scan_request_hash');
+                $table->timestamp('fulfilled_at')->nullable();
             }
         });
 

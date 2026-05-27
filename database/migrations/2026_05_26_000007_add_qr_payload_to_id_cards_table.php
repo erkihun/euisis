@@ -10,8 +10,12 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('id_cards', 'qr_payload')) {
+            return;
+        }
+
         Schema::table('id_cards', function (Blueprint $table): void {
-            $table->text('qr_payload')->nullable()->after('token_hash');
+            $table->text('qr_payload')->nullable();
         });
     }
 
