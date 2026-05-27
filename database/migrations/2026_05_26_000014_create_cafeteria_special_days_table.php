@@ -10,6 +10,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('cafeteria_special_days')) {
+            return;
+        }
+
         Schema::create('cafeteria_special_days', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->date('special_date')->index();

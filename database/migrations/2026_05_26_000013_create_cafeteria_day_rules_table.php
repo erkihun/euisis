@@ -10,6 +10,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('cafeteria_day_rules')) {
+            return;
+        }
+
         Schema::create('cafeteria_day_rules', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->unsignedTinyInteger('day_of_week'); // 1=Mon … 7=Sun

@@ -10,6 +10,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('cafeteria_transactions', 'usage_mode')) {
+            return;
+        }
+
         Schema::table('cafeteria_transactions', function (Blueprint $table): void {
             $table->string('usage_mode')->default('single_day')->after('is_working_day');
             $table->decimal('available_amount_before', 12, 2)->default(0)->after('usage_mode');

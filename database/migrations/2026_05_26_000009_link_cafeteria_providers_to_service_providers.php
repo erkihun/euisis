@@ -10,6 +10,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('cafeteria_providers', 'service_provider_id')) {
+            return;
+        }
+
         Schema::table('cafeteria_providers', function (Blueprint $table): void {
             $table->foreignUuid('service_provider_id')
                 ->nullable()

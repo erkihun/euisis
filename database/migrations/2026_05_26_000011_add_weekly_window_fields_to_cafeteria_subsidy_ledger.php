@@ -10,6 +10,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('cafeteria_subsidy_ledger', 'allocated_for_date')) {
+            return;
+        }
+
         Schema::table('cafeteria_subsidy_ledger', function (Blueprint $table): void {
             $table->date('allocated_for_date')->nullable()->after('ledger_date')->index();
             $table->date('week_start_date')->nullable()->after('allocated_for_date');

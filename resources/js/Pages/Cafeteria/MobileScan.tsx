@@ -22,7 +22,7 @@ type ScanResult = {
 
 const cameraScanConfig: Html5QrcodeCameraScanConfig = {
     fps: 15,
-    qrbox: (w, h) => { const e = Math.floor(Math.min(w, h) * 0.78); return { width: e, height: e }; },
+    qrbox: (w: number, h: number) => { const e = Math.floor(Math.min(w, h) * 0.78); return { width: e, height: e }; },
     aspectRatio: 1,
     disableFlip: false,
 };

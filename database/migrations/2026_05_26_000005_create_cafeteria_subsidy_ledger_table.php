@@ -10,6 +10,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('cafeteria_subsidy_ledger')) {
+            return;
+        }
+
         Schema::create('cafeteria_subsidy_ledger', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignUuid('employee_id')->constrained('employees');
