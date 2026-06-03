@@ -25,6 +25,7 @@ export default function OrganizationUnitTypesShow({ type }: { type: OrgUnitType 
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('organization-unit-types.index')}
                     title={type.name_en}
                     description={type.code}
                     actions={

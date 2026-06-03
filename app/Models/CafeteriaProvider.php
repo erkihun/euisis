@@ -7,7 +7,6 @@ namespace App\Models;
 use App\Models\Concerns\HasUuidPrimaryKey;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -18,6 +17,7 @@ class CafeteriaProvider extends Model
 
     protected $fillable = [
         'service_provider_id',
+        'provider_id',
         'code',
         'name_en',
         'name_am',
@@ -45,6 +45,11 @@ class CafeteriaProvider extends Model
         return $this->belongsTo(ServiceProvider::class);
     }
 
+    public function provider(): BelongsTo
+    {
+        return $this->belongsTo(Provider::class);
+    }
+
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
@@ -55,11 +60,42 @@ class CafeteriaProvider extends Model
         return $this->hasMany(CafeteriaTransaction::class);
     }
 
-    public function users(): BelongsToMany
+    /** Admin user assignments (pivot in cafeteria_provider_assignments). */
+    public function adminAssignments(): HasMany
     {
-        return $this->belongsToMany(User::class, 'cafeteria_provider_users')
-            ->withPivot(['role', 'is_active', 'assigned_by', 'effective_from', 'effective_to'])
-            ->withTimestamps();
+        return $this->hasMany(CafeteriaProviderAssignment::class);
+    }
+
+    /** Alias kept for dashboard withCount compatibility. */
+    public function portalAssignments(): HasMany
+    {
+        return $this->adminAssignments();
+    }
+
+    /** Dedicated portal credential accounts for this provider. */
+    public function providerUsers(): HasMany
+    {
+        return $this->hasMany(CafeteriaProviderUser::class);
+    }
+
+    public function branches(): HasMany
+    {
+        return $this->hasMany(CafeteriaProviderBranch::class);
+    }
+
+    public function menus(): HasMany
+    {
+        return $this->hasMany(CafeteriaMenu::class);
+    }
+
+    public function foodOrders(): HasMany
+    {
+        return $this->hasMany(CafeteriaFoodOrder::class);
+    }
+
+    public function providerLedgerEntries(): HasMany
+    {
+        return $this->hasMany(CafeteriaProviderLedgerEntry::class);
     }
 
     public function createdBy(): BelongsTo

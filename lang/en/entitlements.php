@@ -14,4 +14,5 @@ return [
     'revoke' => 'Revoke Entitlement',
     'no_entitlements' => 'No entitlements found',
     'active_entitlements' => 'Active Entitlements',
+    'granted_successfully' => 'Entitlement granted.',
 ];

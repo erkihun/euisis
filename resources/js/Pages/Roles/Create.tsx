@@ -74,7 +74,7 @@ function PermissionGroup({
                     {allSelected ? t('permissions.clearGroup') : t('permissions.selectAllInGroup')}
                 </button>
             </div>
-            <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-1.5">
                 {permissions.map((perm) => (
                     <label
                         key={perm.name}
@@ -156,10 +156,10 @@ export default function CreateRole({ permissions }: { permissions: Record<string
         >
             <Head title={t('roles.createTitle')} />
 
-            <div className="mx-auto max-w-3xl">
+            <div className="w-full">
                 <form onSubmit={submit} className="space-y-5">
                     <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                        <div>
+                        <div className="max-w-lg">
                             <label className="block text-xs font-medium text-gray-600 dark:text-slate-400">
                                 {t('roles.roleName')}
                             </label>
@@ -180,24 +180,22 @@ export default function CreateRole({ permissions }: { permissions: Record<string
                     </div>
 
                     <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                        <div className="mb-4 flex items-center justify-between">
+                        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                             <h2 className="text-sm font-semibold text-gray-900 dark:text-slate-100">
                                 {t('roles.permissionsSection')}
                                 <span className="ml-2 text-xs font-normal text-gray-500 dark:text-slate-400">
                                     ({form.data.permissions.length} {t('permissions.usedByRoles').toLowerCase()})
                                 </span>
                             </h2>
-                        </div>
-                        <div className="mb-4">
                             <input
                                 type="search"
                                 placeholder={t('permissions.searchPermissions')}
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className={inputCls}
+                                className="w-64 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder-slate-500"
                             />
                         </div>
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                             {Object.entries(filteredPermissions).map(([group, perms]) => (
                                 <PermissionGroup
                                     key={group}

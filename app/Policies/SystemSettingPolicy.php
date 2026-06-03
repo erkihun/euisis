@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\SystemSetting;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 class SystemSettingPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function view(User $user): bool
     {
         return $user->can('system-settings.view');

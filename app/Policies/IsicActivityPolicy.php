@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\IsicActivity;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class IsicActivityPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('isic-activities.viewAny');

@@ -72,6 +72,7 @@ export default function CodeRulesShow({
         <AuthenticatedLayout
             header={(
                 <PageHeader
+                    backHref={route('code-rules.index')}
                     title={codeRule.name_en}
                     description={t(`codeRules.entityTypes.${codeRule.entity_type}` as Parameters<typeof t>[0])}
                     actions={(

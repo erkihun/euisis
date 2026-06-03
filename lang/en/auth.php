@@ -13,4 +13,11 @@ return [
     'reset_password' => 'Reset Password',
     'confirm_password' => 'Confirm Password',
     'send_reset_link' => 'Send Password Reset Link',
+
+    'account_inactive' => 'Your account has been deactivated. Please contact your administrator.',
+
+    // Employee self-registration
+    'employee_not_found' => 'No employee record was found with that employee number.',
+    'employee_no_email' => 'This employee record has no email address on file. Please contact HR.',
+    'employee_already_registered' => 'An account already exists for this employee. Please sign in instead.',
 ];

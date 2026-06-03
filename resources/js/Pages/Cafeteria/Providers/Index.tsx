@@ -64,7 +64,6 @@ export default function ProvidersIndex({
                 />
             }
         >
-            <Head title={t('cafeteria.providers')} />
             <div className="space-y-4">
                 <form className="flex flex-wrap gap-3" onSubmit={submit}>
                     <input name="search" defaultValue={filters.search ?? ''} placeholder={t('common.search')} className={inputCls} />
@@ -92,13 +91,18 @@ export default function ProvidersIndex({
                                     {providers.map((p) => (
                                         <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/40">
                                             <td className="px-4 py-3 font-mono text-xs text-gray-700 dark:text-slate-300">{p.code}</td>
-                                            <td className="px-4 py-3 font-medium text-gray-900 dark:text-slate-100">{p.name_en}</td>
+                                            <td className="px-4 py-3 font-medium">
+                                                <Link href={route('cafeteria.providers.show', p.id)} className="text-gray-900 hover:text-blue-600 hover:underline dark:text-slate-100 dark:hover:text-blue-400">
+                                                    {p.name_en}
+                                                </Link>
+                                            </td>
                                             <td className="px-4 py-3 text-gray-500">{p.phone_number ?? '—'}</td>
                                             <td className="px-4 py-3">
                                                 <StatusBadge status={p.is_active ? 'active' : 'inactive'} label={p.is_active ? t('common.active') : t('common.inactive')} />
                                             </td>
                                             <td className="px-4 py-3 text-right">
                                                 <div className="flex justify-end gap-2">
+                                                    <Link href={route('cafeteria.providers.show', p.id)} className="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">{t('common.view')}</Link>
                                                     {p.can.update && <Link href={route('cafeteria.providers.edit', p.id)} className="text-xs text-blue-600 hover:underline">{t('common.edit')}</Link>}
                                                     {p.can.archive && !p.deleted_at && <button onClick={() => handleArchive(p.id)} className="text-xs text-red-600 hover:underline">{t('common.archive')}</button>}
                                                     {p.can.restore && p.deleted_at && <button onClick={() => handleRestore(p.id)} className="text-xs text-blue-600 hover:underline">{t('common.restore')}</button>}

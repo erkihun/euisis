@@ -9,6 +9,7 @@ use App\Actions\Organizations\CreateOrganizationAction;
 use App\Actions\Organizations\UpdateOrganizationAction;
 use App\Enums\HierarchyVersionStatus;
 use App\Http\Controllers\Controller;
+use App\Models\InstitutionOffice;
 use App\Http\Requests\OrganizationStoreRequest;
 use App\Http\Requests\OrganizationUpdateRequest;
 use App\Models\HierarchyVersion;
@@ -135,12 +136,26 @@ class OrganizationController extends Controller
 
         $organization->load(['type', 'mergedInto', 'nameHistories']);
 
+        $parentOrganizationId = $latestVersionId !== null
+            ? $organization->parentEdges()
+                ->where('hierarchy_version_id', $latestVersionId)
+                ->value('parent_organization_id')
+            : null;
+
+        $institutionOffices = InstitutionOffice::query()
+            ->where('institution_id', $organization->id)
+            ->orderBy('name_en')
+            ->get(['id', 'office_code', 'name_en', 'office_level', 'status'])
+            ->toArray();
+
         return Inertia::render('Organizations/Show', [
             'organization' => $organization,
+            'parentOrganizationId' => $parentOrganizationId,
             'currentAssignmentsCount' => $organization->assignments()->where('is_current', true)->count(),
             'descendants' => $latestVersionId === null
                 ? []
                 : $organizationScopeService->descendantsForOrganization($organization->id, $latestVersionId),
+            'institutionOffices' => $institutionOffices,
             'can' => [
                 'update' => $user?->can('update', $organization) ?? false,
                 'archive' => $user?->can('archive', $organization) ?? false,

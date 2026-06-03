@@ -244,7 +244,7 @@ class DashboardMetricService
         }
 
         if ($can['transfers']) {
-            $items[] = $this->queue('transfersPendingConfirmation', 'employee-transfers.pending', $this->transferQuery($scope)
+            $items[] = $this->queue('transfersPendingConfirmation', 'transfers.dashboard', $this->transferQuery($scope)
                 ->whereIn('employee_transfers.status', [
                     TransferStatus::Submitted->value,
                     TransferStatus::CurrentOrganizationConfirmed->value,
@@ -310,7 +310,7 @@ class DashboardMetricService
                 ->count();
 
             if ($staleTransfers > 0) {
-                $alerts[] = $this->alert('staleTransferApprovals', 'critical', $staleTransfers, route('employee-transfers.pending'));
+                $alerts[] = $this->alert('staleTransferApprovals', 'critical', $staleTransfers, route('transfers.dashboard'));
             }
         }
 
@@ -334,7 +334,7 @@ class DashboardMetricService
             return [];
         }
 
-        return AuditLog::query()
+        $logs = AuditLog::query()
             ->when(
                 ! $scope['global_access'] && $scope['organization_ids'] !== [],
                 fn (Builder $query) => $query->whereIn('organization_id', $scope['organization_ids'])
@@ -345,15 +345,24 @@ class DashboardMetricService
             )
             ->orderByDesc('created_at')
             ->limit($scope['activity_limit'])
-            ->get(['id', 'event_type', 'auditable_type', 'created_at'])
-            ->map(fn (AuditLog $log): array => [
-                'id' => $log->id,
-                'event' => $log->event_type->value,
-                'actor' => $log->actor_type ?? 'user',
-                'subject' => class_basename((string) $log->auditable_type),
-                'timestamp' => $log->created_at?->toIso8601String(),
-                'severity' => $this->severityForAuditEvent($log->event_type->value),
-            ])->all();
+            ->get(['id', 'event_type', 'auditable_type', 'actor_user_id', 'created_at']);
+
+        // Batch-resolve actor display names
+        $actorIds = $logs->pluck('actor_user_id')->filter()->unique()->values();
+        $actorNames = $actorIds->isNotEmpty()
+            ? User::query()->whereIn('id', $actorIds)->pluck('name', 'id')
+            : collect();
+
+        return $logs->map(fn (AuditLog $log): array => [
+            'id'        => $log->id,
+            'event'     => $log->event_type->value,
+            'actor'     => $log->actor_user_id
+                ? ($actorNames->get($log->actor_user_id) ?? $log->actor_user_id)
+                : 'system',
+            'subject'   => $log->auditable_type ? class_basename($log->auditable_type) : null,
+            'timestamp' => $log->created_at?->toIso8601String(),
+            'severity'  => $this->severityForAuditEvent($log->event_type->value),
+        ])->all();
     }
 
     private function kpi(string $key, int|float $value, string $icon, string $tone, ?array $trend = null, string $suffix = ''): array

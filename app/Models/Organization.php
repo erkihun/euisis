@@ -59,6 +59,14 @@ class Organization extends Model
         return $this->belongsTo(OrganizationType::class, 'organization_type_id');
     }
 
+    /**
+     * Alias for type() — preferred name per domain model.
+     */
+    public function organizationType(): BelongsTo
+    {
+        return $this->type();
+    }
+
     public function mergedInto(): BelongsTo
     {
         return $this->belongsTo(self::class, 'merged_into_id');
@@ -92,5 +100,15 @@ class Organization extends Model
     public function organizationUnits(): HasMany
     {
         return $this->hasMany(OrganizationUnit::class);
+    }
+
+    public function institutionOffices(): HasMany
+    {
+        return $this->hasMany(InstitutionOffice::class, 'institution_id');
+    }
+
+    public function geographicInstitutionOffices(): HasMany
+    {
+        return $this->hasMany(InstitutionOffice::class, 'geographic_organization_id');
     }
 }

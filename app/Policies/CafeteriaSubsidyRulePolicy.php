@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\CafeteriaSubsidyRule;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class CafeteriaSubsidyRulePolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('cafeteria_subsidy_rules.viewAny');

@@ -15,4 +15,20 @@ return [
     'active_cards' => 'Active Cards',
     'expired_cards' => 'Expired Cards',
     'revoked_cards' => 'Revoked Cards',
+    // Action flash messages
+    'issued_successfully'    => 'Card issued successfully.',
+    'activated_successfully' => 'Card activated successfully.',
+    'reported_lost'          => 'Card reported as lost.',
+    'reported_damaged'       => 'Card reported as damaged.',
+    'replacement_submitted'  => 'Replacement request submitted.',
+    'revoked_successfully'   => 'Card revoked.',
+    // Card request flash messages
+    'request_submitted'  => 'Card request submitted.',
+    'request_verified'   => 'Card request data verified.',
+    'request_approved'   => 'Card request approved. Card is now pending print.',
+    'request_rejected'   => 'Card request rejected.',
+    'request_cancelled'  => 'Card request cancelled.',
+    // Print batch flash messages
+    'print_batch_created'  => 'Print batch created.',
+    'batch_marked_printed' => 'Batch marked as printed. Cards are now ready for issuance.',
 ];

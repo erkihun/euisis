@@ -30,3 +30,20 @@ This matrix summarizes the route-level permission groups currently exposed in th
 - Backend policies remain the source of truth. The sidebar and action buttons only hide actions the current user cannot perform.
 - Organization scope is enforced separately from RBAC for employee, transfer, and organization-sensitive routes.
 - Provider API scope is enforced in API middleware and is not represented as a standalone web admin module yet.
+## Cafeteria Provider Portal
+
+| Area | Permission | Scope |
+| --- | --- | --- |
+| Login | `cafeteria-portal.login` | Active assigned provider |
+| Dashboard | `cafeteria-portal.viewDashboard` | Selected provider only |
+| Scan | `cafeteria-portal.scan` | Selected provider only |
+| Transactions | `cafeteria-portal.viewTransactions` | Selected provider only |
+| Transaction Export | `cafeteria-portal.exportTransactions`, `provider-cafeteria-transactions.export` | Selected provider only |
+| Payment Claims | `provider-cafeteria-payment-claims.export` | Selected provider only |
+| Ledger | `cafeteria-portal.viewLedger` | Selected provider only |
+| Menus | `cafeteria-portal.manageMenus` | Selected provider only |
+| Orders | `cafeteria-portal.manageOrders` | Selected provider only |
+| Reports | `cafeteria-portal.viewReports` | Selected provider only |
+| Profile | `cafeteria-portal.updateProfile` | Current portal user |
+
+Provider-only users cannot access the admin dashboard. Admin/staff users can access the provider portal only when explicitly granted portal access and assigned to an active provider.

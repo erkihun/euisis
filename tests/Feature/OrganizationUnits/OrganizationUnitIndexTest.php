@@ -76,7 +76,7 @@ test('test_index_lists_accessible_organizations', function (): void {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('OrganizationUnits/Index')
-            ->has('organizations')
+            ->has('organizationTree')
             ->has('can'),
         );
 });

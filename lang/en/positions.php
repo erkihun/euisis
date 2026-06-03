@@ -13,4 +13,8 @@ return [
     'title_am' => 'Amharic Title',
     'grade_level' => 'Grade Level',
     'job_family' => 'Job Family',
+    'new_job_positions_status' => 'Job Positions Status',
+    'total_job_positions' => 'Total Job Positions',
+    'filled_positions' => 'Assigned Positions',
+    'vacant_positions' => 'Vacant Positions',
 ];

@@ -44,7 +44,7 @@ export default function ServiceProvidersShow({
         <AuthenticatedLayout
             header={
                 <div className="flex items-center justify-between gap-4">
-                    <PageHeader title={provider.name} description={provider.code} />
+                    <PageHeader backHref={route('service-providers.index')} title={provider.name} description={provider.code} />
                     <div className="flex items-center gap-2">
                         {can.update && (
                             <Link

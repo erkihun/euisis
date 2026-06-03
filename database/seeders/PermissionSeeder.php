@@ -96,6 +96,78 @@ class PermissionSeeder extends Seeder
             'organization-unit-types.restore', 'organization-unit-types.viewDeleted',
             'recycle-bin.view', 'recycle-bin.restore', 'recycle-bin.viewDetails',
             'recycle-bin.forceDelete',
+
+            // Position Establishments
+            'position-establishments.viewAny', 'position-establishments.view',
+            'position-establishments.create', 'position-establishments.update',
+            'position-establishments.approve', 'position-establishments.archive',
+            'position-establishments.restore',
+
+            // Vacancy Announcements
+            'vacancy-announcements.viewAny', 'vacancy-announcements.view',
+            'vacancy-announcements.create', 'vacancy-announcements.update',
+            'vacancy-announcements.publish', 'vacancy-announcements.close',
+            'vacancy-announcements.delete',
+
+            // Vacancy Applications
+            'vacancy-applications.viewAny', 'vacancy-applications.view',
+            'vacancy-applications.submit', 'vacancy-applications.withdraw',
+            'vacancy-applications.screen', 'vacancy-applications.select',
+            'vacancy-applications.reject', 'vacancy-applications.initiateTransfer',
+
+            // Cafeteria Providers
+            'cafeteria_providers.viewAny', 'cafeteria_providers.view',
+            'cafeteria_providers.create', 'cafeteria_providers.update',
+            'cafeteria_providers.archive', 'cafeteria_providers.restore',
+
+            // Cafeteria Settings
+            'cafeteria_settings.view', 'cafeteria_settings.update',
+
+            // Cafeteria Transactions
+            'cafeteria_transactions.view', 'cafeteria_transactions.scan',
+            'cafeteria_transactions.reverse',
+
+            // Cafeteria Reports
+            'cafeteria_reports.view', 'cafeteria_reports.generate', 'cafeteria_reports.export',
+
+            // Cafeteria Ledger
+            'cafeteria_ledger.view',
+
+            // Cafeteria Day Rules
+            'cafeteria_day_rules.view', 'cafeteria_day_rules.update',
+
+            // Cafeteria Holidays
+            'cafeteria_holidays.create',
+
+            // Cafeteria Subsidy Rules
+            'cafeteria_subsidy_rules.view', 'cafeteria_subsidy_rules.create',
+            'cafeteria_subsidy_rules.update', 'cafeteria_subsidy_rules.archive',
+
+            // Cafeteria Special Days
+            'cafeteria_special_days.view', 'cafeteria_special_days.create',
+            'cafeteria_special_days.update', 'cafeteria_special_days.archive',
+
+            // Cafeteria Employee Exclusions
+            'cafeteria_employee_exclusions.view', 'cafeteria_employee_exclusions.create',
+            'cafeteria_employee_exclusions.update', 'cafeteria_employee_exclusions.end',
+            'cafeteria_employee_exclusions.archive',
+
+            // Institution Offices
+            'institution-offices.viewAny', 'institution-offices.view',
+            'institution-offices.create', 'institution-offices.update',
+            'institution-offices.delete', 'institution-offices.restore',
+            'institution-offices.move', 'institution-offices.viewTree',
+            'institution-offices.export',
+
+            // Cafeteria Provider Portal
+            'cafeteria-portal.login', 'cafeteria-portal.viewDashboard',
+            'cafeteria-portal.scan', 'cafeteria-portal.viewTransactions',
+            'cafeteria-portal.viewLedger', 'cafeteria-portal.manageMenus',
+            'cafeteria-portal.manageOrders', 'cafeteria-portal.viewReports',
+            'cafeteria-portal.updateProfile', 'cafeteria-portal.view',
+            'cafeteria-portal.impersonate', 'cafeteria-portal.exportTransactions',
+            'provider-cafeteria-transactions.export',
+            'provider-cafeteria-payment-claims.export',
         ];
 
         foreach ($legacy as $permission) {

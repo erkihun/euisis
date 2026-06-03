@@ -76,3 +76,15 @@ Recycle Bin coverage verifies protected access, soft-delete metadata, restore be
 - `custom_amount` and requested subsidy amount inputs are rejected by backend validation.
 - Remaining-week scans must persist consumed dates and the calendar response must mark those dates consumed.
 - Today’s Scans must include employee identity fields and must not expose national ID, raw QR token, or QR hashes.
+## Cafeteria Provider Portal Checks
+
+```bash
+php artisan route:list --path=cafeteria/portal
+php artisan test tests/Feature/CafeteriaProviderPortalSeparationTest.php
+php artisan test tests/Feature/CafeteriaProviderTransactionExportTest.php
+npm run build
+```
+
+These cover the `/cafeteria/portal` route namespace, portal login render, auth requirement, provider-only admin redirect, portal Inertia context, and TypeScript/Vite compilation.
+
+The transaction export test covers provider-scoped CSV, XLSX, and PDF output, payment claim summary output, permission denial, sensitive-field exclusion, and export audit logging.

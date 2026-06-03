@@ -24,12 +24,12 @@ class CafeteriaProviderAccessService
         return $user->cafeteriaProviders()
             ->wherePivot('is_active', true)
             ->where(function (Builder $query) use ($today): void {
-                $query->whereNull('cafeteria_provider_users.effective_from')
-                    ->orWhere('cafeteria_provider_users.effective_from', '<=', $today);
+                $query->whereNull('cafeteria_provider_assignments.effective_from')
+                    ->orWhere('cafeteria_provider_assignments.effective_from', '<=', $today);
             })
             ->where(function (Builder $query) use ($today): void {
-                $query->whereNull('cafeteria_provider_users.effective_to')
-                    ->orWhere('cafeteria_provider_users.effective_to', '>=', $today);
+                $query->whereNull('cafeteria_provider_assignments.effective_to')
+                    ->orWhere('cafeteria_provider_assignments.effective_to', '>=', $today);
             })
             ->pluck('cafeteria_providers.id')
             ->all();

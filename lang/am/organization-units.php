@@ -17,4 +17,9 @@ return [
     'root_unit' => 'ዋና ዩኒት',
     'add_organization_unit' => 'ዩኒት ጨምር',
     'back_to_organizations' => 'ወደ ድርጅቶች ተመለስ',
+    'help_text' => 'የድርጅት ዩኒቶች በተቋም ቢሮ ውስጥ ያሉ ውስጣዊ ዲፓርትመንቶች፣ ዳይሬክቶሬቶች እና ቡድኖች ናቸው።',
+    'do_not_create_offices_as_units' => 'የተቋም ቢሮዎችን እንደ ዩኒቶች አትፍጠሩ — ይልቁንስ ተቋማዊ ቢሮዎችን ይጠቀሙ።',
+    'parent_unit_must_same_office' => 'ዋና ዩኒት ለዚሁ ተቋም ቢሮ መሆን አለበት።',
+    'institution_office' => 'ተቋም ቢሮ',
+    'select_institution_office' => 'ተቋም ቢሮ ምረጥ',
 ];

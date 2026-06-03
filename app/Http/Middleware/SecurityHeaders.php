@@ -48,19 +48,34 @@ class SecurityHeaders
         //   object-src 'none'      — blocks Flash/ActiveX/plugins
         //   base-uri 'self'        — prevents base-tag injection
         //   form-action 'self'     — prevents cross-origin form submission
-        //   upgrade-insecure-requests — forces HTTP sub-resources to HTTPS
         //
-        // NOTE: script-src includes 'unsafe-inline' for compatibility with
-        // Vite HMR in development and inline event handlers. In a future
-        // hardening pass, replace with nonce-based CSP using Laravel's built-in
-        // Vite::useCspNonce() integration.
+        // fonts.bunny.net is a privacy-respecting font CDN (Bunny Fonts) used for
+        // the Figtree typeface. It is allowed in style-src and font-src at all times.
+        //
+        // In local development the Vite dev server runs on a separate origin
+        // (typically http://[::1]:5173 or http://localhost:5173). Scripts and
+        // WebSocket HMR connections from that origin are explicitly allowed here so
+        // the browser does not block hot-module replacement.
+        //
+        // NOTE: Hardening path — replace 'unsafe-inline' in script-src with
+        // nonce-based CSP using Laravel's Vite::useCspNonce() integration.
+        $isLocal = app()->environment('local');
+
+        $scriptSrc = $isLocal
+            ? "script-src 'self' 'unsafe-inline' http://localhost:5173 http://127.0.0.1:5173"
+            : "script-src 'self' 'unsafe-inline'";
+
+        $connectSrc = $isLocal
+            ? "connect-src 'self' ws: wss: ws://localhost:5173 ws://127.0.0.1:5173 http://localhost:5173 http://127.0.0.1:5173"
+            : "connect-src 'self' ws: wss:";
+
         $response->headers->set('Content-Security-Policy', implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline'",
-            "style-src 'self' 'unsafe-inline'",
+            $scriptSrc,
+            "style-src 'self' 'unsafe-inline' https://fonts.bunny.net https://fonts.googleapis.com",
             "img-src 'self' data: blob:",
-            "font-src 'self' data:",
-            "connect-src 'self' ws: wss:",
+            "font-src 'self' data: https://fonts.bunny.net https://fonts.gstatic.com",
+            $connectSrc,
             "frame-ancestors 'none'",
             "object-src 'none'",
             "base-uri 'self'",

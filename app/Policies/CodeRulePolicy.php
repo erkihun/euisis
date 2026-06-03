@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\CodeRule;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 class CodeRulePolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('code-rules.viewAny');

@@ -53,6 +53,6 @@ class EntitlementController extends Controller
             $request->integer('quota_limit') ?: null,
         );
 
-        return back()->with('success', 'Entitlement granted.');
+        return back()->with('success', __('entitlements.granted_successfully'));
     }
 }

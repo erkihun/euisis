@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\EntitlementRule;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 class EntitlementRulePolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('entitlement-rules.viewAny');

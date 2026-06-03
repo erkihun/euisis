@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\ServiceType;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 class ServiceTypePolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('service-types.viewAny');

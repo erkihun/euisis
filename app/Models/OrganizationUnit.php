@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\OrganizationUnitStatus;
-use App\Enums\OrganizationUnitType;
 use App\Models\Concerns\HasUuidPrimaryKey;
+use App\Models\OrganizationUnitType as OrganizationUnitTypeModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +22,7 @@ class OrganizationUnit extends Model
         'organization_id',
         'parent_unit_id',
         'organization_unit_type_id',
+        'institution_office_id',
         'unit_type',
         'code',
         'name_en',
@@ -43,10 +44,10 @@ class OrganizationUnit extends Model
     {
         return [
             // unit_type is kept as a plain string to allow custom type codes beyond the enum
-            'status'         => OrganizationUnitStatus::class,
+            'status' => OrganizationUnitStatus::class,
             'effective_from' => 'date',
-            'effective_to'   => 'date',
-            'metadata'       => 'array',
+            'effective_to' => 'date',
+            'metadata' => 'array',
         ];
     }
 
@@ -57,7 +58,12 @@ class OrganizationUnit extends Model
 
     public function unitType(): BelongsTo
     {
-        return $this->belongsTo(OrganizationUnitType::class, 'organization_unit_type_id');
+        return $this->belongsTo(OrganizationUnitTypeModel::class, 'organization_unit_type_id');
+    }
+
+    public function institutionOffice(): BelongsTo
+    {
+        return $this->belongsTo(InstitutionOffice::class);
     }
 
     public function parent(): BelongsTo

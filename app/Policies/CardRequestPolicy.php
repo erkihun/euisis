@@ -7,9 +7,12 @@ namespace App\Policies;
 use App\Models\CardRequest;
 use App\Models\User;
 use App\Services\OrganizationScope\OrganizationScopeService;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class CardRequestPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function __construct(private OrganizationScopeService $organizationScopeService) {}
 
     public function viewAny(User $user): bool

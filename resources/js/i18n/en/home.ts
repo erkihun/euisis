@@ -68,6 +68,25 @@ const home = {
     footerRights: 'All rights reserved.',
     footerSupport: 'Support:',
     footerSystem: 'Employee Unified ID & Service Integration System',
+
+    // Public pages
+    announcementsPageTitle: 'Transfer Announcements',
+    announcementsPageSubtitle: 'Published open transfer positions',
+    noAnnouncements: 'No announcements are currently available.',
+    verifyPageTitle: 'Verify Employee ID Card',
+    verifyPageSubtitle: 'Enter the card reference number or scan the QR code to verify.',
+    verifyInputLabel: 'Card Reference / UUID',
+    verifyInputPlaceholder: 'e.g. 550e8400-e29b-41d4-a716-446655440000',
+    verifyButton: 'Verify',
+    servicesPageTitle: 'Public Services',
+    servicesPageSubtitle: 'Service offerings available to city administration employees.',
+    supportPageTitle: 'Support & Help',
+    supportPageSubtitle: 'Contact information and help resources.',
+    supportEmailLabel: 'Support Email',
+    supportPhoneLabel: 'Support Phone',
+    supportHelpCenterLabel: 'Help Center',
+    supportNoContact: 'For support, please contact your organization administrator.',
+    registrationDisabled: 'Self-registration is currently disabled.',
 } as const;
 
 export default home;

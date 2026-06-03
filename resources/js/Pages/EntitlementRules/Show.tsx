@@ -24,6 +24,7 @@ export default function EntitlementRulesShow({
         <AuthenticatedLayout
             header={(
                 <PageHeader
+                    backHref={route('entitlement-rules.index')}
                     title={rule.name}
                     actions={(
                         <div className="flex gap-3">

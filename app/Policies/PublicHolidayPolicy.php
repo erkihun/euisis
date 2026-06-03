@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\PublicHoliday;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class PublicHolidayPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('public_holidays.viewAny');

@@ -564,6 +564,27 @@ export function ListOrderedIcon(p: IconProps) {
     );
 }
 
+/** ClipboardList — Position Establishments */
+export function ClipboardListIcon(p: IconProps) {
+    return (
+        <svg {...base} {...p}>
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+            <rect x="9" y="3" width="6" height="4" rx="1" />
+            <line x1="9" y1="12" x2="15" y2="12" />
+            <line x1="9" y1="16" x2="13" y2="16" />
+        </svg>
+    );
+}
+
+/** Megaphone — Vacancy Announcements */
+export function MegaphoneIcon(p: IconProps) {
+    return (
+        <svg {...base} {...p}>
+            <path d="M3 11l19-9-9 19-2-8-8-2z" />
+        </svg>
+    );
+}
+
 /** Boxes — Organization Unit Types (grouped components) */
 export function BoxesIcon(p: IconProps) {
     return (

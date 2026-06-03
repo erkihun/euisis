@@ -80,6 +80,9 @@ const organizationUnits = {
     expandOrganization: 'Expand organization',
     collapseOrganization: 'Collapse organization',
     viewUnitsTooltip: 'View units for this organization',
+    helpText: 'Organization Units are internal departments, directorates, and teams inside an institution office',
+    doNotCreateOfficesAsUnits: 'Do not create institution offices as organization units — use Institution Offices instead',
+    parentUnitMustSameOffice: 'Parent unit must belong to the same institution office',
 } as const;
 
 export default organizationUnits;

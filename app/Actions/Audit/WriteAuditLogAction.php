@@ -14,6 +14,26 @@ use Illuminate\Support\Str;
 
 class WriteAuditLogAction
 {
+    /**
+     * Keys whose values must never appear in the audit log, regardless of caller.
+     * Values are replaced with the string '[REDACTED]'.
+     */
+    private const REDACTED_KEYS = [
+        'password',
+        'password_confirmation',
+        'current_password',
+        'national_id',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'phone_number',
+        'remember_token',
+        'qr_token',
+        'qr_hash',
+        'token_hash',
+        'secret',
+        'api_key',
+    ];
+
     public function execute(
         AuditEventType $eventType,
         ?User $actor,
@@ -33,14 +53,30 @@ class WriteAuditLogAction
             'auditable_type' => $auditable ? $auditable::class : null,
             'auditable_id' => $auditable?->getKey(),
             'organization_id' => $organizationId,
-            'old_values' => $oldValues,
-            'new_values' => $newValues,
+            'old_values' => $this->redact($oldValues),
+            'new_values' => $this->redact($newValues),
             'reason' => $reason,
             'request_id' => (string) Str::uuid7(),
             'request_ip' => $request?->ip(),
             'user_agent' => $request?->userAgent(),
             'created_at' => now(),
         ]);
+    }
+
+    /** Strip sensitive fields from value arrays before persisting to the audit log. */
+    private function redact(?array $values): ?array
+    {
+        if ($values === null) {
+            return null;
+        }
+
+        return array_map(
+            fn ($value, $key) => in_array(strtolower((string) $key), self::REDACTED_KEYS, true)
+                ? '[REDACTED]'
+                : $value,
+            $values,
+            array_keys($values),
+        );
     }
 
     private function validOrganizationId(?string $organizationId): ?string

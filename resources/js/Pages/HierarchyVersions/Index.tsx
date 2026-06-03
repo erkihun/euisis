@@ -1,5 +1,10 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+
+/** Safely decode Laravel pagination HTML entities without dangerouslySetInnerHTML. */
+function paginationLabel(label: string): string {
+    return label.replace(/&laquo;/g, '«').replace(/&raquo;/g, '»').replace(/&amp;/g, '&');
+}
 import PageHeader from '@/Components/PageHeader';
 import StatusBadge from '@/Components/StatusBadge';
 import EmptyState from '@/Components/EmptyState';
@@ -285,8 +290,7 @@ export default function HierarchyVersionsIndex({
                                 key={`${link.label}-${index}`}
                                 href={link.url ?? '#'}
                                 className={`rounded-lg px-3 py-1.5 text-sm ${link.active ? 'bg-blue-600 text-white' : 'border border-gray-200 text-gray-700 dark:border-slate-700 dark:text-slate-300'} ${link.url ? '' : 'pointer-events-none opacity-50'}`}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                            />
+                            >{paginationLabel(link.label)}</Link>
                         ))}
                     </div>
                 )}

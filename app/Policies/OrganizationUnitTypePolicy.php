@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\OrganizationUnitType;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 class OrganizationUnitTypePolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('organization-unit-types.viewAny');

@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\CafeteriaReportRun;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class CafeteriaReportRunPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('cafeteria_reports.viewAny');

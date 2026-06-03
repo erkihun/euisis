@@ -44,6 +44,7 @@
   - approval workflows, steps, approvals, task assignments
 - Audit & Reporting
   - immutable audit logs, export audit, dashboard/reporting foundation
+  - provider-scoped cafeteria transaction CSV export and payment claim CSV export
 
 ## Database Model Summary
 
@@ -112,6 +113,7 @@
 - `coupon_programs`
 - `coupon_balances`
 - `cafeteria_transactions`
+- provider-scoped payment claim export services and audit events
 
 ### Consumer Association
 
@@ -361,3 +363,10 @@ capture the report in `docs/infrastructure-security.md`.
 - Removed Custom Amount from scan/settings validation and frontend controls.
 - Added backend-driven scan calendar metadata for day rules, holidays, special days, exclusions, and consumed days.
 - Updated Today’s Scans toward identifiable provider-scoped employee scan logs.
+## Cafeteria Provider Portal Separation
+
+- Provider portal routes are separated under `/cafeteria/portal` with `cafeteria.portal.*` names.
+- Portal middleware aliases are `cafeteria.portal`, `cafeteria.provider.assigned`, and `cafeteria.portal.context`.
+- Provider pages render through `CafeteriaProviderPortalLayout` and normalized `resources/js/Pages/Cafeteria/Portal/*` Inertia page names.
+- Provider-only users are redirected from the admin dashboard to the provider dashboard.
+- Provider data remains selected-provider scoped in the portal controllers.

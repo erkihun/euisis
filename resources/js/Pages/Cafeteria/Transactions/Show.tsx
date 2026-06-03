@@ -60,6 +60,7 @@ export default function TransactionShow({ transaction }: { transaction: Transact
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('transactions.index')}
                     title={transaction.transaction_number}
                     actions={
                         transaction.can.reverse ? (

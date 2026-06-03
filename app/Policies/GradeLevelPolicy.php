@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\GradeLevel;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class GradeLevelPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('grade-levels.viewAny');

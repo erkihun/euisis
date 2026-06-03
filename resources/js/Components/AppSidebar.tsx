@@ -17,6 +17,9 @@ import {
     GitForkIcon,
     ArrowLeftRightIcon,
     ClipboardCheckIcon,
+    ClipboardListIcon,
+    MegaphoneIcon,
+    Inbox,
     BadgeCheckIcon,
     ReceiptTextIcon,
     HandshakeIcon,
@@ -27,6 +30,8 @@ import {
     ActivityIcon,
     BoxesIcon,
     QrCodeIcon,
+    UserIcon,
+    NetworkIcon,
 } from '@/Components/Icons';
 import { CSSProperties, SVGProps, useMemo, useState } from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
@@ -34,12 +39,19 @@ import { useCan } from '@/hooks/useCan';
 import { useLocale } from '@/hooks/useLocale';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
 
-type NavItem = {
+/** A leaf nav item — renders as a clickable link. */
+type NavSubItem = {
     routeName: string;
     labelKey: string;
     icon: (p: SVGProps<SVGSVGElement>) => JSX.Element;
     permission?: string;
-    tab?: string; // when set, links to routeName?tab=<tab> and active only when that tab is current
+    tab?: string;
+};
+
+/** A nav item — either a plain link OR a parent with expandable children. */
+type NavItem = NavSubItem & {
+    /** When present, this item renders as a dropdown toggle instead of a link. */
+    children?: NavSubItem[];
 };
 
 type NavGroup = {
@@ -57,6 +69,7 @@ const navGroups: NavGroup[] = [
         items: [
             { routeName: 'organizations.index',           labelKey: 'nav.organizations',        icon: Building2,      permission: 'organizations.view' },
             { routeName: 'organization-types.index',      labelKey: 'nav.organizationTypes',    icon: TagsIcon,       permission: 'organization-types.viewAny' },
+            { routeName: 'institution-offices.index',     labelKey: 'nav.institutionOffices',   icon: NetworkIcon,    permission: 'institution-offices.viewAny' },
             { routeName: 'organization-units.index',      labelKey: 'nav.organizationUnits',    icon: GitBranchIcon,  permission: 'organization-units.viewAny' },
             { routeName: 'organization-unit-types.index', labelKey: 'nav.organizationUnitTypes', icon: BoxesIcon,     permission: 'organization-unit-types.viewAny' },
             { routeName: 'hierarchy-versions.index',      labelKey: 'nav.hierarchyVersions',    icon: GitForkIcon,    permission: 'hierarchy-versions.viewAny' },
@@ -67,12 +80,26 @@ const navGroups: NavGroup[] = [
         labelKey: 'nav.groupWorkforce',
         icon: Users,
         items: [
-            { routeName: 'employees.index',          labelKey: 'nav.employees',         icon: Users,             permission: 'employees.view' },
-            { routeName: 'employee-transfers.index', labelKey: 'nav.employeeTransfers', icon: ArrowLeftRightIcon, permission: 'transfers.viewAny' },
-            { routeName: 'positions.index',          labelKey: 'nav.positions',         icon: Briefcase,         permission: 'positions.viewAny' },
+            { routeName: 'employees.index',                labelKey: 'nav.employees',              icon: Users,              permission: 'employees.view' },
+            { routeName: 'position-establishments.index',  labelKey: 'nav.positionEstablishments', icon: ClipboardListIcon,   permission: 'position-establishments.viewAny' },
+            { routeName: 'vacancy-announcements.index',    labelKey: 'nav.vacancyAnnouncements',   icon: MegaphoneIcon,       permission: 'vacancy-announcements.viewAny' },
+            { routeName: 'vacancy-applications.my-applications', labelKey: 'nav.myApplications',  icon: Inbox },
+            { routeName: 'positions.index',                labelKey: 'nav.positions',              icon: Briefcase,          permission: 'positions.viewAny' },
+            { routeName: 'positions.status',               labelKey: 'nav.newJobPositionsStatus',  icon: ClipboardCheckIcon, permission: 'positions.viewAny' },
             { routeName: 'grade-levels.index',       labelKey: 'nav.gradeLevels',       icon: TrendingUpIcon,    permission: 'grade-levels.viewAny' },
             { routeName: 'occupations.index',        labelKey: 'nav.occupations',       icon: HardHatIcon,       permission: 'occupations.viewAny' },
             { routeName: 'isic-activities.index',    labelKey: 'nav.isicActivities',    icon: ActivityIcon,      permission: 'isic-activities.viewAny' },
+        ],
+    },
+    {
+        key: 'transfers',
+        labelKey: 'nav.transferManagement',
+        icon: ArrowLeftRightIcon,
+        items: [
+            { routeName: 'transfers.dashboard',             labelKey: 'nav.transferDashboard',        icon: LayoutDashboard,   permission: 'transfers.view' },
+            { routeName: 'transfer-announcements.index',  labelKey: 'nav.transferAnnouncements',    icon: MegaphoneIcon,     permission: 'transfers.announcements.view' },
+            { routeName: 'transfer-settings.show',        labelKey: 'nav.transferSettings',          icon: SettingsIcon,      permission: 'transfers.settings.manage' },
+            { routeName: 'transfer-applications.index',   labelKey: 'nav.transferApplications',      icon: Inbox,             permission: 'transfers.applications.view' },
         ],
     },
     {
@@ -105,8 +132,23 @@ const navGroups: NavGroup[] = [
             { routeName: 'cafeteria.transactions.index',  labelKey: 'nav.cafeteriaTransactions', icon: ReceiptTextIcon,  permission: 'cafeteria_transactions.viewAny' },
             { routeName: 'cafeteria.ledger.index',        labelKey: 'nav.cafeteriaLedger',       icon: ScrollText,       permission: 'cafeteria_ledger.viewAny' },
             { routeName: 'cafeteria.reports.index',       labelKey: 'nav.cafeteriaReports',      icon: ActivityIcon,     permission: 'cafeteria_reports.viewAny' },
-            { routeName: 'cafeteria.providers.index',     labelKey: 'nav.cafeteriaProviders',    icon: HandshakeIcon,    permission: 'cafeteria_providers.viewAny' },
+{ routeName: 'cafeteria.providers.index',     labelKey: 'nav.cafeteriaProviders',    icon: HandshakeIcon,    permission: 'cafeteria_providers.viewAny' },
             { routeName: 'cafeteria.settings.index', labelKey: 'nav.cafeteriaSettings', icon: SettingsIcon, permission: 'cafeteria_settings.view' },
+        ],
+    },
+    {
+        key: 'transport',
+        labelKey: 'nav.groupTransport',
+        icon: ActivityIcon,
+        items: [
+            { routeName: 'transport.providers.index', labelKey: 'nav.transportProviders', icon: HandshakeIcon, permission: 'transport-providers.viewAny' },
+            { routeName: 'transport.scan', labelKey: 'nav.transportScan', icon: QrCodeIcon, permission: 'transport-passes.viewAny' },
+            { routeName: 'transport.routes.index', labelKey: 'nav.transportRoutes', icon: ScrollText, permission: 'transport-routes.viewAny' },
+            { routeName: 'transport.vehicles.index', labelKey: 'nav.transportVehicles', icon: ActivityIcon, permission: 'transport-vehicles.viewAny' },
+            { routeName: 'transport.drivers.index', labelKey: 'nav.transportDrivers', icon: UserIcon, permission: 'transport-drivers.viewAny' },
+            { routeName: 'transport.passes.index', labelKey: 'nav.transportPasses', icon: BadgeCheckIcon, permission: 'transport-passes.viewAny' },
+            { routeName: 'transport.reports.index', labelKey: 'nav.transportReports', icon: ReceiptTextIcon, permission: 'transport-reports.view' },
+            { routeName: 'transport.settings.index', labelKey: 'nav.transportSettings', icon: SettingsIcon, permission: 'transport-settings.view' },
         ],
     },
     {
@@ -126,12 +168,20 @@ const dashboardNav: NavItem = {
     icon: LayoutDashboard,
 };
 
+const employeeNav: NavItem[] = [
+    { routeName: 'employee.portal',               labelKey: 'nav.myPortal',             icon: UserIcon },
+    { routeName: 'employee.entitlements',         labelKey: 'nav.myEntitlements',       icon: BadgeCheckIcon },
+    { routeName: 'employee.transfer-applications', labelKey: 'nav.transferApplications', icon: Inbox },
+    { routeName: 'public.transfer-announcements', labelKey: 'nav.announcements',         icon: MegaphoneIcon },
+];
+
 const adminNav: NavItem[] = [
-    { routeName: 'users.index',           labelKey: 'nav.users',          icon: UserCogIcon,  permission: 'users.viewAny' },
-    { routeName: 'roles.index',           labelKey: 'nav.roles',          icon: ShieldCheck,  permission: 'roles.viewAny' },
-    { routeName: 'permissions.index',     labelKey: 'nav.permissions',    icon: KeyIcon,      permission: 'permissions.viewAny' },
-    { routeName: 'recycle-bin.index',     labelKey: 'nav.recycleBin',     icon: TrashIcon,    permission: 'recycle-bin.view' },
-    { routeName: 'system-settings.index', labelKey: 'nav.systemSettings', icon: SettingsIcon, permission: 'system-settings.view' },
+    { routeName: 'users.index',                      labelKey: 'nav.users',               icon: UserCogIcon,  permission: 'users.viewAny' },
+    { routeName: 'provider-users.index',             labelKey: 'nav.cafeteriaProviderUsers', icon: HandshakeIcon, permission: 'cafeteria-provider-users.viewAny' },
+    { routeName: 'roles.index',                      labelKey: 'nav.roles',               icon: ShieldCheck,  permission: 'roles.viewAny' },
+    { routeName: 'permissions.index',                labelKey: 'nav.permissions',         icon: KeyIcon,      permission: 'permissions.viewAny' },
+    { routeName: 'recycle-bin.index',                labelKey: 'nav.recycleBin',          icon: TrashIcon,    permission: 'recycle-bin.view' },
+    { routeName: 'system-settings.index',            labelKey: 'nav.systemSettings',      icon: SettingsIcon, permission: 'system-settings.view' },
 ];
 
 interface Props {
@@ -239,10 +289,101 @@ function NavLink({ item, collapsed, isAdmin = false }: { item: NavItem; collapse
     );
 }
 
+/** Nav item that has expandable sub-items (dropdown within a group). */
+function NavItemDropdown({
+    item,
+    collapsed,
+}: {
+    item: NavItem & { children: NavSubItem[] };
+    collapsed: boolean;
+}) {
+    const { can } = useCan();
+    const { t } = useLocale();
+
+    const visibleChildren = item.children.filter((c) => !c.permission || can(c.permission));
+    if (visibleChildren.length === 0) return null;
+
+    const anyChildActive = visibleChildren.some((c) => route().current(c.routeName));
+    const [open, setOpen] = useState(anyChildActive);
+
+    const activeBar  = 'border-[var(--color-primary)] bg-[color:var(--color-primary)]/10';
+    const activeText = 'text-[color:var(--color-primary)]';
+    const hoverBg    = 'hover:bg-[color:var(--color-primary)]/10 hover:text-gray-900 dark:hover:text-slate-100';
+    const Icon       = item.icon;
+    const label      = t(item.labelKey);
+
+    if (collapsed) {
+        // In collapsed mode render the parent icon only — clicking opens sub-items via tooltip/hover isn't supported;
+        // just show a single icon that links to the dashboard route.
+        return (
+            <li>
+                <button
+                    type="button"
+                    title={label}
+                    aria-label={label}
+                    onClick={() => setOpen((o) => !o)}
+                    className={[
+                        'group relative mx-2 flex h-10 w-10 items-center justify-center rounded-lg transition-colors',
+                        'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]',
+                        anyChildActive
+                            ? `${activeBar} ${activeText}`
+                            : `text-gray-500 dark:text-slate-500 ${hoverBg}`,
+                    ].join(' ')}
+                >
+                    <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                </button>
+            </li>
+        );
+    }
+
+    return (
+        <li>
+            <button
+                type="button"
+                onClick={() => setOpen((o) => !o)}
+                aria-expanded={open}
+                className={[
+                    'group flex w-full items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[15px] font-normal transition-colors',
+                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]',
+                    anyChildActive
+                        ? `border-l-2 ${activeBar} ${activeText}`
+                        : `border-l-2 border-transparent text-gray-600 dark:text-slate-400 ${hoverBg}`,
+                ].join(' ')}
+            >
+                <Icon
+                    className={[
+                        'h-[19px] w-[19px] shrink-0 transition-colors',
+                        anyChildActive
+                            ? activeText
+                            : 'text-gray-500 group-hover:text-gray-800 dark:text-slate-500 dark:group-hover:text-slate-300',
+                    ].join(' ')}
+                    aria-hidden="true"
+                />
+                <span className="min-w-0 flex-1 truncate text-left">{label}</span>
+                <ChevronDown
+                    className={[
+                        'h-3.5 w-3.5 shrink-0 transition-transform duration-200',
+                        open ? '' : '-rotate-90',
+                    ].join(' ')}
+                />
+            </button>
+
+            {open && (
+                <ul role="list" className="mt-0.5 mb-1 space-y-0.5 pl-5 border-l border-gray-200 ml-5 dark:border-slate-700">
+                    {visibleChildren.map((child) => (
+                        <NavLink key={child.routeName} item={child} collapsed={false} />
+                    ))}
+                </ul>
+            )}
+        </li>
+    );
+}
+
 export default function AppSidebar({ onClose, collapsed = false, onToggleCollapse }: Props) {
     const { can } = useCan();
     const { locale, t } = useLocale();
     const { getString } = useSystemSettings();
+    const isEmployeeUser = (usePage().props as any).is_employee_user === true;
 
     const appName        = getString('app.short_name',              'AA Employee ID');
     const orgName        = getString('general.organization_name',   'Addis Ababa City Administration');
@@ -253,7 +394,17 @@ export default function AppSidebar({ onClose, collapsed = false, onToggleCollaps
 
     const visibleGroups = useMemo(() =>
         navGroups
-            .map((g) => ({ ...g, items: g.items.filter((item) => !item.permission || can(item.permission)) }))
+            .map((g) => ({
+                ...g,
+                items: g.items
+                    .filter((item) => !item.permission || can(item.permission))
+                    .map((item) =>
+                        item.children
+                            ? { ...item, children: item.children.filter((c) => !c.permission || can(c.permission)) }
+                            : item,
+                    )
+                    .filter((item) => !item.children || item.children.length > 0),
+            }))
             .filter((g) => g.items.length > 0),
         [can],
     );
@@ -265,7 +416,10 @@ export default function AppSidebar({ onClose, collapsed = false, onToggleCollaps
 
     const activeGroupKeys = useMemo(() => new Set(
         [...visibleGroups, ...(visibleAdminNav.length > 0 ? [{ key: 'admin', labelKey: 'nav.admin', icon: ShieldCheck, items: visibleAdminNav }] : [])]
-            .filter((g) => g.items.some((item) => route().current(item.routeName)))
+            .filter((g) => g.items.some((item) =>
+                route().current(item.routeName) ||
+                (item.children ?? []).some((c) => route().current(c.routeName)),
+            ))
             .map((g) => g.key),
     ), [visibleGroups, visibleAdminNav]);
 
@@ -292,9 +446,11 @@ export default function AppSidebar({ onClose, collapsed = false, onToggleCollaps
         if (collapsed) {
             return (
                 <ul key={group.key} role="list" className="space-y-0.5 py-0.5">
-                    {group.items.map((item) => (
-                        <NavLink key={item.routeName} item={item} collapsed isAdmin={isAdmin} />
-                    ))}
+                    {group.items.map((item) =>
+                        item.children
+                            ? <NavItemDropdown key={item.routeName} item={item as NavItem & { children: NavSubItem[] }} collapsed />
+                            : <NavLink key={item.routeName} item={item} collapsed isAdmin={isAdmin} />
+                    )}
                 </ul>
             );
         }
@@ -329,9 +485,11 @@ export default function AppSidebar({ onClose, collapsed = false, onToggleCollaps
 
                 {isOpen && (
                     <ul role="list" className="mt-0.5 mb-1 space-y-0.5 pl-1">
-                        {group.items.map((item) => (
-                            <NavLink key={item.routeName} item={item} collapsed={false} isAdmin={isAdmin} />
-                        ))}
+                        {group.items.map((item) =>
+                            item.children
+                                ? <NavItemDropdown key={item.routeName} item={item as NavItem & { children: NavSubItem[] }} collapsed={false} />
+                                : <NavLink key={item.routeName} item={item} collapsed={false} isAdmin={isAdmin} />
+                        )}
                     </ul>
                 )}
             </div>
@@ -360,7 +518,7 @@ export default function AppSidebar({ onClose, collapsed = false, onToggleCollaps
                         </button>
                     )}
                     <Link
-                        href={route('dashboard')}
+                        href={isEmployeeUser ? route('employee.portal') : route('dashboard')}
                         title={appName}
                         className="flex h-8 w-8 items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
                     >
@@ -370,7 +528,7 @@ export default function AppSidebar({ onClose, collapsed = false, onToggleCollaps
             ) : (
                 <div className="flex h-[60px] shrink-0 items-center gap-2.5 px-4">
                     <Link
-                        href={route('dashboard')}
+                        href={isEmployeeUser ? route('employee.portal') : route('dashboard')}
                         className="flex min-w-0 flex-1 items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] rounded-lg"
                     >
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center">
@@ -414,20 +572,37 @@ export default function AppSidebar({ onClose, collapsed = false, onToggleCollaps
             {/* ── Navigation ─────────────────────────────────────────────────── */}
             <nav className="sidebar-scroll flex-1 overflow-y-auto py-3" aria-label="Main navigation">
 
-                {/* Dashboard — standalone top item */}
-                <ul role="list" className={collapsed ? 'space-y-0.5 py-0.5' : 'px-3 pb-2'}>
-                    <NavLink item={dashboardNav} collapsed={collapsed} />
-                </ul>
+                {/* Dashboard — standalone top item (admin only) */}
+                {!isEmployeeUser && (
+                    <ul role="list" className={collapsed ? 'space-y-0.5 py-0.5' : 'px-3 pb-2'}>
+                        <NavLink item={dashboardNav} collapsed={collapsed} />
+                    </ul>
+                )}
 
-                {/* Main groups */}
-                {!collapsed && <div className="mx-3 mb-2 h-px bg-gray-200 dark:bg-white/5" />}
+                {/* Employee portal nav */}
+                {isEmployeeUser && (
+                    <>
+                        <ul role="list" className={collapsed ? 'space-y-0.5 py-0.5' : 'px-3 pb-2 space-y-0.5'}>
+                            {employeeNav.map((item) => (
+                                <NavLink key={item.routeName} item={item} collapsed={collapsed} />
+                            ))}
+                        </ul>
+                        {!collapsed && <div className="mx-3 mb-2 h-px bg-gray-200 dark:bg-white/5" />}
+                    </>
+                )}
 
-                <div className={['space-y-0.5', collapsed ? '' : 'px-3'].join(' ')}>
-                    {visibleGroups.map((g) => renderGroup(g, false))}
-                </div>
+                {/* Main groups — admin only */}
+                {!isEmployeeUser && (
+                    <>
+                        {!collapsed && <div className="mx-3 mb-2 h-px bg-gray-200 dark:bg-white/5" />}
+                        <div className={['space-y-0.5', collapsed ? '' : 'px-3'].join(' ')}>
+                            {visibleGroups.map((g) => renderGroup(g, false))}
+                        </div>
+                    </>
+                )}
 
-                {/* Administration section */}
-                {visibleAdminNav.length > 0 && (
+                {/* Administration section — admin only */}
+                {!isEmployeeUser && visibleAdminNav.length > 0 && (
                     <div className="mt-3">
                         {collapsed ? (
                             <>

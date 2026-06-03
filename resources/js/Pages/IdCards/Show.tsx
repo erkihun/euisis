@@ -272,6 +272,7 @@ export default function IdCardShow({ card, can }: PageProps) {
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('id-cards.index')}
                     title={card.card_number}
                     description={card.employee?.full_name ?? ''}
                     actions={

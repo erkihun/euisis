@@ -35,6 +35,7 @@ export default function ShowPermission({
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('permissions.index')}
                     title={label}
                     description={permission.name}
                     actions={

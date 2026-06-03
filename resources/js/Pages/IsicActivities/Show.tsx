@@ -36,6 +36,7 @@ export default function IsicActivitiesShow({ isicActivity }: { isicActivity: any
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('isic-activities.index')}
                     title={`${isicActivity.isic_code} · ${isicActivity.name_en ?? isicActivity.name_am ?? ''}`}
                     actions={
                         <div className="flex gap-3">

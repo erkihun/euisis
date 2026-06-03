@@ -1,0 +1,76 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title'              => 'Institution Offices',
+    'office'             => 'Office',
+    'create'             => 'Create Office',
+    'edit'               => 'Edit Office',
+    'show'               => 'Office Details',
+    'delete'             => 'Delete Office',
+    'restore'            => 'Restore Office',
+    'move'               => 'Move Office',
+    'office_code'        => 'Office Code',
+    'office_name'        => 'Office Name',
+    'office_level'       => 'Office Level',
+    'geographic_area'    => 'Geographic Area',
+    'parent_office'      => 'Parent Office',
+    'institution'        => 'Institution',
+    'head_office'        => 'Head Office',
+    'status'             => 'Status',
+    'opened_on'          => 'Opened On',
+    'closed_on'          => 'Closed On',
+    'address'            => 'Address',
+    'phone'              => 'Phone Number',
+    'email'              => 'Email',
+    'notes'              => 'Notes',
+    'name_en'            => 'Name (English)',
+    'name_am'            => 'Name (Amharic)',
+    'short_name_en'      => 'Short Name (English)',
+    'short_name_am'      => 'Short Name (Amharic)',
+    'assigned_scope_type' => 'Assigned Scope Type',
+    'scope_self'         => 'Self Only',
+    'scope_subtree'      => 'Subtree (Self + Children)',
+    'is_head_office'     => 'Is Head Office',
+    'add_office'         => 'Add Office',
+    'no_offices'         => 'No offices found',
+    'select_institution' => 'Select Institution',
+    'select_parent_office' => 'Select Parent Office',
+    'no_parent'          => 'None (Root Office)',
+    'child_offices'      => 'Child Offices',
+    'back_to_list'       => '← Back to Institution Offices',
+    'tree_view'          => 'Tree View',
+
+    'levels' => [
+        'city'           => 'City',
+        'sub_city'       => 'Sub City',
+        'woreda'         => 'Woreda',
+        'branch'         => 'Branch',
+        'service_center' => 'Service Center',
+        'other'          => 'Other',
+    ],
+
+    'statuses' => [
+        'active'    => 'Active',
+        'inactive'  => 'Inactive',
+        'suspended' => 'Suspended',
+        'closed'    => 'Closed',
+    ],
+
+    'messages' => [
+        'created'  => 'Institution office created successfully.',
+        'updated'  => 'Institution office updated successfully.',
+        'moved'    => 'Institution office moved successfully.',
+        'deleted'  => 'Institution office deleted.',
+        'restored' => 'Institution office restored.',
+    ],
+
+    'validation' => [
+        'parent_must_same_institution'     => 'The parent office must belong to the same institution.',
+        'geographic_level_mismatch'        => 'The geographic organization level does not match the office level.',
+        'cannot_be_own_parent'             => 'An office cannot be its own parent.',
+        'circular_hierarchy_not_allowed'   => 'Circular hierarchy is not allowed.',
+        'invalid_institution'              => 'The selected institution does not exist.',
+    ],
+];

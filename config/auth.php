@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ProviderUser;
 use App\Models\User;
 
 return [
@@ -42,6 +43,16 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'cafeteria_provider' => [
+            'driver' => 'session',
+            'provider' => 'cafeteria_provider_users',
+        ],
+
+        'provider' => [
+            'driver' => 'session',
+            'provider' => 'provider_users',
+        ],
     ],
 
     /*
@@ -67,10 +78,15 @@ return [
             'model' => env('AUTH_MODEL', User::class),
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'cafeteria_provider_users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\CafeteriaProviderUser::class,
+        ],
+
+        'provider_users' => [
+            'driver' => 'eloquent',
+            'model' => ProviderUser::class,
+        ],
     ],
 
     /*

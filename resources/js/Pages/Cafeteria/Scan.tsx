@@ -233,7 +233,7 @@ export default function CafeteriaScan({
     // coveredDates: all calendar dates this scan "uses" (multi-day = scan → week_end)
     const [scanHistory, setScanHistory] = useState<{ ts: string; isExtra: boolean; coveredDates: string[] }[]>(() => {
         try {
-            const raw = localStorage.getItem(SCAN_HISTORY_KEY);
+            const raw = sessionStorage.getItem(SCAN_HISTORY_KEY);
             if (!raw) return [];
             const parsed = JSON.parse(raw) as { ts: string; isExtra: boolean; coveredDates?: string[] }[];
             const cutoff = new Date();
@@ -250,7 +250,7 @@ export default function CafeteriaScan({
     // Persist scan history to localStorage whenever it changes
     useEffect(() => {
         try {
-            localStorage.setItem(SCAN_HISTORY_KEY, JSON.stringify(scanHistory));
+            sessionStorage.setItem(SCAN_HISTORY_KEY, JSON.stringify(scanHistory));
         } catch { }
     }, [scanHistory]);
 

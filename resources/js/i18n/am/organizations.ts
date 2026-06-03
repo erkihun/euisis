@@ -59,6 +59,10 @@ const organizations = {
     parentOrganizationOutsideScope: 'የወላጅ ድርጅቱ ከተፈቀደልዎ ወሰን ውጭ ነው',
     serviceScope: 'የአገልግሎት ወሰን',
     parentAndChildCannotMatch: 'ወላጅ እና ልጅ ድርጅት አንድ መሆን አይችሉም',
+    helpText: 'ድርጅቶች ህጋዊ አካላትን፣ ቢሮዎችን እና ክፍለ ከተሞችን እና ወረዳዎችን ጨምሮ ጂኦግራፊያዊ አካባቢዎችን ይወክላሉ',
+    doNotCreateDepartmentsAsOrganizations: 'ክፍሎችን ወይም ቡድኖችን እንደ ድርጅቶች አትፍጠሩ — ይልቁንስ የድርጅት ዩኒቶችን ይጠቀሙ',
+    institutionOfficeHelp: 'የተቋም ቢሮዎች በጂኦግራፊያዊ አካባቢ ውስጥ የሚሠሩ ተቋማት ትክክለኛ ቢሮዎች ወይም ቅርንጫፎች ናቸው',
+    organizationUnitHelp: 'የድርጅት ዩኒቶች በተቋም ቢሮ ውስጥ ያሉ ውስጣዊ ዲፓርትመንቶች፣ ዳይሬክቶሬቶች እና ቡድኖች ናቸው',
 } as const;
 
 export default organizations;

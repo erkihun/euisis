@@ -365,76 +365,84 @@ export default function EmployeesCreate({
                         )}
                     </div>
 
-                    <div>
-                        <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
-                            {t('positions.organizationUnit')}
-                        </label>
-                        <select
-                            className={inputCls}
-                            value={form.data.organization_unit_id}
-                            onChange={(e) => changeOrganizationUnit(e.target.value)}
-                            disabled={!form.data.organization_id}
-                        >
-                            <option value="">{t('positions.selectOrganizationUnit')}</option>
-                            {filteredOrganizationUnits.map((unit) => (
-                                <option key={unit.id} value={unit.id}>
-                                    {unit.code ? `${unit.code} - ` : ''}{unit.name_en}
-                                </option>
-                            ))}
-                        </select>
-                        {form.errors.organization_unit_id && (
-                            <p className="mt-1 text-xs text-red-600">{form.errors.organization_unit_id}</p>
-                        )}
-                    </div>
+                    {!selectedPositionId && (
+                        <div>
+                            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
+                                {t('positions.organizationUnit')}
+                            </label>
+                            <select
+                                className={inputCls}
+                                value={form.data.organization_unit_id}
+                                onChange={(e) => changeOrganizationUnit(e.target.value)}
+                                disabled={!form.data.organization_id}
+                            >
+                                <option value="">{t('positions.selectOrganizationUnit')}</option>
+                                {filteredOrganizationUnits.map((unit) => (
+                                    <option key={unit.id} value={unit.id}>
+                                        {unit.code ? `${unit.code} - ` : ''}{unit.name_en}
+                                    </option>
+                                ))}
+                            </select>
+                            {form.errors.organization_unit_id && (
+                                <p className="mt-1 text-xs text-red-600">{form.errors.organization_unit_id}</p>
+                            )}
+                        </div>
+                    )}
 
-                    <div>
-                        <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
-                            {t('organizations.hierarchyVersion')}
-                        </label>
-                        <select
-                            className={inputCls}
-                            value={form.data.hierarchy_version_id}
-                            onChange={(e) => form.setData('hierarchy_version_id', e.target.value)}
-                        >
-                            <option value="">{t('employees.noHierarchyVersion')}</option>
-                            {hierarchyVersions.map((v) => (
-                                <option key={v.id} value={v.id}>
-                                    {v.version_name}{v.status ? ` (${v.status})` : ''}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {!selectedPositionId && (
+                        <div>
+                            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
+                                {t('organizations.hierarchyVersion')}
+                            </label>
+                            <select
+                                className={inputCls}
+                                value={form.data.hierarchy_version_id}
+                                onChange={(e) => form.setData('hierarchy_version_id', e.target.value)}
+                            >
+                                <option value="">{t('employees.noHierarchyVersion')}</option>
+                                {hierarchyVersions.map((v) => (
+                                    <option key={v.id} value={v.id}>
+                                        {v.version_name}{v.status ? ` (${v.status})` : ''}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
-                    <div>
-                        <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
-                            {t('positions.title')}
-                        </label>
-                        <select
-                            className={inputCls}
-                            value={form.data.position_id}
-                            onChange={(e) => changePosition(e.target.value)}
-                            disabled={!form.data.organization_id}
-                        >
-                            <option value="">{t('employees.selectPosition')}</option>
-                            {filteredPositions.map((pos) => (
-                                <option key={pos.id} value={pos.id}>
-                                    {pos.job_position_code ? `${pos.job_position_code} - ` : ''}{pos.title_en}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {!selectedPositionId && (
+                        <div>
+                            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
+                                {t('positions.title')}
+                            </label>
+                            <select
+                                className={inputCls}
+                                value={form.data.position_id}
+                                onChange={(e) => changePosition(e.target.value)}
+                                disabled={!form.data.organization_id}
+                            >
+                                <option value="">{t('employees.selectPosition')}</option>
+                                {filteredPositions.map((pos) => (
+                                    <option key={pos.id} value={pos.id}>
+                                        {pos.job_position_code ? `${pos.job_position_code} - ` : ''}{pos.title_en}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
-                    <div>
-                        <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
-                            {t('employees.orCreatePosition')}
-                        </label>
-                        <input
-                            className={inputCls}
-                            placeholder={t('employees.orCreatePosition')}
-                            value={form.data.position_title}
-                            onChange={(e) => form.setData('position_title', e.target.value)}
-                        />
-                    </div>
+                    {!selectedPositionId && (
+                        <div>
+                            <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">
+                                {t('employees.orCreatePosition')}
+                            </label>
+                            <input
+                                className={inputCls}
+                                placeholder={t('employees.orCreatePosition')}
+                                value={form.data.position_title}
+                                onChange={(e) => form.setData('position_title', e.target.value)}
+                            />
+                        </div>
+                    )}
 
                     <div>
                         <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-slate-400">

@@ -34,8 +34,9 @@ export default function ProvidersCreate({ organizations }: { organizations: OrgO
     }
 
     return (
-        <AuthenticatedLayout header={<PageHeader title={t('cafeteria.addProvider')} />}>
-            <Head title={t('cafeteria.addProvider')} />
+        <AuthenticatedLayout
+            header={<PageHeader title={t('cafeteria.addProvider')} backHref={route('cafeteria.providers.index')} />}
+        >
             <form onSubmit={submit} className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div className="border-b border-gray-200 px-6 py-4 dark:border-slate-800">
                     <h2 className="text-base font-semibold text-gray-900 dark:text-slate-100">{t('cafeteria.provider')}</h2>

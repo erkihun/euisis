@@ -86,6 +86,9 @@ const common = {
     remove: 'Remove',
     user: 'User',
     optional: 'Optional',
+    organization: 'Organization',
+    allOrganizations: 'All Organizations',
+    viewAll: 'View All',
 } as const;
 
 export default common;

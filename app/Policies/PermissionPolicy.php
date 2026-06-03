@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\Permission;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 class PermissionPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('permissions.viewAny');

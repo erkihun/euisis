@@ -1,4 +1,22 @@
+/**
+ * Thin wrapper around Sonner so the rest of the app uses a stable
+ * `toast.success / .error / .warning / .info` API regardless of the
+ * underlying library.
+ */
+import { toast as sonner } from 'sonner';
+
+export const toast = {
+    success: (message: string) => sonner.success(message),
+    error:   (message: string) => sonner.error(message),
+    warning: (message: string) => sonner.warning(message),
+    info:    (message: string) => sonner.info(message),
+    dismiss: (id?: string | number) => sonner.dismiss(id),
+};
+
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
+
+// ── Legacy compatibility stubs (used by orphaned Toast.tsx / useToast.ts) ─────
+// These files are no longer rendered but TypeScript still type-checks them.
 
 export interface ToastItem {
     id: string;
@@ -6,37 +24,7 @@ export interface ToastItem {
     message: string;
 }
 
-type Listener = (toasts: ToastItem[]) => void;
-
-let toasts: ToastItem[] = [];
-const listeners: Set<Listener> = new Set();
-
-function notify() {
-    listeners.forEach((fn) => fn([...toasts]));
+/** No-op stub — Sonner manages its own subscription internally. */
+export function subscribeToToasts(_fn: (toasts: ToastItem[]) => void): () => void {
+    return () => { /* noop */ };
 }
-
-function add(type: ToastType, message: string): string {
-    const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    toasts = [...toasts, { id, type, message }];
-    notify();
-    return id;
-}
-
-function dismiss(id: string) {
-    toasts = toasts.filter((t) => t.id !== id);
-    notify();
-}
-
-export function subscribeToToasts(fn: Listener): () => void {
-    listeners.add(fn);
-    fn([...toasts]);
-    return () => { listeners.delete(fn); };
-}
-
-export const toast = {
-    success: (message: string) => add('success', message),
-    error: (message: string) => add('error', message),
-    warning: (message: string) => add('warning', message),
-    info: (message: string) => add('info', message),
-    dismiss,
-};

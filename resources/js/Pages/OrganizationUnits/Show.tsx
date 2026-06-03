@@ -27,6 +27,7 @@ export default function OrganizationUnitsShow({ unit }: Props) {
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('organizations.show', unit.organization_id)}
                     title={unit.name_en}
                     actions={
                         <div className="flex gap-2">

@@ -1,4 +1,5 @@
 const auth = {
+    loggedIn: 'ወደ ስርዓቱ ተገብቷል!',
     login: 'ግባ',
     logout: 'ውጣ',
     register: 'ምዝገባ',

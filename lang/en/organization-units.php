@@ -17,4 +17,9 @@ return [
     'root_unit' => 'Root Unit',
     'add_organization_unit' => 'Add Organization Unit',
     'back_to_organizations' => 'Back to Organizations',
+    'help_text' => 'Organization Units are internal departments, directorates, and teams inside an institution office.',
+    'do_not_create_offices_as_units' => 'Do not create institution offices as organization units — use Institution Offices instead.',
+    'parent_unit_must_same_office' => 'Parent unit must belong to the same institution office.',
+    'institution_office' => 'Institution Office',
+    'select_institution_office' => 'Select Institution Office',
 ];

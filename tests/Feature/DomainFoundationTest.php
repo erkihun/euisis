@@ -12,16 +12,16 @@ use App\Actions\IdCards\ReplaceCardAction;
 use App\Actions\IdCards\ReportLostOrDamagedCardAction;
 use App\Actions\IdCards\SubmitCardRequestAction;
 use App\Actions\Organizations\PublishHierarchyVersionAction;
-use App\Actions\Transfers\ApproveEmployeeTransferAction;
-use App\Actions\Transfers\ConfirmCurrentOrganizationTransferAction;
-use App\Actions\Transfers\RequestEmployeeTransferAction;
-use App\Actions\Transfers\SubmitEmployeeTransferAction;
+use App\Actions\Transfers\CompleteTransferAction;
+use App\Enums\AssignmentStatus;
 use App\Enums\CardStatus;
 use App\Enums\EmployeeStatus;
 use App\Enums\HierarchyVersionStatus;
 use App\Enums\OrganizationRelationshipType;
 use App\Enums\OrganizationScopeType;
 use App\Enums\OrganizationStatus;
+use App\Enums\TransferAnnouncementStatus;
+use App\Enums\TransferApplicationStatus;
 use App\Models\AuditLog;
 use App\Models\Employee;
 use App\Models\EmployeeAssignment;
@@ -32,8 +32,12 @@ use App\Models\OrganizationClosurePath;
 use App\Models\OrganizationEdge;
 use App\Models\OrganizationNameHistory;
 use App\Models\OrganizationType;
+use App\Models\Position;
 use App\Models\ServiceProvider;
 use App\Models\ServiceType;
+use App\Models\TransferAnnouncement;
+use App\Models\TransferApplication;
+use App\Models\TransferSetting;
 use App\Models\User;
 use App\Models\UserOrganizationScope;
 use App\Services\Verification\VerifyCardForServiceAction;
@@ -222,15 +226,50 @@ it('registers employee, flags duplicates, and preserves identity across transfer
     expect($second->fresh()->employeeDuplicateFlags()->count())->toBeGreaterThan(0);
     expect(OrganizationNameHistory::query()->count())->toBe(0);
 
-    $pending = app(RequestEmployeeTransferAction::class)->execute($first, $child->id, $actor, 'reassignment');
-    app(SubmitEmployeeTransferAction::class)->execute($pending, $actor);
-    app(ConfirmCurrentOrganizationTransferAction::class)->execute($pending->fresh(), $actor);
-    $originalId = $first->id;
-    $transferred = app(ApproveEmployeeTransferAction::class)->execute($pending->fresh(), $actor);
+    // Use new Transfer Module to verify employee identity is preserved across transfer
+    $toPosition = Position::query()->create([
+        'organization_id' => $child->id,
+        'title_en' => 'Transfer Target Position',
+        'job_position_code' => 'TTP-001',
+        'is_active' => true,
+    ]);
 
-    expect($transferred->employee->id)->toBe($originalId);
-    expect($transferred->employee->fresh()->currentAssignment->organization_id)->toBe($child->id);
-    expect(EmployeeAssignment::query()->where('employee_id', $first->id)->where('assignment_status', 'closed')->exists())->toBeTrue();
+    $announcement = TransferAnnouncement::query()->create([
+        'organization_id' => $child->id,
+        'position_id' => $toPosition->id,
+        'number_of_vacancies' => 1,
+        'opening_date' => now()->subDay()->toDateString(),
+        'closing_date' => now()->addDays(30)->toDateString(),
+        'status' => TransferAnnouncementStatus::Published,
+        'created_by' => $actor->id,
+    ]);
+
+    $settings = TransferSetting::current();
+    $settings->update([
+        'releasing_consent_required' => false,
+        'receiving_consent_required' => false,
+        'final_approval_required' => false,
+        'card_reprint_policy' => 'no_reprint',
+        'service_recalculation_policy' => 'no_recalculation',
+    ]);
+
+    $application = TransferApplication::query()->create([
+        'announcement_id' => $announcement->id,
+        'employee_id' => $first->id,
+        'current_assignment_id' => $first->current_assignment_id,
+        'releasing_organization_id' => $root->id,
+        'receiving_organization_id' => $child->id,
+        'status' => TransferApplicationStatus::Approved,
+        'submitted_at' => now(),
+    ]);
+
+    $originalId = $first->id;
+    app(CompleteTransferAction::class)->execute($application->fresh(), $actor);
+
+    $first->refresh();
+    expect($first->id)->toBe($originalId);
+    expect($first->currentAssignment->organization_id)->toBe($child->id);
+    expect(EmployeeAssignment::query()->where('employee_id', $first->id)->where('assignment_status', AssignmentStatus::Closed->value)->exists())->toBeTrue();
 });
 
 it('enforces card approval, print, issue, token privacy, replacement, and verification rules', function (): void {

@@ -56,6 +56,7 @@ export default function HierarchyVersionShow({
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('hierarchy-versions.index')}
                     title={t('hierarchyVersions.hierarchyVersionDetails')}
                     description={version.version_name}
                     actions={

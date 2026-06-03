@@ -26,6 +26,7 @@ export default function ServiceTypesShow({
         <AuthenticatedLayout
             header={(
                 <PageHeader
+                    backHref={route('service-types.index')}
                     title={serviceType.name_en}
                     actions={(
                         <div className="flex gap-3">

@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\Occupation;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class OccupationPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('occupations.viewAny');

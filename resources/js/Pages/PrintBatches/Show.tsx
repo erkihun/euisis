@@ -91,16 +91,9 @@ export default function PrintBatchShow({ batch, can }: PageProps) {
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('print-batches.index')}
                     title={batch.batch_number}
                     description={`${batch.total_cards} ${t('idCards.cardsInBatch').toLowerCase()}`}
-                    actions={
-                        <Link
-                            href={route('print-batches.index')}
-                            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                        >
-                            {t('common.back')}
-                        </Link>
-                    }
                 />
             }
         >

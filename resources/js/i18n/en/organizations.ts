@@ -59,6 +59,10 @@ const organizations = {
     parentOrganizationOutsideScope: 'Parent organization is outside your allowed scope',
     serviceScope: 'Service scope',
     parentAndChildCannotMatch: 'Parent and child organization cannot be the same',
+    helpText: 'Organizations represent legal entities, bureaus, and geographic areas such as sub-cities and woredas',
+    doNotCreateDepartmentsAsOrganizations: 'Do not create departments or teams as organizations — use Organization Units instead',
+    institutionOfficeHelp: 'Institution Offices are the actual offices or branches of an institution operating in a geographic area',
+    organizationUnitHelp: 'Organization Units are internal departments, directorates, and teams inside an institution office',
 } as const;
 
 export default organizations;

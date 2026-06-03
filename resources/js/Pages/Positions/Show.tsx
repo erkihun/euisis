@@ -11,6 +11,7 @@ export default function PositionsShow({ position }: { position: any }) {
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('positions.index')}
                     title={`${position.job_position_code} · ${position.title_en}`}
                     actions={
                         <div className="flex gap-3">

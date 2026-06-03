@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\EmployeeStatus;
 use App\Models\Concerns\HasUuidPrimaryKey;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -46,20 +47,22 @@ class Employee extends Model
     protected function casts(): array
     {
         return [
-            'date_of_birth'      => 'date',
-            'status'             => EmployeeStatus::class,
+            'date_of_birth' => 'date',
+            'status' => EmployeeStatus::class,
             'data_quality_score' => 'float',
-            'metadata'           => 'array',
-            'is_demo'            => 'bool',
+            'metadata' => 'array',
+            'is_demo' => 'bool',
         ];
     }
 
     public function getNationalIdAttribute(mixed $value): ?string
     {
-        if ($value === null) return null;
+        if ($value === null) {
+            return null;
+        }
         try {
             return decrypt($value);
-        } catch (\Illuminate\Contracts\Encryption\DecryptException) {
+        } catch (DecryptException) {
             return (string) $value;
         }
     }
@@ -67,7 +70,7 @@ class Employee extends Model
     public function setNationalIdAttribute(mixed $value): void
     {
         $plain = ($value !== null && $value !== '') ? (string) $value : null;
-        $this->attributes['national_id']      = $plain !== null ? encrypt($plain) : null;
+        $this->attributes['national_id'] = $plain !== null ? encrypt($plain) : null;
         $this->attributes['national_id_hash'] = $plain !== null ? hash('sha256', $plain) : null;
     }
 
@@ -109,6 +112,11 @@ class Employee extends Model
     public function transfers(): HasMany
     {
         return $this->hasMany(EmployeeTransfer::class);
+    }
+
+    public function transferApplications(): HasMany
+    {
+        return $this->hasMany(TransferApplication::class);
     }
 
     public function currentOrganization(): HasManyThrough

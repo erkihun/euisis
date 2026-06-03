@@ -19,7 +19,13 @@ class ServiceType extends Model
         'name_en',
         'name_am',
         'description',
+        'description_en',
+        'description_am',
+        'module_key',
+        'route_prefix',
+        'icon',
         'is_active',
+        'sort_order',
         'deleted_by',
         'deletion_reason',
     ];
@@ -28,12 +34,18 @@ class ServiceType extends Model
     {
         return [
             'is_active' => 'bool',
+            'sort_order' => 'integer',
         ];
     }
 
     public function providers(): HasMany
     {
         return $this->hasMany(ServiceProvider::class);
+    }
+
+    public function providerServices(): HasMany
+    {
+        return $this->hasMany(ProviderService::class);
     }
 
     public function entitlementRules(): HasMany

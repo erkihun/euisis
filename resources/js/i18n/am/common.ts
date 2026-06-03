@@ -86,6 +86,9 @@ const common = {
     remove: 'አስወግድ',
     user: 'ተጠቃሚ',
     optional: 'አማራጭ',
+    organization: 'ድርጅት',
+    allOrganizations: 'ሁሉም ድርጅቶች',
+    viewAll: 'ሁሉንም ይመልከቱ',
 } as const;
 
 export default common;

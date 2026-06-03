@@ -166,16 +166,9 @@ export default function CardRequestShow({ cardRequest, can }: PageProps) {
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('card-requests.index')}
                     title={t('idCards.requestDetails')}
                     description={cardRequest.employee?.full_name ?? ''}
-                    actions={
-                        <Link
-                            href={route('card-requests.index')}
-                            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                        >
-                            {t('common.back')}
-                        </Link>
-                    }
                 />
             }
         >

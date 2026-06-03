@@ -119,42 +119,42 @@ class IdCardController extends Controller
     {
         $issueCardAction->execute($card, $request->user(), $request->input('issued_to'), $request->input('received_by'));
 
-        return back()->with('success', 'Card issued successfully.');
+        return back()->with('success', __('id-cards.issued_successfully'));
     }
 
     public function activate(ActivateCardRequest $request, IdCard $card, ActivateCardAction $activateCardAction): RedirectResponse
     {
         $activateCardAction->execute($card, $request->user(), $request->input('notes'));
 
-        return back()->with('success', 'Card activated successfully.');
+        return back()->with('success', __('id-cards.activated_successfully'));
     }
 
     public function reportLost(ReportLostCardRequest $request, IdCard $card, ReportLostOrDamagedCardAction $action): RedirectResponse
     {
         $action->execute($card, 'lost', $request->user(), $request->input('reason'));
 
-        return back()->with('success', 'Card reported as lost.');
+        return back()->with('success', __('id-cards.reported_lost'));
     }
 
     public function reportDamaged(ReportDamagedCardRequest $request, IdCard $card, ReportLostOrDamagedCardAction $action): RedirectResponse
     {
         $action->execute($card, 'damaged', $request->user(), $request->input('reason'));
 
-        return back()->with('success', 'Card reported as damaged.');
+        return back()->with('success', __('id-cards.reported_damaged'));
     }
 
     public function replace(ReplaceCardRequest $request, IdCard $card, ReplaceCardAction $replaceCardAction): RedirectResponse
     {
         $replaceCardAction->execute($card, $request->user(), $request->input('reason'));
 
-        return redirect()->route('card-requests.index')->with('success', 'Replacement request submitted.');
+        return redirect()->route('card-requests.index')->with('success', __('id-cards.replacement_submitted'));
     }
 
     public function revoke(RevokeCardRequest $request, IdCard $card, RevokeCardAction $revokeCardAction): RedirectResponse
     {
         $revokeCardAction->execute($card, $request->user(), $request->input('reason'));
 
-        return back()->with('success', 'Card revoked.');
+        return back()->with('success', __('id-cards.revoked_successfully'));
     }
 
     public function exportAudit(Request $request, IdCard $card, WriteAuditLogAction $writeAuditLogAction): JsonResponse

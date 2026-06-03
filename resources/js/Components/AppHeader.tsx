@@ -1,9 +1,12 @@
+import { useEffect, useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import { MenuIcon, ChevronDown, LogOut, SettingsIcon } from '@/Components/Icons';
+import { Search } from 'lucide-react';
 import ThemeToggle from '@/Components/ThemeToggle';
 import Dropdown from '@/Components/Dropdown';
 import LanguageSwitcher from '@/Components/LanguageSwitcher';
 import UserAvatar from '@/Components/UserAvatar';
+import AppCommandPalette from '@/Components/ui/AppCommandPalette';
 import { useLocale } from '@/hooks/useLocale';
 import type { PageProps } from '@/types';
 
@@ -16,8 +19,22 @@ export default function AppHeader({ onMenuClick }: Props) {
     const user = auth.user;
     const roles = auth.roles ?? [];
     const { t } = useLocale();
+    const [paletteOpen, setPaletteOpen] = useState(false);
+
+    useEffect(() => {
+        function onKey(e: KeyboardEvent) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                setPaletteOpen((v) => !v);
+            }
+        }
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, []);
 
     return (
+        <>
+        <AppCommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
         <header className="flex h-14 shrink-0 items-center border-b border-gray-200 bg-white px-4 sm:px-6 dark:border-slate-800 dark:bg-slate-900" style={{ borderTop: '3px solid var(--color-accent)' }}>
             {/* Mobile menu button */}
             <button
@@ -27,6 +44,20 @@ export default function AppHeader({ onMenuClick }: Props) {
                 aria-label="Open sidebar"
             >
                 <MenuIcon className="h-5 w-5" aria-hidden="true" />
+            </button>
+
+            {/* Search / command trigger */}
+            <button
+                type="button"
+                onClick={() => setPaletteOpen(true)}
+                className="hidden items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm text-gray-500 transition-colors hover:bg-gray-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 sm:flex"
+                aria-label={t('nav.commandMenu')}
+            >
+                <Search className="h-3.5 w-3.5" aria-hidden="true" />
+                <span className="hidden md:inline">{t('common.search')}…</span>
+                <kbd className="ml-1 hidden rounded border border-gray-200 px-1 py-0.5 text-[10px] font-medium dark:border-slate-700 lg:block">
+                    Ctrl K
+                </kbd>
             </button>
 
             <div className="flex-1" />
@@ -110,5 +141,6 @@ export default function AppHeader({ onMenuClick }: Props) {
                 </Dropdown>
             </div>
         </header>
+        </>
     );
 }

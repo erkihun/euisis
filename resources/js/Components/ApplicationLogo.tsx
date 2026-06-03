@@ -14,6 +14,7 @@ export default function ApplicationLogo({ className = 'h-8 w-8' }: Props) {
                 src={logoUrl}
                 alt=""
                 className={className}
+                style={{ objectFit: 'contain', objectPosition: 'center' }}
             />
         );
     }

@@ -8,6 +8,7 @@ use App\Actions\Audit\WriteAuditLogAction;
 use App\Actions\CodeRules\GenerateCodeAction;
 use App\Actions\Employees\RegisterEmployeeAction;
 use App\Actions\Transfers\RequestEmployeeTransferAction;
+use App\Enums\AssignmentStatus;
 use App\Enums\AuditEventType;
 use App\Enums\CodeRuleEntityType;
 use App\Enums\HierarchyVersionStatus;
@@ -229,7 +230,7 @@ class EmployeeController extends Controller
                 ->where('is_active', true)
                 ->whereDoesntHave('assignments', fn ($q) => $q
                     ->where('is_current', true)
-                    ->where('assignment_status', \App\Enums\AssignmentStatus::Active)
+                    ->where('assignment_status', AssignmentStatus::Active)
                 )
                 ->when($accessibleOrganizationIds->isNotEmpty(), fn ($query) => $query->whereIn('organization_id', $accessibleOrganizationIds))
                 ->when($selectedOrganizationId !== null, fn ($query) => $query->where('organization_id', $selectedOrganizationId))
@@ -261,7 +262,7 @@ class EmployeeController extends Controller
             ->whereNull('deleted_at')
             ->whereDoesntHave('assignments', fn ($q) => $q
                 ->where('is_current', true)
-                ->where('assignment_status', \App\Enums\AssignmentStatus::Active)
+                ->where('assignment_status', AssignmentStatus::Active)
             )
             ->orderBy('title_en');
 
@@ -499,7 +500,7 @@ class EmployeeController extends Controller
             now()->toDateString(),
         );
 
-        return to_route('employee-transfers.show', $transfer)
-            ->with('flash', ['message' => __('Transfer draft created. Continue the workflow in Employee Transfers.'), 'type' => 'success']);
+        return to_route('transfers.dashboard')
+            ->with('flash', ['message' => __('Transfer draft created.'), 'type' => 'success']);
     }
 }

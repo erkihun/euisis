@@ -169,6 +169,8 @@ enum AuditEventType: string
     case CafeteriaScanCalendarGenerated = 'cafeteria_scan.calendar_generated';
     case CafeteriaReportGenerated = 'cafeteria_report_generated';
     case CafeteriaReportExported = 'cafeteria_report_exported';
+    case CafeteriaProviderTransactionsExported = 'cafeteria_provider_transactions.exported';
+    case CafeteriaProviderPaymentClaimExported = 'cafeteria_provider_payment_claim.exported';
     case CafeteriaSettingsUpdated = 'cafeteria_settings_updated';
     case CafeteriaDayRuleUpdated = 'cafeteria_day_rule_updated';
     case CafeteriaSpecialDayCreated = 'cafeteria_special_day_created';
@@ -180,6 +182,66 @@ enum AuditEventType: string
     case EmployeeCafeteriaExclusionEnded = 'employee_cafeteria_exclusion_ended';
     case EmployeeCafeteriaExclusionArchived = 'employee_cafeteria_exclusion_archived';
     case EmployeeCafeteriaExclusionRestored = 'employee_cafeteria_exclusion_restored';
+
+    // ── Position Establishments ────────────────────────────────────────────
+    case PositionEstablishmentCreated = 'position_establishment_created';
+    case PositionEstablishmentUpdated = 'position_establishment_updated';
+    case PositionEstablishmentApproved = 'position_establishment_approved';
+    case PositionEstablishmentArchived = 'position_establishment_archived';
+    case PositionEstablishmentRestored = 'position_establishment_restored';
+
+    // ── Vacancy Announcements ──────────────────────────────────────────────
+    case VacancyAnnouncementCreated = 'vacancy_announcement_created';
+    case VacancyAnnouncementUpdated = 'vacancy_announcement_updated';
+    case VacancyAnnouncementPublished = 'vacancy_announcement_published';
+    case VacancyAnnouncementClosed = 'vacancy_announcement_closed';
+    case VacancyAnnouncementCancelled = 'vacancy_announcement_cancelled';
+
+    // ── Vacancy Applications ───────────────────────────────────────────────
+    case VacancyApplicationSubmitted = 'vacancy_application_submitted';
+    case VacancyApplicationWithdrawn = 'vacancy_application_withdrawn';
+    case VacancyApplicationScreened = 'vacancy_application_screened';
+    case VacancyApplicationShortlisted = 'vacancy_application_shortlisted';
+    case VacancyApplicationSelected = 'vacancy_application_selected';
+    case VacancyApplicationRejected = 'vacancy_application_rejected';
+    case VacancyTransferInitiated = 'vacancy_transfer_initiated';
+    case VacancyTransferCompleted = 'vacancy_transfer_completed';
+
+    // ── Transfer Module ───────────────────────────────────────────────────────
+    case TransferSettingsUpdated = 'transfer_settings_updated';
+    case TransferAnnouncementCreated = 'transfer_announcement_created';
+    case TransferAnnouncementUpdated = 'transfer_announcement_updated';
+    case TransferAnnouncementPublished = 'transfer_announcement_published';
+    case TransferAnnouncementClosed = 'transfer_announcement_closed';
+    case TransferAnnouncementCancelled = 'transfer_announcement_cancelled';
+    case TransferApplicationSubmitted = 'transfer_application_submitted';
+    case TransferApplicationUnderReview = 'transfer_application_under_review';
+    case TransferApplicationVerified = 'transfer_application_verified';
+    case TransferApplicationSelected = 'transfer_application_selected';
+    case TransferApplicationRejected = 'transfer_application_rejected';
+    case TransferApplicationWithdrawn = 'transfer_application_withdrawn';
+    case TransferApplicationCancelled = 'transfer_application_cancelled';
+    case TransferDocumentUploaded = 'transfer_document_uploaded';
+    case TransferDocumentVerified = 'transfer_document_verified';
+    case TransferDocumentRejected = 'transfer_document_rejected';
+    case TransferReleaseApproved = 'transfer_release_approved';
+    case TransferReleaseRejected = 'transfer_release_rejected';
+    case TransferReceivingApproved = 'transfer_receiving_approved';
+    case TransferReceivingRejected = 'transfer_receiving_rejected';
+    case TransferFinalApproved = 'transfer_final_approved';
+    case TransferFinalRejected = 'transfer_final_rejected';
+    case TransferOverrideRequested = 'transfer_override_requested';
+    case TransferOverrideApproved = 'transfer_override_approved';
+    case TransferOverrideRejected = 'transfer_override_rejected';
+    case TransferModuleCompleted = 'transfer_module_completed';
+
+    // ── Institution Offices ────────────────────────────────────────────────
+    case InstitutionOfficeCreated = 'institution_office_created';
+    case InstitutionOfficeUpdated = 'institution_office_updated';
+    case InstitutionOfficeMoved = 'institution_office_moved';
+    case InstitutionOfficeDeleted = 'institution_office_deleted';
+    case InstitutionOfficeRestored = 'institution_office_restored';
+    case InstitutionOfficeStatusChanged = 'institution_office_status_changed';
 
     // ── MFA (TOTP) ─────────────────────────────────────────────────────────
     case MfaSetupStarted = 'mfa.setup_started';

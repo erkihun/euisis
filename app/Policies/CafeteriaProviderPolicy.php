@@ -7,9 +7,12 @@ namespace App\Policies;
 use App\Models\CafeteriaProvider;
 use App\Models\User;
 use App\Services\Cafeteria\CafeteriaProviderAccessService;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class CafeteriaProviderPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('cafeteria_providers.viewAny');

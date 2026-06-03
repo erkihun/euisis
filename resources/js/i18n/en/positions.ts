@@ -44,6 +44,19 @@ const positions = {
     noOrganizationUnits: 'No organizational units found for this organization.',
     noOrganizationUnitsHint: 'Please create organizational units before adding positions.',
     selectUnitToViewPositions: 'Select an organizational unit to view its positions.',
+    newJobPositionsStatus: 'Job Positions Status',
+    newJobPositionsStatusDescription: 'Monitor total, assigned, and vacant job positions by department.',
+    totalJobPositions: 'Total Job Positions',
+    filledPositions: 'Assigned Positions',
+    vacantPositions: 'Vacant Positions',
+    total: 'Total',
+    filled: 'Assigned',
+    vacant: 'Vacant',
+    slots: 'Slots',
+    occupancy: 'Occupancy',
+    positionTitle: 'Title',
+    unassignedDepartment: 'Unassigned Department',
+    noPositionStatusFound: 'No job positions found.',
 } as const;
 
 export default positions;

@@ -55,7 +55,7 @@ class CalendarService
             return $this->ethiopian->formatGregorianDateAsEthiopian($carbon, $locale);
         }
 
-        return $carbon->format('Y-m-d');
+        return $carbon->format('F j, Y');
     }
 
     /**
@@ -80,7 +80,7 @@ class CalendarService
             return "{$datePart} {$timePart}";
         }
 
-        return $carbon->format('Y-m-d H:i');
+        return $carbon->format('F j, Y H:i');
     }
 
     // ─── Parsing: localized input → Gregorian ────────────────────────────────

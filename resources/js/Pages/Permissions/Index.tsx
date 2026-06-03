@@ -37,13 +37,14 @@ export default function PermissionsIndex({
     filters,
     can,
 }: {
-    permissions: Permission[];
+    permissions: Permission[] | { data: Permission[] };
     groups: string[];
     filters: { search: string; group: string };
     can: { create: boolean };
 }) {
     const { t, locale } = useLocale();
     const [view, setView] = useState<'table' | 'grouped'>('grouped');
+    const permissionRows = Array.isArray(permissions) ? permissions : permissions.data;
 
     function label(p: Permission): string {
         return (locale === 'am' ? p.label_am : null) ?? p.label_en ?? p.name;
@@ -62,7 +63,7 @@ export default function PermissionsIndex({
         router.delete(route('permissions.destroy', id), { preserveScroll: true });
     }
 
-    const grouped = permissions.reduce<Record<string, Permission[]>>((acc, p) => {
+    const grouped = permissionRows.reduce<Record<string, Permission[]>>((acc, p) => {
         const key = p.group ?? 'other';
         (acc[key] ??= []).push(p);
         return acc;
@@ -127,13 +128,13 @@ export default function PermissionsIndex({
                 </div>
             </div>
 
-            {permissions.length === 0 ? (
+            {permissionRows.length === 0 ? (
                 <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <EmptyState title={t('permissions.noPermissionsFound')} description="" />
                 </div>
             ) : view === 'table' ? (
                 <TableView
-                    permissions={permissions}
+                    permissions={permissionRows}
                     label={label}
                     description={description}
                     onDestroy={destroy}

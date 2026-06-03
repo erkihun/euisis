@@ -20,11 +20,21 @@ type CanProps = {
     createChild: boolean;
 };
 
+type InstitutionOfficePreview = {
+    id: string;
+    office_code: string;
+    name_en: string | null;
+    office_level: string;
+    status: string;
+};
+
 export default function OrganizationShow({
     organization,
+    parentOrganizationId,
     currentAssignmentsCount,
     descendants,
     can,
+    institutionOffices = [],
 }: {
     organization: {
         id: string;
@@ -41,9 +51,11 @@ export default function OrganizationShow({
         branding_primary_color: string | null;
         branding_secondary_color: string | null;
     };
+    parentOrganizationId: string | null;
     currentAssignmentsCount: number;
     descendants: Descendant[];
     can: CanProps;
+    institutionOffices?: InstitutionOfficePreview[];
 }) {
     const { t } = useLocale();
     const archiveForm = useForm({});
@@ -59,6 +71,7 @@ export default function OrganizationShow({
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={parentOrganizationId ? route('organizations.show', parentOrganizationId) : route('organizations.index')}
                     title={organization.name_en}
                     description={organization.code}
                     actions={
@@ -225,6 +238,82 @@ export default function OrganizationShow({
                     </div>
                 </section>
             )}
+
+            {/* Institution Offices */}
+            <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900 dark:text-slate-100">
+                        {t('institutionOffices.title')} ({institutionOffices.length})
+                    </h3>
+                    <Link
+                        href={`${route('institution-offices.create')}?institution_id=${organization.id}`}
+                        className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                    >
+                        + {t('institutionOffices.addOffice')}
+                    </Link>
+                </div>
+                {institutionOffices.length === 0 ? (
+                    <p className="mt-4 text-sm text-gray-400 dark:text-slate-500">
+                        {t('institutionOffices.noOffices')}
+                    </p>
+                ) : (
+                    <div className="mt-4 overflow-hidden rounded-xl border border-gray-100 dark:border-slate-800">
+                        <table className="min-w-full text-left text-sm">
+                            <thead className="bg-gray-50 dark:bg-slate-950">
+                                <tr>
+                                    {[
+                                        t('institutionOffices.officeCode'),
+                                        t('institutionOffices.officeName'),
+                                        t('institutionOffices.officeLevel'),
+                                        t('institutionOffices.status'),
+                                        '',
+                                    ].map((h) => (
+                                        <th
+                                            key={h}
+                                            className="px-4 py-2 text-xs font-semibold uppercase text-gray-500 dark:text-slate-400"
+                                        >
+                                            {h}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {institutionOffices.map((office) => (
+                                    <tr
+                                        key={office.id}
+                                        className="border-t border-gray-100 dark:border-slate-800"
+                                    >
+                                        <td className="px-4 py-2 font-mono text-xs text-gray-500 dark:text-slate-400">
+                                            {office.office_code}
+                                        </td>
+                                        <td className="px-4 py-2 text-sm text-gray-700 dark:text-slate-200">
+                                            {office.name_en ?? '—'}
+                                        </td>
+                                        <td className="px-4 py-2">
+                                            <span className="rounded-full bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                                                {office.office_level}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-2">
+                                            <span className="text-xs text-gray-500 dark:text-slate-400">
+                                                {office.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-2">
+                                            <Link
+                                                href={route('institution-offices.show', office.id)}
+                                                className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                                            >
+                                                {t('common.view')}
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </section>
 
             <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
                 <h3 className="font-semibold text-gray-900 dark:text-slate-100">{t('organizations.nameHistory')}</h3>

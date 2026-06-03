@@ -2,29 +2,66 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Employee\EmployeePortalController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProviderPortal\Auth\ProviderLoginController;
+use App\Http\Controllers\ProviderPortal\ProviderDashboardController;
+use App\Http\Controllers\ProviderPortal\ProviderFoodOrderController;
+use App\Http\Controllers\ProviderPortal\ProviderLedgerController;
+use App\Http\Controllers\ProviderPortal\ProviderMenuController;
+use App\Http\Controllers\ProviderPortal\ProviderProfileController;
+use App\Http\Controllers\ProviderPortal\ProviderReportController;
+use App\Http\Controllers\ProviderPortal\ProviderScanController;
+use App\Http\Controllers\ProviderPortal\ProviderTransactionController;
+use App\Http\Controllers\ProviderPortal\Transport\TransportDashboardController as ProviderTransportDashboardController;
+use App\Http\Controllers\ProviderPortal\Transport\TransportDriverController as ProviderTransportDriverController;
+use App\Http\Controllers\ProviderPortal\Transport\TransportReportController as ProviderTransportReportController;
+use App\Http\Controllers\ProviderPortal\Transport\TransportRouteController as ProviderTransportRouteController;
+use App\Http\Controllers\ProviderPortal\Transport\TransportScanController as ProviderTransportScanController;
+use App\Http\Controllers\ProviderPortal\Transport\TransportTransactionController as ProviderTransportTransactionController;
+use App\Http\Controllers\ProviderPortal\Transport\TransportTripController as ProviderTransportTripController;
+use App\Http\Controllers\ProviderPortal\Transport\TransportVehicleController as ProviderTransportVehicleController;
+use App\Http\Controllers\Public\PublicServicesController;
+use App\Http\Controllers\Public\PublicSupportController;
+use App\Http\Controllers\Public\PublicTransferAnnouncementController;
+use App\Http\Controllers\Public\PublicVerifyController;
+use App\Http\Controllers\Transfers\TransferAnnouncementController;
+use App\Http\Controllers\Transfers\TransferApplicationController;
+use App\Http\Controllers\Transfers\TransferDashboardController;
+use App\Http\Controllers\Transfers\TransferSettingController;
+use App\Http\Controllers\Transport\TransportDriverController;
+use App\Http\Controllers\Transport\TransportPassController;
+use App\Http\Controllers\Transport\TransportProviderController;
+use App\Http\Controllers\Transport\TransportReportController;
+use App\Http\Controllers\Transport\TransportRouteController;
+use App\Http\Controllers\Transport\TransportScanController;
+use App\Http\Controllers\Transport\TransportSettingsController;
+use App\Http\Controllers\Transport\TransportVehicleController;
 use App\Http\Controllers\Web\AuditLogController;
 use App\Http\Controllers\Web\CafeteriaDashboardController;
 use App\Http\Controllers\Web\CafeteriaDayRuleController;
+use App\Http\Controllers\Web\CafeteriaProviderBranchController;
 use App\Http\Controllers\Web\CafeteriaProviderController;
+use App\Http\Controllers\Web\CafeteriaProviderUserController;
+use App\Http\Controllers\Web\CafeteriaProviderDashboardController;
 use App\Http\Controllers\Web\CafeteriaReportController;
 use App\Http\Controllers\Web\CafeteriaSettingController;
 use App\Http\Controllers\Web\CafeteriaSpecialDayController;
 use App\Http\Controllers\Web\CafeteriaSubsidyLedgerController;
 use App\Http\Controllers\Web\CafeteriaSubsidyRuleController;
 use App\Http\Controllers\Web\CafeteriaTransactionController;
-use App\Http\Controllers\Web\EmployeeCafeteriaExclusionController;
-use App\Http\Controllers\Web\PublicHolidayController;
 use App\Http\Controllers\Web\CardPrintBatchController;
+use App\Http\Controllers\Web\CardPublicVerifyController;
 use App\Http\Controllers\Web\CardRequestController;
 use App\Http\Controllers\Web\CodeRuleController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\EmployeeCafeteriaExclusionController;
 use App\Http\Controllers\Web\EmployeeController;
-use App\Http\Controllers\Web\EmployeeTransferController;
 use App\Http\Controllers\Web\EntitlementController;
 use App\Http\Controllers\Web\EntitlementRuleController;
 use App\Http\Controllers\Web\GradeLevelController;
 use App\Http\Controllers\Web\HierarchyVersionController;
+use App\Http\Controllers\Web\InstitutionOfficeController;
 use App\Http\Controllers\Web\IdCardController;
 use App\Http\Controllers\Web\IdCardExportController;
 use App\Http\Controllers\Web\IsicActivityController;
@@ -36,14 +73,18 @@ use App\Http\Controllers\Web\OrganizationUnitController;
 use App\Http\Controllers\Web\OrganizationUnitTypeController;
 use App\Http\Controllers\Web\PermissionController;
 use App\Http\Controllers\Web\PositionController;
+use App\Http\Controllers\Web\PositionEstablishmentController;
+use App\Http\Controllers\Web\PublicHolidayController;
 use App\Http\Controllers\Web\RecycleBinController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\ServiceProviderController;
+use App\Http\Controllers\Web\ServiceProviderUserController;
 use App\Http\Controllers\Web\ServiceTypeController;
 use App\Http\Controllers\Web\SystemSettingController;
 use App\Http\Controllers\Web\UserController;
-use App\Http\Controllers\Web\CardPublicVerifyController;
 use App\Http\Controllers\Web\UserOrganizationScopeController;
+use App\Http\Controllers\Web\VacancyAnnouncementController;
+use App\Http\Controllers\Web\VacancyApplicationController;
 use App\Models\IdCard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,14 +92,191 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
+})->name('home');
+
+// /cafe → cafeteria provider login shortcut
+Route::get('/cafe', function () {
+    return redirect()->route('provider.portal.login');
+})->name('cafe.login');
+
+// /employee → employee login shortcut
+Route::get('/employee', function () {
+    return redirect()->route('login');
+})->middleware('guest')->name('employee.login.redirect');
+
+// Cafeteria Provider Portal — login (guest only for cafeteria_provider guard)
+Route::middleware('guest:provider')->prefix('provider/portal')->name('provider.portal.')->group(function (): void {
+    Route::get('/login', [ProviderLoginController::class, 'create'])->name('login');
+    Route::post('/login', [ProviderLoginController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('login.store');
 });
+
+// Cafeteria Provider Portal — authenticated pages (cafeteria_provider guard)
+Route::middleware(['auth:provider', 'provider.portal', 'provider.portal.context'])
+    ->prefix('provider/portal')
+    ->name('provider.portal.')
+    ->group(function (): void {
+        Route::post('/logout', [ProviderLoginController::class, 'destroy'])->name('logout');
+        Route::get('/dashboard', ProviderDashboardController::class)->name('dashboard');
+        Route::get('/scan', [ProviderScanController::class, 'index'])->name('scan');
+        Route::post('/scan', [ProviderScanController::class, 'store'])->middleware('throttle:60,1')->name('scan.store');
+        Route::get('/scan/today', [ProviderScanController::class, 'today'])->name('scan.today');
+        Route::get('/scan/calendar', [ProviderScanController::class, 'calendar'])->name('scan.calendar');
+        Route::get('/transactions', [ProviderTransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transactions/export', [ProviderTransactionController::class, 'export'])->middleware('throttle:10,1')->name('transactions.export');
+        Route::get('/transactions/export/csv', [ProviderTransactionController::class, 'exportCsv'])->middleware('throttle:10,1')->name('transactions.export.csv');
+        Route::get('/transactions/export/xlsx', [ProviderTransactionController::class, 'exportXlsx'])->middleware('throttle:10,1')->name('transactions.export.xlsx');
+        Route::get('/transactions/export/pdf', [ProviderTransactionController::class, 'exportPdf'])->middleware('throttle:10,1')->name('transactions.export.pdf');
+        Route::get('/transactions/export/payment-claim', [ProviderTransactionController::class, 'exportPaymentClaim'])->middleware('throttle:10,1')->name('transactions.export.payment-claim');
+        Route::get('/transactions/export/payment-claim/xlsx', [ProviderTransactionController::class, 'exportPaymentClaimXlsx'])->middleware('throttle:10,1')->name('transactions.export.payment-claim.xlsx');
+        Route::get('/transactions/export/payment-claim/pdf', [ProviderTransactionController::class, 'exportPaymentClaimPdf'])->middleware('throttle:10,1')->name('transactions.export.payment-claim.pdf');
+        Route::get('/transactions/{transaction}', [ProviderTransactionController::class, 'show'])->name('transactions.show');
+        Route::get('/ledger', [ProviderLedgerController::class, 'index'])->name('ledger.index');
+        Route::get('/menus', [ProviderMenuController::class, 'index'])->name('menus.index');
+        Route::get('/menus/create', [ProviderMenuController::class, 'create'])->name('menus.create');
+        Route::post('/menus', [ProviderMenuController::class, 'store'])->name('menus.store');
+        Route::get('/menus/{menu}', [ProviderMenuController::class, 'show'])->name('menus.show');
+        Route::get('/menus/{menu}/edit', [ProviderMenuController::class, 'edit'])->name('menus.edit');
+        Route::match(['put', 'patch'], '/menus/{menu}', [ProviderMenuController::class, 'update'])->name('menus.update');
+        Route::post('/menus/{menu}/publish', [ProviderMenuController::class, 'publish'])->name('menus.publish');
+        Route::post('/menus/{menu}/close', [ProviderMenuController::class, 'close'])->name('menus.close');
+        Route::delete('/menus/{menu}', [ProviderMenuController::class, 'destroy'])->name('menus.destroy');
+        Route::get('/orders', [ProviderFoodOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [ProviderFoodOrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders/{order}/confirm', [ProviderFoodOrderController::class, 'confirm'])->name('orders.confirm');
+        Route::post('/orders/{order}/prepare', [ProviderFoodOrderController::class, 'prepare'])->name('orders.prepare');
+        Route::post('/orders/{order}/serve', [ProviderFoodOrderController::class, 'serve'])->name('orders.serve');
+        Route::post('/orders/{order}/reject', [ProviderFoodOrderController::class, 'reject'])->name('orders.reject');
+        Route::post('/orders/{order}/cancel', [ProviderFoodOrderController::class, 'cancel'])->name('orders.cancel');
+        Route::get('/reports', [ProviderReportController::class, 'index'])->name('reports.index');
+        Route::middleware('provider.service:cafeteria')->prefix('cafeteria')->name('cafeteria.')->group(function (): void {
+            Route::get('/', ProviderDashboardController::class)->name('dashboard');
+            Route::get('/scan', [ProviderScanController::class, 'index'])->name('scan');
+            Route::post('/scan', [ProviderScanController::class, 'store'])->middleware('throttle:60,1')->name('scan.store');
+            Route::get('/scan/today', [ProviderScanController::class, 'today'])->name('scan.today');
+            Route::get('/scan/calendar', [ProviderScanController::class, 'calendar'])->name('scan.calendar');
+            Route::get('/transactions', [ProviderTransactionController::class, 'index'])->name('transactions.index');
+            Route::get('/transactions/export', [ProviderTransactionController::class, 'export'])->middleware('throttle:10,1')->name('transactions.export');
+            Route::get('/transactions/export/csv', [ProviderTransactionController::class, 'exportCsv'])->middleware('throttle:10,1')->name('transactions.export.csv');
+            Route::get('/transactions/export/xlsx', [ProviderTransactionController::class, 'exportXlsx'])->middleware('throttle:10,1')->name('transactions.export.xlsx');
+            Route::get('/transactions/export/pdf', [ProviderTransactionController::class, 'exportPdf'])->middleware('throttle:10,1')->name('transactions.export.pdf');
+            Route::get('/transactions/export/payment-claim', [ProviderTransactionController::class, 'exportPaymentClaim'])->middleware('throttle:10,1')->name('transactions.export.payment-claim');
+            Route::get('/transactions/export/payment-claim/xlsx', [ProviderTransactionController::class, 'exportPaymentClaimXlsx'])->middleware('throttle:10,1')->name('transactions.export.payment-claim.xlsx');
+            Route::get('/transactions/export/payment-claim/pdf', [ProviderTransactionController::class, 'exportPaymentClaimPdf'])->middleware('throttle:10,1')->name('transactions.export.payment-claim.pdf');
+            Route::get('/transactions/{transaction}', [ProviderTransactionController::class, 'show'])->name('transactions.show');
+            Route::get('/ledger', [ProviderLedgerController::class, 'index'])->name('ledger.index');
+            Route::get('/menus', [ProviderMenuController::class, 'index'])->name('menus.index');
+            Route::get('/menus/create', [ProviderMenuController::class, 'create'])->name('menus.create');
+            Route::post('/menus', [ProviderMenuController::class, 'store'])->name('menus.store');
+            Route::get('/menus/{menu}', [ProviderMenuController::class, 'show'])->name('menus.show');
+            Route::get('/menus/{menu}/edit', [ProviderMenuController::class, 'edit'])->name('menus.edit');
+            Route::match(['put', 'patch'], '/menus/{menu}', [ProviderMenuController::class, 'update'])->name('menus.update');
+            Route::post('/menus/{menu}/publish', [ProviderMenuController::class, 'publish'])->name('menus.publish');
+            Route::post('/menus/{menu}/close', [ProviderMenuController::class, 'close'])->name('menus.close');
+            Route::delete('/menus/{menu}', [ProviderMenuController::class, 'destroy'])->name('menus.destroy');
+            Route::get('/orders', [ProviderFoodOrderController::class, 'index'])->name('orders.index');
+            Route::get('/orders/{order}', [ProviderFoodOrderController::class, 'show'])->name('orders.show');
+            Route::post('/orders/{order}/confirm', [ProviderFoodOrderController::class, 'confirm'])->name('orders.confirm');
+            Route::post('/orders/{order}/prepare', [ProviderFoodOrderController::class, 'prepare'])->name('orders.prepare');
+            Route::post('/orders/{order}/serve', [ProviderFoodOrderController::class, 'serve'])->name('orders.serve');
+            Route::post('/orders/{order}/reject', [ProviderFoodOrderController::class, 'reject'])->name('orders.reject');
+            Route::post('/orders/{order}/cancel', [ProviderFoodOrderController::class, 'cancel'])->name('orders.cancel');
+            Route::get('/reports', [ProviderReportController::class, 'index'])->name('reports.index');
+        });
+        Route::middleware('provider.service:transport')->prefix('transport')->name('transport.')->group(function (): void {
+            Route::get('/', ProviderTransportDashboardController::class)->name('index');
+            Route::get('/dashboard', ProviderTransportDashboardController::class)->name('dashboard');
+            Route::get('/scan', [ProviderTransportScanController::class, 'index'])->name('scan');
+            Route::post('/scan', [ProviderTransportScanController::class, 'store'])->middleware('throttle:60,1')->name('scan.store');
+            Route::get('/transactions', [ProviderTransportTransactionController::class, 'index'])->name('transactions.index');
+            Route::get('/transactions/export/csv', [ProviderTransportTransactionController::class, 'exportCsv'])->middleware('throttle:10,1')->name('transactions.export.csv');
+            Route::get('/transactions/{transaction}', [ProviderTransportTransactionController::class, 'show'])->name('transactions.show');
+            Route::get('/routes', [ProviderTransportRouteController::class, 'index'])->name('routes.index');
+            Route::get('/routes/create', [ProviderTransportRouteController::class, 'create'])->name('routes.create');
+            Route::post('/routes', [ProviderTransportRouteController::class, 'store'])->name('routes.store');
+            Route::get('/routes/{route}/edit', [ProviderTransportRouteController::class, 'edit'])->name('routes.edit');
+            Route::patch('/routes/{route}', [ProviderTransportRouteController::class, 'update'])->name('routes.update');
+            Route::get('/vehicles', [ProviderTransportVehicleController::class, 'index'])->name('vehicles.index');
+            Route::get('/vehicles/create', [ProviderTransportVehicleController::class, 'create'])->name('vehicles.create');
+            Route::post('/vehicles', [ProviderTransportVehicleController::class, 'store'])->name('vehicles.store');
+            Route::get('/vehicles/{vehicle}/edit', [ProviderTransportVehicleController::class, 'edit'])->name('vehicles.edit');
+            Route::patch('/vehicles/{vehicle}', [ProviderTransportVehicleController::class, 'update'])->name('vehicles.update');
+            Route::get('/drivers', [ProviderTransportDriverController::class, 'index'])->name('drivers.index');
+            Route::get('/drivers/create', [ProviderTransportDriverController::class, 'create'])->name('drivers.create');
+            Route::post('/drivers', [ProviderTransportDriverController::class, 'store'])->name('drivers.store');
+            Route::get('/drivers/{driver}/edit', [ProviderTransportDriverController::class, 'edit'])->name('drivers.edit');
+            Route::patch('/drivers/{driver}', [ProviderTransportDriverController::class, 'update'])->name('drivers.update');
+            Route::get('/trips', [ProviderTransportTripController::class, 'index'])->name('trips.index');
+            Route::get('/trips/create', [ProviderTransportTripController::class, 'create'])->name('trips.create');
+            Route::post('/trips', [ProviderTransportTripController::class, 'store'])->name('trips.store');
+            Route::get('/trips/{trip}/edit', [ProviderTransportTripController::class, 'edit'])->name('trips.edit');
+            Route::patch('/trips/{trip}', [ProviderTransportTripController::class, 'update'])->name('trips.update');
+            Route::get('/reports', [ProviderTransportReportController::class, 'index'])->name('reports.index');
+        });
+        Route::get('/profile', [ProviderProfileController::class, 'show'])->name('profile.show');
+        Route::patch('/profile', [ProviderProfileController::class, 'update'])->name('profile.update');
+        Route::patch('/profile/password', [ProviderProfileController::class, 'updatePassword'])->name('profile.password');
+    });
+
+// Legacy cafeteria/portal aliases — all redirect to the general provider portal.
+// Login routes are guest-only to prevent CSRF-forgery against authenticated sessions.
+Route::prefix('cafeteria/portal')->name('cafeteria.portal.')->group(function (): void {
+    Route::middleware('guest:provider')->group(function (): void {
+        Route::get('/login', fn () => redirect()->route('provider.portal.login'))->name('login');
+        Route::post('/login', fn () => redirect()->route('provider.portal.login'))->name('login.store');
+    });
+    Route::post('/logout', fn () => redirect()->route('provider.portal.logout'))->name('logout');
+    Route::get('/dashboard', fn () => redirect()->route('provider.portal.dashboard'))->name('dashboard');
+    Route::get('/scan', fn () => redirect()->route('provider.portal.scan'))->name('scan');
+    Route::get('/transactions', fn () => redirect()->route('provider.portal.transactions.index'))->name('transactions.index');
+    Route::get('/ledger', fn () => redirect()->route('provider.portal.ledger.index'))->name('ledger.index');
+    Route::get('/menus', fn () => redirect()->route('provider.portal.menus.index'))->name('menus.index');
+    Route::get('/orders', fn () => redirect()->route('provider.portal.orders.index'))->name('orders.index');
+    Route::get('/reports', fn () => redirect()->route('provider.portal.reports.index'))->name('reports.index');
+    Route::get('/profile', fn () => redirect()->route('provider.portal.profile.show'))->name('profile.show');
+});
+
+// ── Public pages — no auth required ─────────────────────────────────────────
+Route::get('/announcements', [PublicTransferAnnouncementController::class, 'index'])
+    ->name('public.transfer-announcements');
+
+Route::get('/announcements/transfer/{announcement}', [PublicTransferAnnouncementController::class, 'show'])
+    ->name('public.transfer-announcements.show');
+
+// Employee portal + apply routes — auth required, no MFA/verification gate
+Route::middleware(['auth', 'admin.access'])->group(function (): void {
+    Route::get('/my-portal', [EmployeePortalController::class, 'index'])
+        ->name('employee.portal');
+
+    Route::get('/my-portal/entitlements', [EmployeePortalController::class, 'myEntitlements'])
+        ->name('employee.entitlements');
+
+    Route::get('/my-portal/transfer-applications', [EmployeePortalController::class, 'myTransferApplications'])
+        ->name('employee.transfer-applications');
+
+    Route::get('/announcements/transfer/{announcement}/apply', [PublicTransferAnnouncementController::class, 'apply'])
+        ->name('public.transfer-announcements.apply');
+
+    Route::post('/announcements/transfer/{announcement}/apply', [PublicTransferAnnouncementController::class, 'storeApply'])
+        ->name('public.transfer-announcements.apply.store');
+});
+
+Route::get('/verify', [PublicVerifyController::class, 'index'])
+    ->name('public.verify');
+
+Route::get('/services', [PublicServicesController::class, 'index'])
+    ->name('public.services');
+
+Route::get('/support', [PublicSupportController::class, 'index'])
+    ->name('public.support');
 
 // Public card verification — QR gateway, no auth required
 Route::get('/verify/card/{publicCardUuid}', CardPublicVerifyController::class)
     ->name('id-cards.verify.public')
     ->middleware('throttle:30,1');
 
-Route::middleware(['auth', 'verified', 'mfa'])->group(function (): void {
+Route::middleware(['auth', 'verified', 'mfa', 'admin.access'])->group(function (): void {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     // Organizations
@@ -151,6 +369,7 @@ Route::middleware(['auth', 'verified', 'mfa'])->group(function (): void {
 
     // Positions
     Route::get('/positions', [PositionController::class, 'index'])->name('positions.index');
+    Route::get('/positions/status', [PositionController::class, 'status'])->name('positions.status');
     Route::get('/positions/create', [PositionController::class, 'create'])->name('positions.create');
     Route::post('/positions', [PositionController::class, 'store'])->name('positions.store');
     Route::get('/positions/{position}', [PositionController::class, 'show'])->name('positions.show');
@@ -158,6 +377,7 @@ Route::middleware(['auth', 'verified', 'mfa'])->group(function (): void {
     Route::patch('/positions/{position}', [PositionController::class, 'update'])->name('positions.update');
     Route::delete('/positions/{position}', [PositionController::class, 'archive'])->name('positions.archive');
     Route::post('/positions/{position}/restore', [PositionController::class, 'restore'])->name('positions.restore');
+    Route::post('/positions/{position}/approve-establishment', [PositionController::class, 'approveEstablishment'])->name('positions.approve-establishment');
 
     // Grade Levels
     Route::get('/grade-levels', [GradeLevelController::class, 'index'])->name('grade-levels.index');
@@ -169,21 +389,69 @@ Route::middleware(['auth', 'verified', 'mfa'])->group(function (): void {
     Route::delete('/grade-levels/{gradeLevel}', [GradeLevelController::class, 'archive'])->name('grade-levels.archive');
     Route::post('/grade-levels/{gradeLevel}/restore', [GradeLevelController::class, 'restore'])->name('grade-levels.restore');
 
-    // Employee Transfers
-    Route::get('/employee-transfers', [EmployeeTransferController::class, 'index'])->name('employee-transfers.index');
-    Route::get('/employee-transfers/pending', [EmployeeTransferController::class, 'pending'])->name('employee-transfers.pending');
-    Route::get('/employee-transfers/create', [EmployeeTransferController::class, 'create'])->name('employee-transfers.create');
-    Route::post('/employee-transfers', [EmployeeTransferController::class, 'store'])->name('employee-transfers.store');
-    Route::get('/employee-transfers/{employeeTransfer}', [EmployeeTransferController::class, 'show'])->name('employee-transfers.show');
-    Route::get('/employee-transfers/{employeeTransfer}/edit', [EmployeeTransferController::class, 'edit'])->name('employee-transfers.edit');
-    Route::patch('/employee-transfers/{employeeTransfer}', [EmployeeTransferController::class, 'update'])->name('employee-transfers.update');
-    Route::post('/employee-transfers/{employeeTransfer}/submit', [EmployeeTransferController::class, 'submit'])->name('employee-transfers.submit');
-    Route::post('/employee-transfers/{employeeTransfer}/confirm-current-organization', [EmployeeTransferController::class, 'confirmCurrentOrganization'])->name('employee-transfers.confirm-current-organization');
-    Route::post('/employee-transfers/{employeeTransfer}/confirm-receiving-organization', [EmployeeTransferController::class, 'confirmReceivingOrganization'])->name('employee-transfers.confirm-receiving-organization');
-    Route::post('/employee-transfers/{employeeTransfer}/approve', [EmployeeTransferController::class, 'approve'])->name('employee-transfers.approve');
-    Route::post('/employee-transfers/{employeeTransfer}/reject', [EmployeeTransferController::class, 'reject'])->name('employee-transfers.reject');
-    Route::post('/employee-transfers/{employeeTransfer}/cancel', [EmployeeTransferController::class, 'cancel'])->name('employee-transfers.cancel');
-    Route::post('/employee-transfers/{employeeTransfer}/complete', [EmployeeTransferController::class, 'complete'])->name('employee-transfers.complete');
+    // ── Transfer Module ────────────────────────────────────────────────────
+    Route::get('/transfers', TransferDashboardController::class)->name('transfers.dashboard');
+    Route::get('/transfers/settings', [TransferSettingController::class, 'show'])->name('transfer-settings.show');
+    Route::patch('/transfers/settings', [TransferSettingController::class, 'update'])->name('transfer-settings.update');
+
+    // Transfer Announcements
+    Route::get('/transfer-announcements', [TransferAnnouncementController::class, 'index'])->name('transfer-announcements.index');
+    Route::get('/transfer-announcements/create', [TransferAnnouncementController::class, 'create'])->name('transfer-announcements.create');
+    Route::post('/transfer-announcements', [TransferAnnouncementController::class, 'store'])->name('transfer-announcements.store');
+    Route::get('/transfer-announcements/{transferAnnouncement}', [TransferAnnouncementController::class, 'show'])->name('transfer-announcements.show');
+    Route::get('/transfer-announcements/{transferAnnouncement}/edit', [TransferAnnouncementController::class, 'edit'])->name('transfer-announcements.edit');
+    Route::patch('/transfer-announcements/{transferAnnouncement}', [TransferAnnouncementController::class, 'update'])->name('transfer-announcements.update');
+    Route::post('/transfer-announcements/{transferAnnouncement}/publish', [TransferAnnouncementController::class, 'publish'])->name('transfer-announcements.publish');
+    Route::post('/transfer-announcements/{transferAnnouncement}/close', [TransferAnnouncementController::class, 'close'])->name('transfer-announcements.close');
+    Route::post('/transfer-announcements/{transferAnnouncement}/cancel', [TransferAnnouncementController::class, 'cancel'])->name('transfer-announcements.cancel');
+    Route::delete('/transfer-announcements/{transferAnnouncement}', [TransferAnnouncementController::class, 'destroy'])->name('transfer-announcements.destroy');
+
+    // Transfer Applications
+    Route::get('/transfer-applications', [TransferApplicationController::class, 'index'])->name('transfer-applications.index');
+    Route::post('/transfer-applications', [TransferApplicationController::class, 'store'])->name('transfer-applications.store');
+    Route::get('/transfer-applications/{transferApplication}', [TransferApplicationController::class, 'show'])->name('transfer-applications.show');
+    Route::post('/transfer-applications/{transferApplication}/screen', [TransferApplicationController::class, 'screen'])->name('transfer-applications.screen');
+    Route::post('/transfer-applications/{transferApplication}/select', [TransferApplicationController::class, 'select'])->name('transfer-applications.select');
+    Route::post('/transfer-applications/{transferApplication}/reject', [TransferApplicationController::class, 'reject'])->name('transfer-applications.reject');
+    Route::post('/transfer-applications/{transferApplication}/withdraw', [TransferApplicationController::class, 'withdraw'])->name('transfer-applications.withdraw');
+    Route::post('/transfer-applications/{transferApplication}/approve-release', [TransferApplicationController::class, 'approveRelease'])->name('transfer-applications.approve-release');
+    Route::post('/transfer-applications/{transferApplication}/reject-release', [TransferApplicationController::class, 'rejectRelease'])->name('transfer-applications.reject-release');
+    Route::post('/transfer-applications/{transferApplication}/approve-receiving', [TransferApplicationController::class, 'approveReceiving'])->name('transfer-applications.approve-receiving');
+    Route::post('/transfer-applications/{transferApplication}/reject-receiving', [TransferApplicationController::class, 'rejectReceiving'])->name('transfer-applications.reject-receiving');
+    Route::post('/transfer-applications/{transferApplication}/approve-final', [TransferApplicationController::class, 'approveFinal'])->name('transfer-applications.approve-final');
+    Route::post('/transfer-applications/{transferApplication}/reject-final', [TransferApplicationController::class, 'rejectFinal'])->name('transfer-applications.reject-final');
+
+    // Position Establishments
+    Route::get('/position-establishments', [PositionEstablishmentController::class, 'index'])->name('position-establishments.index');
+    Route::post('/position-establishments', [PositionEstablishmentController::class, 'store'])->name('position-establishments.store');
+    Route::get('/position-establishments/{position_establishment}', [PositionEstablishmentController::class, 'show'])->name('position-establishments.show');
+    Route::get('/position-establishments/{position_establishment}/edit', [PositionEstablishmentController::class, 'edit'])->name('position-establishments.edit');
+    Route::patch('/position-establishments/{position_establishment}', [PositionEstablishmentController::class, 'update'])->name('position-establishments.update');
+    Route::post('/position-establishments/{position_establishment}/approve', [PositionEstablishmentController::class, 'approve'])->name('position-establishments.approve');
+    Route::delete('/position-establishments/{position_establishment}', [PositionEstablishmentController::class, 'archive'])->name('position-establishments.archive');
+
+    // Vacancy Announcements
+    Route::get('/vacancy-announcements', [VacancyAnnouncementController::class, 'index'])->name('vacancy-announcements.index');
+    Route::get('/vacancy-announcements/create', [VacancyAnnouncementController::class, 'create'])->name('vacancy-announcements.create');
+    Route::post('/vacancy-announcements', [VacancyAnnouncementController::class, 'store'])->name('vacancy-announcements.store');
+    Route::get('/vacancy-announcements/{vacancy_announcement}', [VacancyAnnouncementController::class, 'show'])->name('vacancy-announcements.show');
+    Route::get('/vacancy-announcements/{vacancy_announcement}/edit', [VacancyAnnouncementController::class, 'edit'])->name('vacancy-announcements.edit');
+    Route::patch('/vacancy-announcements/{vacancy_announcement}', [VacancyAnnouncementController::class, 'update'])->name('vacancy-announcements.update');
+    Route::post('/vacancy-announcements/{vacancy_announcement}/publish', [VacancyAnnouncementController::class, 'publish'])->name('vacancy-announcements.publish');
+    Route::post('/vacancy-announcements/{vacancy_announcement}/close', [VacancyAnnouncementController::class, 'close'])->name('vacancy-announcements.close');
+    Route::delete('/vacancy-announcements/{vacancy_announcement}', [VacancyAnnouncementController::class, 'destroy'])->name('vacancy-announcements.destroy');
+
+    // Vacancy Applications
+    Route::get('/vacancy-applications', [VacancyApplicationController::class, 'index'])->name('vacancy-applications.index');
+    Route::get('/vacancy-applications/my', [VacancyApplicationController::class, 'myApplications'])->name('vacancy-applications.my-applications');
+    Route::post('/vacancy-applications', [VacancyApplicationController::class, 'store'])->name('vacancy-applications.store');
+    Route::get('/vacancy-applications/{vacancy_application}', [VacancyApplicationController::class, 'show'])->name('vacancy-applications.show');
+    Route::post('/vacancy-applications/{vacancy_application}/withdraw', [VacancyApplicationController::class, 'withdraw'])->name('vacancy-applications.withdraw');
+    Route::post('/vacancy-applications/{vacancy_application}/screen', [VacancyApplicationController::class, 'screen'])->name('vacancy-applications.screen');
+    Route::post('/vacancy-applications/{vacancy_application}/shortlist', [VacancyApplicationController::class, 'shortlist'])->name('vacancy-applications.shortlist');
+    Route::post('/vacancy-applications/{vacancy_application}/select', [VacancyApplicationController::class, 'select'])->name('vacancy-applications.select');
+    Route::post('/vacancy-applications/{vacancy_application}/reject', [VacancyApplicationController::class, 'reject'])->name('vacancy-applications.reject');
+    Route::post('/vacancy-applications/{vacancy_application}/initiate-transfer', [VacancyApplicationController::class, 'initiateTransfer'])->name('vacancy-applications.initiate-transfer');
 
     // ID Cards
     Route::get('/id-cards', [IdCardController::class, 'index'])->name('id-cards.index');
@@ -332,6 +600,68 @@ Route::middleware(['auth', 'verified', 'mfa'])->group(function (): void {
     Route::post('/system-settings/clear-cache', [SystemSettingController::class, 'clearCache'])->name('system-settings.clear-cache');
     Route::patch('/system-settings/{setting}', [SystemSettingController::class, 'update'])->name('system-settings.update');
 
+    // Provider Users — standalone service provider credential accounts
+    Route::get('/provider-users', ServiceProviderUserController::class)->name('provider-users.index');
+    Route::get('/provider-users/create', [ServiceProviderUserController::class, 'create'])->name('provider-users.create');
+    Route::post('/provider-users', [ServiceProviderUserController::class, 'store'])->name('provider-users.store');
+    Route::get('/provider-users/{providerUser}', [ServiceProviderUserController::class, 'show'])->name('provider-users.show');
+    Route::get('/provider-users/{providerUser}/edit', [ServiceProviderUserController::class, 'edit'])->name('provider-users.edit');
+    Route::patch('/provider-users/{providerUser}', [ServiceProviderUserController::class, 'update'])->name('provider-users.update');
+    Route::delete('/provider-users/{providerUser}', [ServiceProviderUserController::class, 'destroy'])->name('provider-users.destroy');
+    Route::post('/provider-users/{providerUser}/suspend', [ServiceProviderUserController::class, 'suspend'])->name('provider-users.suspend');
+    Route::post('/provider-users/{providerUser}/activate', [ServiceProviderUserController::class, 'activate'])->name('provider-users.activate');
+    Route::post('/provider-users/{providerUser}/reset-password', [ServiceProviderUserController::class, 'resetPassword'])->name('provider-users.reset-password');
+
+    // Transport Provider Module
+    Route::prefix('transport')->name('transport.')->group(function (): void {
+        Route::get('/providers', [TransportProviderController::class, 'index'])->name('providers.index');
+        Route::get('/providers/create', [TransportProviderController::class, 'create'])->name('providers.create');
+        Route::post('/providers', [TransportProviderController::class, 'store'])->name('providers.store');
+        Route::get('/providers/{provider}', [TransportProviderController::class, 'show'])->name('providers.show');
+        Route::get('/providers/{provider}/edit', [TransportProviderController::class, 'edit'])->name('providers.edit');
+        Route::match(['put', 'patch'], '/providers/{provider}', [TransportProviderController::class, 'update'])->name('providers.update');
+        Route::delete('/providers/{provider}', [TransportProviderController::class, 'destroy'])->name('providers.destroy');
+        Route::get('/scan', [TransportScanController::class, 'index'])->name('scan');
+        Route::post('/scan', [TransportScanController::class, 'store'])->middleware('throttle:60,1')->name('scan.store');
+        Route::get('/settings', [TransportSettingsController::class, 'index'])->name('settings.index');
+        Route::patch('/settings', [TransportSettingsController::class, 'update'])->name('settings.update');
+        Route::get('/routes', [TransportRouteController::class, 'index'])->name('routes.index');
+        Route::get('/routes/create', [TransportRouteController::class, 'create'])->name('routes.create');
+        Route::post('/routes', [TransportRouteController::class, 'store'])->name('routes.store');
+        Route::get('/routes/{route}/edit', [TransportRouteController::class, 'edit'])->name('routes.edit');
+        Route::patch('/routes/{route}', [TransportRouteController::class, 'update'])->name('routes.update');
+        Route::get('/vehicles', [TransportVehicleController::class, 'index'])->name('vehicles.index');
+        Route::get('/vehicles/create', [TransportVehicleController::class, 'create'])->name('vehicles.create');
+        Route::post('/vehicles', [TransportVehicleController::class, 'store'])->name('vehicles.store');
+        Route::get('/vehicles/{vehicle}/edit', [TransportVehicleController::class, 'edit'])->name('vehicles.edit');
+        Route::patch('/vehicles/{vehicle}', [TransportVehicleController::class, 'update'])->name('vehicles.update');
+        Route::get('/drivers', [TransportDriverController::class, 'index'])->name('drivers.index');
+        Route::get('/drivers/create', [TransportDriverController::class, 'create'])->name('drivers.create');
+        Route::post('/drivers', [TransportDriverController::class, 'store'])->name('drivers.store');
+        Route::get('/drivers/{driver}/edit', [TransportDriverController::class, 'edit'])->name('drivers.edit');
+        Route::patch('/drivers/{driver}', [TransportDriverController::class, 'update'])->name('drivers.update');
+        Route::get('/passes', [TransportPassController::class, 'index'])->name('passes.index');
+        Route::get('/passes/create', [TransportPassController::class, 'create'])->name('passes.create');
+        Route::post('/passes', [TransportPassController::class, 'store'])->name('passes.store');
+        Route::get('/passes/{pass}/edit', [TransportPassController::class, 'edit'])->name('passes.edit');
+        Route::patch('/passes/{pass}', [TransportPassController::class, 'update'])->name('passes.update');
+        Route::get('/reports', [TransportReportController::class, 'index'])->name('reports.index');
+    });
+
+    // Institution Offices
+    Route::get('/institution-offices', [InstitutionOfficeController::class, 'index'])->name('institution-offices.index');
+    Route::get('/institution-offices/create', [InstitutionOfficeController::class, 'create'])->name('institution-offices.create');
+    Route::post('/institution-offices', [InstitutionOfficeController::class, 'store'])->name('institution-offices.store');
+    Route::get('/institution-offices/{institutionOffice}', [InstitutionOfficeController::class, 'show'])->name('institution-offices.show');
+    Route::get('/institution-offices/{institutionOffice}/edit', [InstitutionOfficeController::class, 'edit'])->name('institution-offices.edit');
+    Route::patch('/institution-offices/{institutionOffice}', [InstitutionOfficeController::class, 'update'])->name('institution-offices.update');
+    Route::delete('/institution-offices/{institutionOffice}', [InstitutionOfficeController::class, 'destroy'])->name('institution-offices.destroy');
+    Route::post('/institution-offices/{institutionOffice}/restore', [InstitutionOfficeController::class, 'restore'])->name('institution-offices.restore');
+    Route::post('/institution-offices/{institutionOffice}/move', [InstitutionOfficeController::class, 'move'])->name('institution-offices.move');
+    Route::get('/institutions/{organization}/offices', [InstitutionOfficeController::class, 'index'])->name('institutions.offices.index');
+    Route::get('/institutions/{organization}/offices/tree', [InstitutionOfficeController::class, 'tree'])->name('institutions.offices.tree');
+    Route::get('/institutions/{organization}/offices/parent-options', [InstitutionOfficeController::class, 'parentOptions'])->name('institutions.offices.parent-options');
+
     // Cafeteria Subsidy Module
     Route::prefix('cafeteria')->name('cafeteria.')->group(function (): void {
         Route::get('/', [CafeteriaDashboardController::class, 'index'])->name('dashboard');
@@ -356,6 +686,10 @@ Route::middleware(['auth', 'verified', 'mfa'])->group(function (): void {
         Route::post('/reports/generate', [CafeteriaReportController::class, 'generate'])->name('reports.generate');
         Route::get('/reports/{cafeteriaReport}', [CafeteriaReportController::class, 'show'])->name('reports.show');
 
+
+        // Provider Dashboard
+        Route::get('/providers/dashboard', CafeteriaProviderDashboardController::class)->name('providers.dashboard');
+
         // Providers
         Route::get('/providers', [CafeteriaProviderController::class, 'index'])->name('providers.index');
         Route::get('/providers/create', [CafeteriaProviderController::class, 'create'])->name('providers.create');
@@ -365,6 +699,24 @@ Route::middleware(['auth', 'verified', 'mfa'])->group(function (): void {
         Route::patch('/providers/{cafeteriaProvider}', [CafeteriaProviderController::class, 'update'])->name('providers.update');
         Route::delete('/providers/{cafeteriaProvider}', [CafeteriaProviderController::class, 'archive'])->name('providers.archive');
         Route::post('/providers/{cafeteriaProvider}/restore', [CafeteriaProviderController::class, 'restore'])->name('providers.restore');
+
+        // Cafeteria Provider Users (admin CRUD — stored in cafeteria_provider_users, not users table)
+        Route::get('/providers/{cafeteriaProvider}/users', [CafeteriaProviderUserController::class, 'index'])->name('providers.users.index');
+        Route::get('/providers/{cafeteriaProvider}/users/create', [CafeteriaProviderUserController::class, 'create'])->name('providers.users.create');
+        Route::post('/providers/{cafeteriaProvider}/users', [CafeteriaProviderUserController::class, 'store'])->name('providers.users.store');
+        Route::get('/providers/{cafeteriaProvider}/users/{providerUser}/edit', [CafeteriaProviderUserController::class, 'edit'])->name('providers.users.edit');
+        Route::patch('/providers/{cafeteriaProvider}/users/{providerUser}', [CafeteriaProviderUserController::class, 'update'])->name('providers.users.update');
+        Route::post('/providers/{cafeteriaProvider}/users/{providerUser}/reset-password', [CafeteriaProviderUserController::class, 'resetPassword'])->name('providers.users.reset-password');
+        Route::post('/providers/{cafeteriaProvider}/users/{providerUser}/suspend', [CafeteriaProviderUserController::class, 'suspend'])->name('providers.users.suspend');
+        Route::post('/providers/{cafeteriaProvider}/users/{providerUser}/activate', [CafeteriaProviderUserController::class, 'activate'])->name('providers.users.activate');
+        Route::delete('/providers/{cafeteriaProvider}/users/{providerUser}', [CafeteriaProviderUserController::class, 'destroy'])->name('providers.users.destroy');
+
+        // Provider Branches
+        Route::get('/providers/{cafeteriaProvider}/branches/create', [CafeteriaProviderBranchController::class, 'create'])->name('providers.branches.create');
+        Route::post('/providers/{cafeteriaProvider}/branches', [CafeteriaProviderBranchController::class, 'store'])->name('providers.branches.store');
+        Route::get('/providers/{cafeteriaProvider}/branches/{branch}/edit', [CafeteriaProviderBranchController::class, 'edit'])->name('providers.branches.edit');
+        Route::patch('/providers/{cafeteriaProvider}/branches/{branch}', [CafeteriaProviderBranchController::class, 'update'])->name('providers.branches.update');
+        Route::delete('/providers/{cafeteriaProvider}/branches/{branch}', [CafeteriaProviderBranchController::class, 'archive'])->name('providers.branches.archive');
 
         // Subsidy Rules
         Route::get('/subsidy-rules', [CafeteriaSubsidyRuleController::class, 'index'])->name('subsidy-rules.index');
@@ -385,6 +737,9 @@ Route::middleware(['auth', 'verified', 'mfa'])->group(function (): void {
         // Cafeteria Settings
         Route::get('/settings', [CafeteriaSettingController::class, 'index'])->name('settings.index');
         Route::put('/settings', [CafeteriaSettingController::class, 'update'])->name('settings.update');
+        Route::post('/settings/provider-users', [CafeteriaSettingController::class, 'storeProviderUser'])->name('settings.provider-users.store');
+        Route::patch('/settings/provider-users/{providerUser}', [CafeteriaSettingController::class, 'updateProviderUser'])->name('settings.provider-users.update');
+        Route::delete('/settings/provider-users/{providerUser}', [CafeteriaSettingController::class, 'destroyProviderUser'])->name('settings.provider-users.destroy');
 
         // Day Rules
         Route::get('/day-rules', [CafeteriaDayRuleController::class, 'index'])->name('day-rules.index');
@@ -411,7 +766,7 @@ Route::middleware(['auth', 'verified', 'mfa'])->group(function (): void {
     });
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

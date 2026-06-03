@@ -27,7 +27,7 @@ export default function Login({
             <Head title="Sign in" />
 
             {/* ── Left branding panel ───────────────────────────────────── */}
-            <div className="relative hidden w-[46%] shrink-0 overflow-hidden lg:flex lg:flex-col">
+            <div className="relative hidden w-[58%] shrink-0 overflow-hidden lg:flex lg:flex-col">
                 {/* Base gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-[#0c1228] to-slate-950" />
 
@@ -58,7 +58,7 @@ export default function Login({
 
                     {/* Logo — centered, no background */}
                     <div className="flex flex-col items-center gap-3">
-                        <ApplicationLogo className="h-24 w-24 fill-white drop-shadow-lg" />
+                        <ApplicationLogo className="h-20 w-auto max-w-[200px] fill-white drop-shadow-lg" />
                         <div>
                             <p className="text-lg font-bold tracking-wide text-white">EUISIS</p>
                             <p className="text-[11px] text-orange-300/60">Employee Unified Identity System</p>
@@ -66,7 +66,7 @@ export default function Login({
                     </div>
 
                     {/* Main description block — centered */}
-                    <div className="flex max-w-sm flex-col items-center gap-6">
+                    <div className="flex max-w-lg flex-col items-center gap-6">
 
                         {/* Live badge */}
                         <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5">
@@ -139,7 +139,7 @@ export default function Login({
 
                 {/* Mobile top bar */}
                 <div className="flex items-center gap-2.5 px-6 py-5 lg:hidden">
-                    <ApplicationLogo className="h-8 w-8 fill-slate-800 dark:fill-white" />
+                    <ApplicationLogo className="h-8 w-auto max-w-[80px] fill-slate-800 dark:fill-white" />
                     <span className="text-sm font-bold text-slate-900 dark:text-white">EUISIS</span>
                 </div>
 

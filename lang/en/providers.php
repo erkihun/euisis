@@ -13,4 +13,5 @@ return [
     'view' => 'View Provider',
     'no_providers' => 'No providers found',
     'active_providers' => 'Active Providers',
+    'provider_user_saved' => 'Provider user created successfully.',
 ];

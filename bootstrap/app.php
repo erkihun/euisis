@@ -1,11 +1,19 @@
 <?php
 
+use App\Http\Middleware\EnsureAdminAccess;
+use App\Http\Middleware\EnsureCafeteriaPortalUser;
+use App\Http\Middleware\EnsureCafeteriaProviderAssigned;
 use App\Http\Middleware\EnsureMfaNotRequired;
+use App\Http\Middleware\EnsureProviderHasActiveAssignment;
+use App\Http\Middleware\EnsureProviderPortalUser;
+use App\Http\Middleware\EnsureProviderServiceEnabled;
 use App\Http\Middleware\EnsureProviderServiceScope;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RequestCorrelationId;
 use App\Http\Middleware\RequireMfa;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SetCafeteriaPortalContext;
+use App\Http\Middleware\SetProviderPortalContext;
 use App\Services\ErrorLoggingService;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -42,8 +50,16 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'provider.scope' => EnsureProviderServiceScope::class,
-            'mfa'            => RequireMfa::class,
-            'mfa.setup'      => EnsureMfaNotRequired::class,
+            'provider.portal' => EnsureProviderPortalUser::class,
+            'provider.service' => EnsureProviderServiceEnabled::class,
+            'provider.portal.context' => SetProviderPortalContext::class,
+            'provider.assigned' => EnsureProviderHasActiveAssignment::class,
+            'cafeteria.portal' => EnsureCafeteriaPortalUser::class,
+            'cafeteria.provider.assigned' => EnsureCafeteriaProviderAssigned::class,
+            'cafeteria.portal.context' => SetCafeteriaPortalContext::class,
+            'admin.access' => EnsureAdminAccess::class,
+            'mfa' => RequireMfa::class,
+            'mfa.setup' => EnsureMfaNotRequired::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
@@ -73,6 +89,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationException $e, Request $request) use ($isApi, $apiError) {
             if ($isApi($request)) {
                 return $apiError(__('errors.unauthorized'), 401);
+            }
+
+            if ($request->is('provider/portal*')) {
+                return redirect()->guest(route('provider.portal.login'));
             }
 
             return redirect()->guest(route('login'));

@@ -61,4 +61,8 @@ return [
     'scope_does_not_include_record' => 'Your organization scope does not include this record.',
     'subtree_scope_description' => 'Subtree scope includes the selected organization and its child organizations.',
     'no_published_hierarchy_version' => 'No published hierarchy version was found. Scope fallback to assigned organization only.',
+    'help_text' => 'Organizations represent legal entities, bureaus, and geographic areas such as sub-cities and woredas.',
+    'do_not_create_departments_as_organizations' => 'Do not create departments or teams as organizations — use Organization Units instead.',
+    'institution_office_help' => 'Institution Offices are the actual offices or branches of an institution operating in a geographic area.',
+    'organization_unit_help' => 'Organization Units are internal departments, directorates, and teams inside an institution office.',
 ];

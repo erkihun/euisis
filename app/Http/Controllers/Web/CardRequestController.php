@@ -73,7 +73,7 @@ class CardRequestController extends Controller
             $requestType,
         );
 
-        return redirect()->route('card-requests.index')->with('success', 'Card request submitted.');
+        return redirect()->route('card-requests.index')->with('success', __('id-cards.request_submitted'));
     }
 
     public function show(CardRequest $cardRequest): Response
@@ -110,27 +110,27 @@ class CardRequestController extends Controller
     {
         $action->execute($cardRequest, $request->user(), $request->input('notes'));
 
-        return back()->with('success', 'Card request data verified.');
+        return back()->with('success', __('id-cards.request_verified'));
     }
 
     public function approve(ApproveCardRequestRequest $request, CardRequest $cardRequest, ApproveCardRequestAction $action): RedirectResponse
     {
         $action->execute($cardRequest, $request->user(), $request->input('notes'));
 
-        return back()->with('success', 'Card request approved. Card is now pending print.');
+        return back()->with('success', __('id-cards.request_approved'));
     }
 
     public function reject(RejectCardRequestRequest $request, CardRequest $cardRequest, RejectCardRequestAction $action): RedirectResponse
     {
         $action->execute($cardRequest, $request->user(), $request->string('rejection_reason')->toString());
 
-        return back()->with('success', 'Card request rejected.');
+        return back()->with('success', __('id-cards.request_rejected'));
     }
 
     public function cancel(CancelCardRequestRequest $request, CardRequest $cardRequest, CancelCardRequestAction $action): RedirectResponse
     {
         $action->execute($cardRequest, $request->user(), $request->input('cancellation_reason'));
 
-        return back()->with('success', 'Card request cancelled.');
+        return back()->with('success', __('id-cards.request_cancelled'));
     }
 }

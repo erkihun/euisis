@@ -41,8 +41,9 @@ export default function ProvidersEdit({ provider, organizations }: { provider: P
     }
 
     return (
-        <AuthenticatedLayout header={<PageHeader title={t('cafeteria.editProvider')} />}>
-            <Head title={t('cafeteria.editProvider')} />
+        <AuthenticatedLayout
+            header={<PageHeader title={t('cafeteria.editProvider')} description={provider.code} backHref={route('cafeteria.providers.show', provider.id)} />}
+        >
             <form onSubmit={submit} className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div className="border-b border-gray-200 px-6 py-4 dark:border-slate-800">
                     <p className="font-mono text-sm text-gray-500">{provider.code}</p>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -31,6 +32,8 @@ class RegisteredUserController extends Controller
 
     /**
      * Handle an incoming registration request.
+     * Employees identify themselves by their employee number; the system
+     * pulls their name and email from the existing Employee record.
      *
      * @throws ValidationException
      */
@@ -41,28 +44,51 @@ class RegisteredUserController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'employee_number' => ['required', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Find the employee by employee_number
+        $employee = Employee::query()
+            ->where('employee_number', $request->employee_number)
+            ->first();
+
+        if ($employee === null) {
+            throw ValidationException::withMessages([
+                'employee_number' => __('auth.employee_not_found'),
+            ]);
+        }
+
+        if (empty($employee->email)) {
+            throw ValidationException::withMessages([
+                'employee_number' => __('auth.employee_no_email'),
+            ]);
+        }
+
+        // Block duplicate accounts
+        if (User::where('email', $employee->email)->exists()) {
+            throw ValidationException::withMessages([
+                'employee_number' => __('auth.employee_already_registered'),
+            ]);
+        }
+
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name' => $employee->full_name ?? trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+            'email' => $employee->email,
             'password' => Hash::make($request->password),
+            'employee_reference' => $employee->employee_number,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('employee.portal');
     }
 
     /**
      * Returns a redirect to /login when public self-service registration is
-     * disabled (REGISTRATION_ENABLED env / config('security.registration_enabled')),
-     * or null when registration is on and processing should continue.
+     * disabled, or null when registration is on.
      */
     private function disabledRedirect(): ?RedirectResponse
     {

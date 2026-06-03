@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 class RolePolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('roles.viewAny');

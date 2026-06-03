@@ -80,6 +80,9 @@ const organizationUnits = {
     expandOrganization: 'ድርጅቱን ዘርጋ',
     collapseOrganization: 'ድርጅቱን ጨምቅ',
     viewUnitsTooltip: 'ለዚህ ድርጅት ዩኒቶችን ይመልከቱ',
+    helpText: 'የድርጅት ዩኒቶች በተቋም ቢሮ ውስጥ ያሉ ውስጣዊ ዲፓርትመንቶች፣ ዳይሬክቶሬቶች እና ቡድኖች ናቸው',
+    doNotCreateOfficesAsUnits: 'የተቋም ቢሮዎችን እንደ ዩኒቶች አትፍጠሩ — ይልቁንስ ተቋማዊ ቢሮዎችን ይጠቀሙ',
+    parentUnitMustSameOffice: 'ዋና ዩኒት ለዚሁ ተቋም ቢሮ መሆን አለበት',
 } as const;
 
 export default organizationUnits;

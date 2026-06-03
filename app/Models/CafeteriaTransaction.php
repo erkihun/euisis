@@ -10,12 +10,14 @@ use App\Models\Concerns\HasUuidPrimaryKey;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CafeteriaTransaction extends Model
 {
     use HasUuidPrimaryKey;
 
     protected $fillable = [
+        'service_transaction_id',
         'transaction_number',
         'employee_id',
         'id_card_id',
@@ -98,6 +100,11 @@ class CafeteriaTransaction extends Model
     public function operator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function foodOrder(): HasOne
+    {
+        return $this->hasOne(CafeteriaFoodOrder::class, 'fulfilled_transaction_id');
     }
 
     public function isAccepted(): bool

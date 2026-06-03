@@ -35,6 +35,7 @@ export default function GradeLevelsShow({ gradeLevel }: { gradeLevel: any }) {
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('grade-levels.index')}
                     title={gradeLevel.name}
                     actions={
                         <div className="flex gap-3">

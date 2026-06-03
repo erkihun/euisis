@@ -8,7 +8,11 @@ use App\Actions\Positions\ArchivePositionAction;
 use App\Actions\Positions\CreatePositionAction;
 use App\Actions\Positions\RestorePositionAction;
 use App\Actions\Positions\UpdatePositionAction;
+use App\Actions\Vacancy\ApprovePositionEstablishmentAction;
+use App\Enums\AssignmentStatus;
+use App\Enums\EstablishmentStatus;
 use App\Enums\HierarchyVersionStatus;
+use App\Enums\OccupancyStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePositionRequest;
 use App\Http\Requests\UpdatePositionRequest;
@@ -20,14 +24,168 @@ use App\Models\Organization;
 use App\Models\OrganizationEdge;
 use App\Models\OrganizationUnit;
 use App\Models\Position;
+use App\Models\PositionEstablishment;
+use App\Models\User;
 use App\Services\OrganizationScope\OrganizationScopeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class PositionController extends Controller
 {
+    public function status(Request $request, OrganizationScopeService $organizationScopeService): Response
+    {
+        $this->authorize('viewAny', Position::class);
+
+        $user = $request->user();
+        $accessibleOrganizationIds = $organizationScopeService->accessibleOrganizationIds($user);
+
+        $baseQuery = Position::query()
+            ->when($accessibleOrganizationIds->isNotEmpty(), fn ($query) => $query->whereIn('organization_id', $accessibleOrganizationIds))
+            ->when($request->string('search')->toString() !== '', function ($query) use ($request): void {
+                $search = $request->string('search')->toString();
+                $query->where(function ($nested) use ($search): void {
+                    $nested->where('job_position_code', 'like', "%{$search}%")
+                        ->orWhere('title_en', 'like', "%{$search}%")
+                        ->orWhere('title_am', 'like', "%{$search}%")
+                        ->orWhere('grade_level', 'like', "%{$search}%")
+                        ->orWhere('job_family', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->string('organization_id')->toString() !== '', fn ($query) => $query->where('organization_id', $request->string('organization_id')->toString()))
+            ->when($request->string('organization_unit_id')->toString() !== '', fn ($query) => $query->where('organization_unit_id', $request->string('organization_unit_id')->toString()))
+            ->when($request->string('job_family')->toString() !== '', fn ($query) => $query->where('job_family', $request->string('job_family')->toString()))
+            ->when($request->string('grade_level')->toString() !== '', fn ($query) => $query->where('grade_level', $request->string('grade_level')->toString()))
+            ->when($request->filled('is_active'), fn ($query) => $query->where('is_active', $request->boolean('is_active')));
+
+        $summaryPositions = (clone $baseQuery)
+            ->with([
+                'organization:id,name_en,name_am',
+                'organizationUnit:id,name_en,name_am',
+            ])
+            ->withCount([
+                'assignments as active_assignments_count' => fn ($query) => $query
+                    ->where('assignment_status', AssignmentStatus::Active->value)
+                    ->where('is_current', true),
+            ])
+            ->orderBy('organization_id')
+            ->orderBy('organization_unit_id')
+            ->orderBy('job_position_code')
+            ->get();
+
+        $establishmentsByPosition = PositionEstablishment::query()
+            ->where('status', EstablishmentStatus::Approved->value)
+            ->when($accessibleOrganizationIds->isNotEmpty(), fn ($query) => $query->whereIn('organization_id', $accessibleOrganizationIds))
+            ->withCount([
+                'occupancies as filled_positions' => fn ($query) => $query->where('status', OccupancyStatus::Active->value),
+            ])
+            ->get(['id', 'establishment_number', 'position_id', 'approved_slots'])
+            ->groupBy('position_id');
+
+        $attachStatus = function (Position $position) use ($establishmentsByPosition): void {
+            $establishments = $establishmentsByPosition->get($position->id, collect());
+            $approvedSlots = (int) $establishments->sum('approved_slots');
+            $establishmentFilled = (int) $establishments->sum('filled_positions');
+            $activeAssignments = (int) $position->active_assignments_count;
+
+            $position->status_total_positions = $approvedSlots > 0 ? $approvedSlots : 1;
+            $position->status_filled_positions = $establishmentFilled > 0 ? $establishmentFilled : min($activeAssignments, $position->status_total_positions);
+            $position->status_establishment_number = $establishments->pluck('establishment_number')->filter()->implode(', ');
+        };
+
+        $summaryPositions->each($attachStatus);
+
+        $paginatedPositions = (clone $baseQuery)
+            ->with([
+                'organization:id,name_en,name_am',
+                'organizationUnit:id,name_en,name_am',
+            ])
+            ->withCount([
+                'assignments as active_assignments_count' => fn ($query) => $query
+                    ->where('assignment_status', AssignmentStatus::Active->value)
+                    ->where('is_current', true),
+            ])
+            ->orderBy('organization_id')
+            ->orderBy('organization_unit_id')
+            ->orderBy('job_position_code')
+            ->paginate($request->integer('per_page', 15))
+            ->withQueryString();
+
+        $paginatedPositions->getCollection()->each($attachStatus);
+
+        $organizations = Organization::query()
+            ->when($accessibleOrganizationIds->isNotEmpty(), fn ($query) => $query->whereIn('id', $accessibleOrganizationIds))
+            ->orderBy('name_en')
+            ->get(['id', 'name_en', 'name_am']);
+
+        $organizationUnits = OrganizationUnit::query()
+            ->when($accessibleOrganizationIds->isNotEmpty(), fn ($query) => $query->whereIn('organization_id', $accessibleOrganizationIds))
+            ->when($request->string('organization_id')->toString() !== '', fn ($query) => $query->where('organization_id', $request->string('organization_id')->toString()))
+            ->orderBy('name_en')
+            ->get(['id', 'organization_id', 'name_en', 'name_am']);
+
+        $mapPosition = function (Position $position) use ($establishmentsByPosition): array {
+            $filled = (int) $position->status_filled_positions;
+            $total = (int) $position->status_total_positions;
+
+            return [
+                'id' => $position->id,
+                'position_id' => $position->id,
+                'establishment_id' => $establishmentsByPosition->get($position->id, collect())->first()?->id,
+                'establishment_number' => $position->status_establishment_number,
+                'job_position_code' => $position->job_position_code,
+                'title_en' => $position->title_en,
+                'title_am' => $position->title_am,
+                'grade_level' => $position->grade_level,
+                'job_family' => $position->job_family,
+                'organization_name_en' => $position->organization?->name_en,
+                'organization_name_am' => $position->organization?->name_am,
+                'department_name_en' => $position->organizationUnit?->name_en ?? $position->organization?->name_en,
+                'department_name_am' => $position->organizationUnit?->name_am ?? $position->organization?->name_am,
+                'is_active' => (bool) $position->is_active,
+                'total_positions' => $total,
+                'filled_positions' => $filled,
+                'vacant_positions' => max(0, $total - $filled),
+            ];
+        };
+
+        $positions = $paginatedPositions->through($mapPosition);
+
+        $jobFamilies = (clone $baseQuery)
+            ->whereNotNull('job_family')
+            ->distinct()
+            ->orderBy('job_family')
+            ->pluck('job_family')
+            ->filter()
+            ->values()
+            ->all();
+
+        return Inertia::render('Positions/Status', [
+            'summary' => [
+                'total_positions' => (int) $summaryPositions->sum('status_total_positions'),
+                'filled_positions' => (int) $summaryPositions->sum('status_filled_positions'),
+                'vacant_positions' => max(0, (int) $summaryPositions->sum('status_total_positions') - (int) $summaryPositions->sum('status_filled_positions')),
+            ],
+            'positions' => [
+                'data' => $positions->items(),
+                'meta' => [
+                    'current_page' => $positions->currentPage(),
+                    'last_page' => $positions->lastPage(),
+                    'per_page' => $positions->perPage(),
+                    'total' => $positions->total(),
+                    'from' => $positions->firstItem(),
+                    'to' => $positions->lastItem(),
+                ],
+            ],
+            'organizations' => $organizations,
+            'organizationUnits' => $organizationUnits,
+            'jobFamilies' => $jobFamilies,
+            'filters' => $request->only(['search', 'organization_id', 'organization_unit_id', 'job_family', 'grade_level', 'is_active', 'per_page']),
+        ]);
+    }
+
     public function index(Request $request, OrganizationScopeService $organizationScopeService): Response
     {
         $this->authorize('viewAny', Position::class);
@@ -213,16 +371,43 @@ class PositionController extends Controller
             }
         }
 
+        // Load establishment data for every position in the current view
+        $positionIds = $positions->pluck('id');
+        $establishmentsByPosition = $positionIds->isNotEmpty()
+            ? PositionEstablishment::query()
+                ->whereIn('position_id', $positionIds)
+                ->whereIn('status', [EstablishmentStatus::Draft->value, EstablishmentStatus::Approved->value])
+                ->get(['id', 'position_id', 'status', 'approved_slots', 'establishment_number'])
+                ->groupBy('position_id')
+                ->map(fn ($group) => $group->sortBy(fn ($e) => $e->status->value === EstablishmentStatus::Approved->value ? 0 : 1)->first())
+            : collect();
+
+        $positionData = collect(PositionResource::collection($positions)->resolve())
+            ->map(function (array $pos) use ($establishmentsByPosition): array {
+                $est = $establishmentsByPosition->get($pos['id']);
+                $pos['establishment'] = $est ? [
+                    'id' => $est->id,
+                    'status' => $est->status->value,
+                    'approved_slots' => $est->approved_slots,
+                    'establishment_number' => $est->establishment_number,
+                ] : null;
+
+                return $pos;
+            })
+            ->values()
+            ->all();
+
         return Inertia::render('Positions/Index', [
             'organizationTree' => $organizationTree,
             'hasPublishedHierarchy' => $hasPublishedHierarchy,
             'selectedOrganization' => $selectedOrganization,
             'organizationUnits' => $organizationUnits,
             'selectedUnit' => $selectedUnit,
-            'positions' => PositionResource::collection($positions)->resolve(),
+            'positions' => $positionData,
             'filters' => $request->only(['search', 'job_family', 'grade_level', 'is_active']),
             'can' => [
                 'create' => $user?->can('create', Position::class) ?? false,
+                'approve_establishment' => $user?->can('position-establishments.approve') ?? false,
             ],
         ]);
     }
@@ -342,6 +527,44 @@ class PositionController extends Controller
         $action->execute($position, $request->user(), $request->string('reason')->toString() ?: null, $request);
 
         return to_route('positions.index')->with('flash', ['message' => __('recycle-bin.deleted_successfully'), 'type' => 'success']);
+    }
+
+    public function approveEstablishment(
+        Position $position,
+        ApprovePositionEstablishmentAction $action,
+    ): RedirectResponse {
+        $this->authorize('create', PositionEstablishment::class);
+
+        /** @var User $actor */
+        $actor = Auth::user();
+
+        $establishment = PositionEstablishment::query()
+            ->where('position_id', $position->id)
+            ->where('organization_id', $position->organization_id)
+            ->whereIn('status', [EstablishmentStatus::Draft->value, EstablishmentStatus::Approved->value])
+            ->first();
+
+        if ($establishment === null) {
+            $establishment = PositionEstablishment::create([
+                'establishment_number' => 'EST-'.now()->format('Ym').'-'.strtoupper(substr(str_replace('-', '', $position->id), 0, 6)),
+                'organization_id' => $position->organization_id,
+                'organization_unit_id' => $position->organization_unit_id,
+                'position_id' => $position->id,
+                'approved_slots' => 1,
+                'effective_from' => now()->toDateString(),
+                'status' => EstablishmentStatus::Draft->value,
+            ]);
+        }
+
+        if ($establishment->status->value === EstablishmentStatus::Approved->value) {
+            return back()->with('flash', ['message' => __('positionEstablishments.alreadyApproved'), 'type' => 'info']);
+        }
+
+        $this->authorize('approve', $establishment);
+
+        $action->execute($establishment, $actor);
+
+        return back()->with('flash', ['message' => __('positionEstablishments.approved'), 'type' => 'success']);
     }
 
     public function restore(Request $request, string $position, RestorePositionAction $action): RedirectResponse

@@ -2,7 +2,7 @@ import { PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 import AppSidebar from '@/Components/AppSidebar';
 import AppHeader from '@/Components/AppHeader';
 import Breadcrumbs from '@/Components/Breadcrumbs';
-import ToastProvider from '@/Components/ToastProvider';
+import AppToaster from '@/Components/ui/AppToaster';
 import { useLocale } from '@/hooks/useLocale';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
 
@@ -63,7 +63,7 @@ export default function Authenticated({
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
-            <ToastProvider />
+            <AppToaster />
 
             {/* Desktop sidebar — fixed, does not scroll with page content */}
             <div className="hidden lg:block">

@@ -7,10 +7,13 @@ namespace App\Models;
 use App\Services\OrganizationScope\OrganizationScopeService;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
@@ -30,6 +33,10 @@ class User extends Authenticatable
         'password',
         'employee_reference',
         'default_organization_id',
+        'cafeteria_provider_id',
+        'provider_portal_enabled',
+        'provider_portal_activated_at',
+        'user_type',
         'status',
         'last_login_at',
         'is_demo',
@@ -59,8 +66,10 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'provider_portal_activated_at' => 'datetime',
             'password' => 'hashed',
             'is_demo' => 'bool',
+            'provider_portal_enabled' => 'boolean',
             // Sensitive PII — encrypted at rest. national_id_hash is a SHA-256
             // hash used for uniqueness lookups (see EncryptableUserFields).
             'national_id' => 'encrypted',
@@ -115,6 +124,15 @@ class User extends Authenticatable
         return implode('', array_slice($letters, 0, 2));
     }
 
+    /**
+     * Employee profile linked to this user, matched by email address.
+     * Falls back to employee_reference → employee_number if email yields no match.
+     */
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class, 'email', 'email');
+    }
+
     public function organizationScopes(): HasMany
     {
         return $this->hasMany(UserOrganizationScope::class);
@@ -122,9 +140,39 @@ class User extends Authenticatable
 
     public function cafeteriaProviders(): BelongsToMany
     {
-        return $this->belongsToMany(CafeteriaProvider::class, 'cafeteria_provider_users')
-            ->withPivot(['role', 'is_active', 'assigned_by', 'effective_from', 'effective_to'])
+        return $this->belongsToMany(CafeteriaProvider::class, 'cafeteria_provider_assignments')
+            ->withPivot(['role', 'provider_role', 'is_active', 'assigned_by', 'effective_from', 'effective_to'])
             ->withTimestamps();
+    }
+
+    public function primaryCafeteriaProvider(): BelongsTo
+    {
+        return $this->belongsTo(CafeteriaProvider::class, 'cafeteria_provider_id');
+    }
+
+    public function hasProviderPortalAccess(): bool
+    {
+        $today = Carbon::today()->toDateString();
+        $hasPortalGrant = $this->provider_portal_enabled
+            || $this->user_type === 'provider'
+            || $this->can('cafeteria-portal.login')
+            || $this->can('cafeteria-portal.viewDashboard')
+            || $this->can('cafeteria-portal.impersonate')
+            || $this->can('cafeteria-portal.view');
+
+        return $this->isActive()
+            && $hasPortalGrant
+            && $this->cafeteriaProviders()
+                ->wherePivot('is_active', true)
+                ->where(function ($query) use ($today): void {
+                    $query->whereNull('cafeteria_provider_assignments.effective_from')
+                        ->orWhere('cafeteria_provider_assignments.effective_from', '<=', $today);
+                })
+                ->where(function ($query) use ($today): void {
+                    $query->whereNull('cafeteria_provider_assignments.effective_to')
+                        ->orWhere('cafeteria_provider_assignments.effective_to', '>=', $today);
+                })
+                ->exists();
     }
 
     /**

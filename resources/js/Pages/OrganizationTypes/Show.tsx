@@ -36,6 +36,7 @@ export default function ShowOrganizationType({ type }: { type: OrgType }) {
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('organization-types.index')}
                     title={type.name_en}
                     description={t('organizationTypes.organizationType')}
                     actions={

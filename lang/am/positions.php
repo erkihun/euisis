@@ -13,4 +13,8 @@ return [
     'title_am' => 'የአማርኛ ርዕስ',
     'grade_level' => 'ደረጃ',
     'job_family' => 'የስራ ቤተሰብ',
+    'new_job_positions_status' => 'የስራ መደቦች ሁኔታ',
+    'total_job_positions' => 'ጠቅላላ የስራ መደቦች',
+    'filled_positions' => 'የተመደቡ መደቦች',
+    'vacant_positions' => 'ክፍት መደቦች',
 ];

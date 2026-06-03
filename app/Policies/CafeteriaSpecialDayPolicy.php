@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\CafeteriaSpecialDay;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class CafeteriaSpecialDayPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('cafeteria_special_days.viewAny');

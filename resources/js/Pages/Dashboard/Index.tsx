@@ -89,9 +89,9 @@ function keyLabel(t: (key: string) => string, prefix: string) {
     };
 }
 
-function SimpleBarChart({ data, labelFor }: { data: KeyValueDatum[]; labelFor: (key: string) => string }) {
+function SimpleBarChart({ data, labelFor, emptyTitle }: { data: KeyValueDatum[]; labelFor: (key: string) => string; emptyTitle?: string }) {
     if (data.length === 0) {
-        return <EmptyDashboardState compact />;
+        return <EmptyDashboardState compact title={emptyTitle} />;
     }
 
     return (
@@ -110,9 +110,9 @@ function SimpleBarChart({ data, labelFor }: { data: KeyValueDatum[]; labelFor: (
     );
 }
 
-function SimpleLineChart({ data }: { data: LabelValueDatum[] }) {
+function SimpleLineChart({ data, emptyTitle }: { data: LabelValueDatum[]; emptyTitle?: string }) {
     if (data.length === 0) {
-        return <EmptyDashboardState compact />;
+        return <EmptyDashboardState compact title={emptyTitle} />;
     }
 
     return (
@@ -197,12 +197,13 @@ export default function Dashboard({
                                         />
                                     </ChartCard>
                                     <ChartCard title={t('dashboard.kpis.registeredEmployees')}>
-                                        <SimpleLineChart data={(charts.employeeRegistrationsTrend as LabelValueDatum[]) ?? []} />
+                                        <SimpleLineChart emptyTitle={t("dashboard.noData")} data={(charts.employeeRegistrationsTrend as LabelValueDatum[]) ?? []} />
                                     </ChartCard>
                                 </div>
                                 <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
                                     <ChartCard title={t('dashboard.sections.organizationOverview')}>
                                         <SimpleBarChart
+                                            emptyTitle={t("dashboard.noData")}
                                             data={(charts.employeesByOrganizationType as KeyValueDatum[]) ?? []}
                                             labelFor={(value) => value}
                                         />
@@ -243,6 +244,7 @@ export default function Dashboard({
                                 <div className="grid gap-6 xl:grid-cols-2">
                                     <ChartCard title={t('dashboard.sections.organizationOverview')}>
                                         <SimpleBarChart
+                                            emptyTitle={t("dashboard.noData")}
                                             data={(charts.organizationsByType as KeyValueDatum[]) ?? []}
                                             labelFor={(value) => value}
                                         />
@@ -277,12 +279,14 @@ export default function Dashboard({
                                 <div className="grid gap-6 xl:grid-cols-2">
                                     <ChartCard title={t('dashboard.positionsByGradeLevel')}>
                                         <SimpleBarChart
+                                            emptyTitle={t("dashboard.noData")}
                                             data={(charts.positionsByGradeLevel as KeyValueDatum[]) ?? []}
                                             labelFor={(value) => value}
                                         />
                                     </ChartCard>
                                     <ChartCard title={t('dashboard.positionsByJobFamily')}>
                                         <SimpleBarChart
+                                            emptyTitle={t("dashboard.noData")}
                                             data={(charts.positionsByJobFamily as KeyValueDatum[]) ?? []}
                                             labelFor={(value) => value}
                                         />
@@ -321,13 +325,14 @@ export default function Dashboard({
                                     </ChartCard>
                                     <ChartCard title={t('dashboard.topDenialReasons')}>
                                         <SimpleBarChart
+                                            emptyTitle={t("dashboard.noData")}
                                             data={(charts.denialReasons as KeyValueDatum[]) ?? []}
                                             labelFor={(value) => value}
                                         />
                                     </ChartCard>
                                 </div>
                                 <ChartCard title={t('dashboard.verificationTrend')}>
-                                    <SimpleLineChart data={(charts.verificationTrend as LabelValueDatum[]) ?? []} />
+                                    <SimpleLineChart emptyTitle={t("dashboard.noData")} data={(charts.verificationTrend as LabelValueDatum[]) ?? []} />
                                 </ChartCard>
                             </DashboardSection>
                         )}
@@ -338,6 +343,7 @@ export default function Dashboard({
                                     {can.entitlements && (
                                         <ChartCard title={t('dashboard.sections.serviceEntitlements')}>
                                             <SimpleBarChart
+                                                emptyTitle={t("dashboard.noData")}
                                                 data={(charts.entitlementsByServiceType as KeyValueDatum[]) ?? []}
                                                 labelFor={(value) => value}
                                             />
@@ -345,7 +351,7 @@ export default function Dashboard({
                                     )}
                                     {can.transactions && (
                                         <ChartCard title={t('dashboard.sections.serviceTransactions')}>
-                                            <SimpleLineChart data={(charts.serviceTransactionsTrend as LabelValueDatum[]) ?? []} />
+                                            <SimpleLineChart emptyTitle={t("dashboard.noData")} data={(charts.serviceTransactionsTrend as LabelValueDatum[]) ?? []} />
                                         </ChartCard>
                                     )}
                                 </div>
@@ -372,12 +378,14 @@ export default function Dashboard({
                                 <div className="grid gap-6 xl:grid-cols-2">
                                     <ChartCard title={t('dashboard.sections.transferOverview')}>
                                         <SimpleBarChart
+                                            emptyTitle={t("dashboard.noData")}
                                             data={(charts.transfersByStatus as KeyValueDatum[]) ?? []}
                                             labelFor={employeeStatusLabel}
                                         />
                                     </ChartCard>
                                     <ChartCard title={t('dashboard.transferAgingTitle')}>
                                         <SimpleBarChart
+                                            emptyTitle={t("dashboard.noData")}
                                             data={(charts.transferAging as KeyValueDatum[]) ?? []}
                                             labelFor={(value) => t(`dashboard.transferAging.${value}`)}
                                         />

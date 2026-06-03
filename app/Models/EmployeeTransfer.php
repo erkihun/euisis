@@ -38,6 +38,9 @@ class EmployeeTransfer extends Model
         'rejected_at',
         'completed_at',
         'metadata',
+        'transfer_source',
+        'vacancy_application_id',
+        'vacancy_announcement_id',
     ];
 
     protected function casts(): array
@@ -118,5 +121,15 @@ class EmployeeTransfer extends Model
     public function rejectedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    public function vacancyApplication(): BelongsTo
+    {
+        return $this->belongsTo(VacancyApplication::class, 'vacancy_application_id');
+    }
+
+    public function vacancyAnnouncement(): BelongsTo
+    {
+        return $this->belongsTo(VacancyAnnouncement::class, 'vacancy_announcement_id');
     }
 }

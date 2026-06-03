@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\CardPrintBatch;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class CardPrintBatchPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('id-cards.createPrintBatch') || $user->can('cards.manage');

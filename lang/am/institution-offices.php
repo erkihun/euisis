@@ -1,0 +1,76 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title'              => 'የተቋም ቢሮዎች',
+    'office'             => 'ቢሮ',
+    'create'             => 'ቢሮ ፍጠር',
+    'edit'               => 'ቢሮ አርትዕ',
+    'show'               => 'የቢሮ ዝርዝሮች',
+    'delete'             => 'ቢሮ ሰርዝ',
+    'restore'            => 'ቢሮ መልስ',
+    'move'               => 'ቢሮ አዛውር',
+    'office_code'        => 'የቢሮ ኮድ',
+    'office_name'        => 'የቢሮ ስም',
+    'office_level'       => 'የቢሮ ደረጃ',
+    'geographic_area'    => 'ጂኦግራፊያዊ አካባቢ',
+    'parent_office'      => 'የወላጅ ቢሮ',
+    'institution'        => 'ተቋም',
+    'head_office'        => 'ዋና ቢሮ',
+    'status'             => 'ሁኔታ',
+    'opened_on'          => 'የተከፈተበት ቀን',
+    'closed_on'          => 'የተዘጋበት ቀን',
+    'address'            => 'አድራሻ',
+    'phone'              => 'ስልክ ቁጥር',
+    'email'              => 'ኢሜይል',
+    'notes'              => 'ማስታወሻዎች',
+    'name_en'            => 'ስም (እንግሊዝኛ)',
+    'name_am'            => 'ስም (አማርኛ)',
+    'short_name_en'      => 'አጭር ስም (እንግሊዝኛ)',
+    'short_name_am'      => 'አጭር ስም (አማርኛ)',
+    'assigned_scope_type' => 'የተመደበ ወሰን አይነት',
+    'scope_self'         => 'ራሱ ብቻ',
+    'scope_subtree'      => 'ንዑስ ዛፍ (ራሱ + ልጆች)',
+    'is_head_office'     => 'ዋና ቢሮ ነው',
+    'add_office'         => 'ቢሮ ጨምር',
+    'no_offices'         => 'ምንም ቢሮ አልተገኘም',
+    'select_institution' => 'ተቋም ምረጥ',
+    'select_parent_office' => 'የወላጅ ቢሮ ምረጥ',
+    'no_parent'          => 'የለም (ሥር ቢሮ)',
+    'child_offices'      => 'ንዑስ ቢሮዎች',
+    'back_to_list'       => '← ወደ ቢሮዎች ዝርዝር ተመለስ',
+    'tree_view'          => 'የዛፍ እይታ',
+
+    'levels' => [
+        'city'           => 'ከተማ',
+        'sub_city'       => 'ክፍለ ከተማ',
+        'woreda'         => 'ወረዳ',
+        'branch'         => 'ቅርንጫፍ',
+        'service_center' => 'የአገልግሎት ማዕከል',
+        'other'          => 'ሌላ',
+    ],
+
+    'statuses' => [
+        'active'    => 'ንቁ',
+        'inactive'  => 'ንቁ አይደለም',
+        'suspended' => 'ታግዷል',
+        'closed'    => 'ተዘግቷል',
+    ],
+
+    'messages' => [
+        'created'  => 'የተቋም ቢሮ በተሳካ ሁኔታ ተፈጥሯል።',
+        'updated'  => 'የተቋም ቢሮ በተሳካ ሁኔታ ተዘምኗል።',
+        'moved'    => 'የተቋም ቢሮ በተሳካ ሁኔታ ተቀይሯል።',
+        'deleted'  => 'የተቋም ቢሮ ተሰርዟል።',
+        'restored' => 'የተቋም ቢሮ ተመልሷል።',
+    ],
+
+    'validation' => [
+        'parent_must_same_institution'     => 'የወላጅ ቢሮ ከተቋሙ ጋር መሆን አለበት።',
+        'geographic_level_mismatch'        => 'ጂኦግራፊያዊ ድርጅቱ ደረጃ ከቢሮው ደረጃ ጋር አይዛመድም።',
+        'cannot_be_own_parent'             => 'ቢሮ የራሱ ወላጅ ሊሆን አይችልም።',
+        'circular_hierarchy_not_allowed'   => 'ክብ ተዋረድ አይፈቀድም።',
+        'invalid_institution'              => 'የተመረጠው ተቋም አይገኝም።',
+    ],
+];

@@ -68,6 +68,25 @@ const home = {
     footerRights: 'መብቱ ሁሉ የተጠበቀ ነው።',
     footerSupport: 'ድጋፍ:',
     footerSystem: 'የሠራተኛ ተዋሃደ መታወቂያ እና አገልግሎት ስርዓት',
+
+    // Public pages
+    announcementsPageTitle: 'የዝውውር ማስታወቂያዎች',
+    announcementsPageSubtitle: 'የታተሙ ክፍት የዝውውር ቦታዎች',
+    noAnnouncements: 'በአሁኑ ጊዜ ምንም ማስታወቂያ የለም።',
+    verifyPageTitle: 'የሠራተኛ መታወቂያ ካርድ ያረጋግጡ',
+    verifyPageSubtitle: 'ካርዱን ለማረጋገጥ የካርድ ቁጥሩን ያስገቡ ወይም QR ኮዱን ይቃኙ።',
+    verifyInputLabel: 'የካርድ ቁጥር / UUID',
+    verifyInputPlaceholder: 'ምሳሌ፦ 550e8400-e29b-41d4-a716-446655440000',
+    verifyButton: 'አረጋግጥ',
+    servicesPageTitle: 'ይፋዊ አገልግሎቶች',
+    servicesPageSubtitle: 'ለከተማ አስተዳደር ሠራተኞች የሚቀርቡ አገልግሎቶች።',
+    supportPageTitle: 'ድጋፍ እና እገዛ',
+    supportPageSubtitle: 'የድጋፍ አድራሻዎች እና የእገዛ ሀብቶች።',
+    supportEmailLabel: 'የድጋፍ ኢሜይል',
+    supportPhoneLabel: 'የድጋፍ ስልክ',
+    supportHelpCenterLabel: 'የእገዛ ማዕከል',
+    supportNoContact: 'ለድጋፍ፣ እባክዎ የድርጅቱን አስተዳዳሪ ያነጋግሩ።',
+    registrationDisabled: 'ራስን ማስመዝገብ በአሁኑ ጊዜ ተዘግቷል።',
 } as const;
 
 export default home;

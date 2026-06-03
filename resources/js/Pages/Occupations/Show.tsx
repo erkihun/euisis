@@ -35,6 +35,7 @@ export default function OccupationsShow({ occupation }: { occupation: any }) {
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('occupations.index')}
                     title={`${occupation.isco_code} · ${occupation.name_en ?? occupation.name_am ?? ''}`}
                     actions={
                         <div className="flex gap-3">

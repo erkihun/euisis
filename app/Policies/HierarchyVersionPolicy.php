@@ -7,9 +7,12 @@ namespace App\Policies;
 use App\Enums\HierarchyVersionStatus;
 use App\Models\HierarchyVersion;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 class HierarchyVersionPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('hierarchy-versions.viewAny');

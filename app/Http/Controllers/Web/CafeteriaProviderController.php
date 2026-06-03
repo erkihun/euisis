@@ -8,11 +8,13 @@ use App\Actions\Cafeteria\ArchiveCafeteriaProviderAction;
 use App\Actions\Cafeteria\CreateCafeteriaProviderAction;
 use App\Actions\Cafeteria\RestoreCafeteriaProviderAction;
 use App\Actions\Cafeteria\UpdateCafeteriaProviderAction;
+use App\Enums\OrganizationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCafeteriaProviderRequest;
 use App\Http\Requests\UpdateCafeteriaProviderRequest;
 use App\Http\Resources\CafeteriaProviderResource;
 use App\Models\CafeteriaProvider;
+use App\Models\CafeteriaProviderAssignment;
 use App\Models\Organization;
 use App\Services\OrganizationScope\OrganizationScopeService;
 use Illuminate\Http\RedirectResponse;
@@ -47,14 +49,14 @@ class CafeteriaProviderController extends Controller
 
         return Inertia::render('Cafeteria/Providers/Index', [
             'providers' => CafeteriaProviderResource::collection($providers)->resolve(),
-            'meta'      => [
+            'meta' => [
                 'current_page' => $providers->currentPage(),
-                'last_page'    => $providers->lastPage(),
-                'total'        => $providers->total(),
-                'per_page'     => $providers->perPage(),
+                'last_page' => $providers->lastPage(),
+                'total' => $providers->total(),
+                'per_page' => $providers->perPage(),
             ],
             'filters' => $request->only(['search', 'is_active']),
-            'can'     => [
+            'can' => [
                 'create' => $request->user()?->can('create', CafeteriaProvider::class) ?? false,
             ],
         ]);
@@ -81,8 +83,65 @@ class CafeteriaProviderController extends Controller
     {
         $this->authorize('view', $cafeteriaProvider);
 
+        $cafeteriaProvider->load([
+            'branches.organization:id,name_en,name_am,code',
+        ]);
+
+        $adminUsers = CafeteriaProviderAssignment::query()
+            ->where('cafeteria_provider_id', $cafeteriaProvider->id)
+            ->with([
+                'user:id,name,email,status',
+                'branch:id,code,name_en',
+                'organization:id,name_en,code',
+            ])
+            ->latest()
+            ->get()
+            ->map(fn (CafeteriaProviderAssignment $a): array => [
+                'id' => $a->id,
+                'provider_role' => $a->provider_role ?? $a->role,
+                'is_active' => (bool) $a->is_active,
+                'effective_from' => $a->effective_from?->toDateString(),
+                'effective_to' => $a->effective_to?->toDateString(),
+                'user' => [
+                    'name' => $a->user?->name,
+                    'email' => $a->user?->email,
+                    'status' => $a->user?->status,
+                ],
+                'branch' => $a->branch ? [
+                    'code' => $a->branch->code,
+                    'name_en' => $a->branch->name_en,
+                ] : null,
+                'organization' => $a->organization ? [
+                    'name_en' => $a->organization->name_en,
+                    'code' => $a->organization->code,
+                ] : null,
+            ])
+            ->values()
+            ->all();
+
+        $branches = $cafeteriaProvider->branches->map(fn ($b) => [
+            'id' => $b->id,
+            'code' => $b->code,
+            'name_en' => $b->name_en,
+            'name_am' => $b->name_am,
+            'location' => $b->location,
+            'contact_person' => $b->contact_person,
+            'phone_number' => $b->phone_number,
+            'is_active' => $b->is_active,
+            'organization' => $b->organization ? [
+                'name_en' => $b->organization->name_en,
+                'code' => $b->organization->code,
+            ] : null,
+        ])->values()->all();
+
         return Inertia::render('Cafeteria/Providers/Show', [
             'provider' => (new CafeteriaProviderResource($cafeteriaProvider))->resolve(),
+            'adminUsers' => $adminUsers,
+            'branches' => $branches,
+            'can' => [
+                'update' => request()->user()?->can('update', $cafeteriaProvider) ?? false,
+                'manageUsers' => request()->user()?->can('cafeteria_settings.update') ?? false,
+            ],
         ]);
     }
 
@@ -93,7 +152,7 @@ class CafeteriaProviderController extends Controller
         $cafeteriaProvider->load('organization:id,name_en,name_am,code');
 
         return Inertia::render('Cafeteria/Providers/Edit', [
-            'provider'      => (new CafeteriaProviderResource($cafeteriaProvider))->resolve(),
+            'provider' => (new CafeteriaProviderResource($cafeteriaProvider))->resolve(),
             'organizations' => $this->organizationOptions($request),
         ]);
     }
@@ -130,9 +189,9 @@ class CafeteriaProviderController extends Controller
     /** @return array<int, array<string, string|null>> */
     private function organizationOptions(Request $request): array
     {
-        $user  = $request->user();
+        $user = $request->user();
         $query = Organization::query()
-            ->where('status', \App\Enums\OrganizationStatus::Active)
+            ->where('status', OrganizationStatus::Active)
             ->orderBy('name_en');
 
         $isSuperAdmin = $user?->hasRole('Super Admin') || $user?->hasRole('City Admin');

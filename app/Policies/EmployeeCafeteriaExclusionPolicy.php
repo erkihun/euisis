@@ -6,9 +6,12 @@ namespace App\Policies;
 
 use App\Models\EmployeeCafeteriaExclusion;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 readonly class EmployeeCafeteriaExclusionPolicy
 {
+    use DeniesNonAdminUsers;
+
     public function viewAny(User $user): bool
     {
         return $user->can('cafeteria_employee_exclusions.viewAny');

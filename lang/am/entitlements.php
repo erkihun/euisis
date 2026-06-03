@@ -14,4 +14,5 @@ return [
     'revoke' => 'መብት ሰርዝ',
     'no_entitlements' => 'ምንም መብት አልተገኘም',
     'active_entitlements' => 'ንቁ መብቶች',
+    'granted_successfully' => 'መብቱ ተፈቅዷል።',
 ];

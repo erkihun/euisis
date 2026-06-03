@@ -1,5 +1,5 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
-import ToastProvider from '@/Components/ToastProvider';
+import AppToaster from '@/Components/ui/AppToaster';
 import { useLocale } from '@/hooks/useLocale';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
 import { Link } from '@inertiajs/react';
@@ -16,7 +16,7 @@ export default function GuestLayout({ children }: PropsWithChildren) {
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12 dark:bg-slate-950">
-            <ToastProvider />
+            <AppToaster />
             <Link href="/" className="mb-8 flex items-center gap-2.5">
                 <ApplicationLogo className="h-8 w-8 fill-slate-800 dark:fill-white" />
                 <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">

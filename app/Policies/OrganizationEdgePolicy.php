@@ -8,9 +8,12 @@ use App\Enums\HierarchyVersionStatus;
 use App\Models\HierarchyVersion;
 use App\Models\OrganizationEdge;
 use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminUsers;
 
 class OrganizationEdgePolicy
 {
+    use DeniesNonAdminUsers;
+
     public function view(User $user, OrganizationEdge $organizationEdge): bool
     {
         return $user->can('organization-edges.view')

@@ -1,4 +1,5 @@
 const auth = {
+    loggedIn: "You're logged in!",
     login: 'Log in',
     logout: 'Log out',
     register: 'Register',

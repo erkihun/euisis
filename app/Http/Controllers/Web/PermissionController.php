@@ -46,7 +46,9 @@ class PermissionController extends Controller
             $query->where('group', $group);
         }
 
-        $permissions = PermissionResource::collection($query->get())->resolve();
+        $permissions = [
+            'data' => PermissionResource::collection($query->get())->resolve(),
+        ];
 
         $groups = Permission::query()
             ->whereNotNull('group')

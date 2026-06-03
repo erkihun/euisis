@@ -81,6 +81,7 @@ export default function EmployeesShow({ employee }: { employee: EmployeeDetail }
         <AuthenticatedLayout
             header={
                 <PageHeader
+                    backHref={route('employees.index')}
                     title={employee.full_name}
                     description={employee.employee_number}
                     actions={
@@ -227,10 +228,10 @@ export default function EmployeesShow({ employee }: { employee: EmployeeDetail }
                                 {t('employees.transferHistory')}
                             </h3>
                             <Link
-                                href={route('employee-transfers.create', { employee: employee.id })}
+                                href={route('transfers.dashboard')}
                                 className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-700"
                             >
-                                {t('transfers.newTransfer')}
+                                {t('nav.transferManagement')}
                             </Link>
                         </div>
                         <div className="space-y-3 text-sm">
@@ -239,7 +240,7 @@ export default function EmployeesShow({ employee }: { employee: EmployeeDetail }
                             ) : (employee.transfers ?? []).map((tr) => (
                                 <Link
                                     key={tr.id}
-                                    href={route('employee-transfers.show', tr.id)}
+                                    href={route('transfers.dashboard')}
                                     className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 p-4 transition hover:border-blue-200 hover:bg-blue-50/50 dark:border-slate-800 dark:bg-slate-950 dark:hover:border-blue-500/30"
                                 >
                                     <div className="min-w-0">

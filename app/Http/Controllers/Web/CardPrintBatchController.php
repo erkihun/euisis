@@ -54,7 +54,7 @@ class CardPrintBatchController extends Controller
     {
         $batch = $createPrintBatchAction->execute($request->input('card_ids'), $request->user());
 
-        return redirect()->route('print-batches.show', $batch)->with('success', 'Print batch created.');
+        return redirect()->route('print-batches.show', $batch)->with('success', __('id-cards.print_batch_created'));
     }
 
     public function show(CardPrintBatch $batch): Response
@@ -77,6 +77,6 @@ class CardPrintBatchController extends Controller
     {
         $markCardPrintedAction->execute($batch, $request->user(), $request->input('printer_notes'));
 
-        return back()->with('success', 'Batch marked as printed. Cards are now ready for issuance.');
+        return back()->with('success', __('id-cards.batch_marked_printed'));
     }
 }
