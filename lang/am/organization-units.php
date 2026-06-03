@@ -16,7 +16,7 @@ return [
     'cannot_be_own_parent' => 'ዩኒት የራሱ ወላጅ ሊሆን አይችልም።',
     'root_unit' => 'ዋና ዩኒት',
     'add_organization_unit' => 'ዩኒት ጨምር',
-    'back_to_organizations' => 'ወደ ድርጅቶች ተመለስ',
+    'back_to_organizations' => 'ወደ ተቋማት ተመለስ',
     'help_text' => 'የተቋም ዩኒቶች በተቋም ስር ያሉ ቢሮዎች፣ ክፍሎች፣ ዳይሬክቶሬቶች እና ቡድኖች ናቸው።',
     'do_not_create_offices_as_units' => 'የተቋም ቢሮዎች በመዋቅራዊ ተቋም ስር እንደ የተቋም ዩኒት ይፈጠራሉ።',
     'parent_unit_must_same_office' => 'ወላጅ ዩኒት ከተመረጠው ተቋም ጋር መሆን አለበት።',

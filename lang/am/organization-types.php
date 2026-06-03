@@ -15,7 +15,7 @@ return [
     'description_am' => 'መግለጫ (አማርኛ)',
     'is_active' => 'ንቁ',
     'sort_order' => 'የደረጃ ቅደም ተከተል',
-    'organizations_count' => 'ድርጅቶች',
+    'organizations_count' => 'ተቋማት',
     'create' => 'የተቋም ዓይነት ፍጠር',
     'edit' => 'የተቋም ዓይነት አርትዕ',
     'created' => 'የተቋም ዓይነት ተፈጥሯል።',

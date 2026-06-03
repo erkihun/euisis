@@ -19,7 +19,7 @@
     scopeLevel: 'የወሰን ደረጃ',
     sortOrder: 'የደረጃ ቅደም ተከተል',
     isActive: 'ንቁ',
-    organizationsCount: 'ድርጅቶች',
+    organizationsCount: 'ተቋማት',
     noTypes: 'ምንም የተቋም ዓይነት አልተገለጸም',
     searchTypes: 'ዓይነቶችን ፈልግ...',
     createDescription: 'አዲስ የተቋም ዓይነት ይግለጹ',

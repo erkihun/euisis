@@ -2,8 +2,8 @@
 
 return [
     'dashboard' => 'ዳሽቦርድ',
-    'organizations' => 'ድርጅቶች',
-    'registered_organizations' => 'የተመዘገቡ ድርጅቶች',
+    'organizations' => 'ተቋማት',
+    'registered_organizations' => 'የተመዘገቡ ተቋማት',
     'organization_types' => 'የተቋም ዓይነቶች',
     'employees' => 'ሠራተኞች',
     'id_cards' => 'መታወቂያ ካርዶች',

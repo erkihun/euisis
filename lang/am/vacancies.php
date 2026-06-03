@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 declare(strict_types=1);
 
@@ -99,5 +99,5 @@ return [
     'addPosition' => 'የስራ መደብ ጨምር',
     'positionLine' => 'የስራ መደብ',
     'totalVacancySlots' => 'ጠቅላላ ክፍት ቦታዎች',
-    'multiOrganizationHint' => 'አንድ ማስታወቂያ ለብዙ ድርጅቶችና የስራ መደቦች የዝውውር ክፍት ቦታዎችን ሊይዝ ይችላል።',
+    'multiOrganizationHint' => 'አንድ ማስታወቂያ ለብዙ ተቋማትና የስራ መደቦች የዝውውር ክፍት ቦታዎችን ሊይዝ ይችላል።',
 ];

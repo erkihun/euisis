@@ -267,7 +267,7 @@
     institutionAssignment: 'ተቋም ምደባ',
     assignmentScope: 'የምደባ ወሰን',
     assignmentScopeSelf: 'ይህ ተቋም ብቻ',
-    assignmentScopeSubtree: 'ተቋምና ንዑስ ድርጅቶች',
+    assignmentScopeSubtree: 'ተቋምና ንዑስ ተቋማት',
     institutionScopeHelp: 'ሰራተኞች ይህን ካፌቴሪያ መጠቀም የሚችሉት ወቅታዊ ተቋማቸው ባለው ወሰን ውስጥ ከሆነ ብቻ ነው።',
     institutionAccessAllowed: 'ተቋም ፈቃድ ተሰጥቷል',
     institutionAccessDenied: 'ተቋም ፈቃድ ተከልክሏል',

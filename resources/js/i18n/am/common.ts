@@ -87,7 +87,7 @@
     user: 'ተጠቃሚ',
     optional: 'አማራጭ',
     organization: 'ተቋም',
-    allOrganizations: 'ሁሉም ድርጅቶች',
+    allOrganizations: 'ሁሉም ተቋማት',
     viewAll: 'ሁሉንም ይመልከቱ',
 } as const;
 

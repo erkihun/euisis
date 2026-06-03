@@ -1,4 +1,4 @@
-const vacancies = {
+﻿const vacancies = {
     announcements: 'የክፍት ቦታ ማስታወቂያዎች',
     announcement: 'የክፍት ቦታ ማስታወቂያ',
     announcementNumber: 'የማስታወቂያ ቁጥር',
@@ -69,7 +69,7 @@ const vacancies = {
     slotsAvailable: 'ክፍት ቦታዎች',
     slotsTotal: 'ጠቅላላ ቦታዎች',
     slotsSelected: 'የተመረጡ',
-    multiOrganizationHint: 'ከበርካታ ድርጅቶች ተደራቢ ክፍት ቦታዎችን የሚሸፍን አንድ ማስታወቂያ ይፍጠሩ።',
+    multiOrganizationHint: 'ከበርካታ ተቋማት ተደራቢ ክፍት ቦታዎችን የሚሸፍን አንድ ማስታወቂያ ይፍጠሩ።',
     totalVacancySlots: 'ጠቅላላ ክፍት ቦታዎች',
     includedPositions: 'የተካተቱ ቦታዎች',
     positionLine: 'ቦታ',

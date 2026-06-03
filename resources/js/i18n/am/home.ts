@@ -28,7 +28,7 @@
     // Platform Modules
     modulesSectionTitle: 'የስርዓቱ ሞጁሎች',
     modulesSectionSubtitle: 'ሙሉ ጫፍ ለጫፍ የሠራተኛ መታወቂያ አስተዳደር የተዋሃዱ ሞጁሎች።',
-    module1Title: 'ድርጅቶች',
+    module1Title: 'ተቋማት',
     module1Desc: 'የከተማ አስተዳደር ተዋረድን ስሪቶች ያላቸው ተቋም ቻርቶች እና ጊዜ-ቀናቶች ሁኔታ ያስተዳድሩ።',
     module2Title: 'ሠራተኞች',
     module2Desc: 'ዝውውር ታሪክ፣ ድብልቅ ምርመራ እና ውሂብ ጥራት ደረጃ ያለው ሠራተኛ መዝገብ ያቆዩ።',
