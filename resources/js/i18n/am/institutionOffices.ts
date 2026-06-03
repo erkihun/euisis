@@ -1,4 +1,4 @@
-﻿const institutionOffices = {
+const institutionOffices = {
     title: 'የተቋም ቢሮዎች',
     office: 'ቢሮ',
     create: 'ቢሮ ፍጠር',

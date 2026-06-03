@@ -1,4 +1,4 @@
-﻿const transport = {
+const transport = {
     badge: 'ትራንስፖርት',
     portal: 'የትራንስፖርት አቅራቢ ፖርታል',
     dashboard: 'የትራንስፖርት ዳሽቦርድ',

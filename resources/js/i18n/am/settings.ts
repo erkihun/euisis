@@ -1,4 +1,4 @@
-﻿const settings = {
+const settings = {
     title: 'የስርዓት ቅንብሮች',
     subtitle: 'የመተግበሪያ ባህሪ፣ ቋንቋ፣ ማሳወቂያ፣ መለያ እና ደህንነት ቅንብሮችን ያስተዳድሩ።',
     organizationName: 'የተቋም ስም',

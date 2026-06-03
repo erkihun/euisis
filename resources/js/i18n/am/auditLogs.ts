@@ -1,4 +1,4 @@
-﻿const auditLogs = {
+const auditLogs = {
     title: 'የኦዲት ምዝግቦች',
     auditLog: 'የኦዲት ምዝገባ',
     event: 'ክስተት',

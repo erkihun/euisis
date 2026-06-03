@@ -1,4 +1,4 @@
-﻿const positionEstablishments = {
+const positionEstablishments = {
     title: 'የቦታ ምደባዎች',
     establishment: 'የቦታ ምደባ',
     establishmentNumber: 'የምደባ ቁጥር',

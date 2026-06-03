@@ -1,4 +1,4 @@
-﻿export default {
+export default {
     hierarchyVersions: 'የተዋረድ ስሪቶች',
     hierarchyTree: 'የተዋረድ ዛፍ',
     description: 'ለተቋም መዋቅር ሪፖርት ረቂቅ፣ የታተሙ እና የተመዘገቡ የተዋረድ ስሪቶችን ያስተዳድሩ።',

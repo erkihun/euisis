@@ -1,4 +1,4 @@
-﻿const users = {
+const users = {
     title: 'ተጠቃሚዎች',
     user: 'ተጠቃሚ',
     createUser: 'ተጠቃሚ ፍጠር',

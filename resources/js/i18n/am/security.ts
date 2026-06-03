@@ -1,4 +1,4 @@
-﻿const security = {
+const security = {
     sessionExpired: 'የክፍለ ጊዜዎ አብቅቷል። እባክዎ እንደገና ይግቡ።',
     accessDenied: 'ፍቃድ የለም። ይህን ድርጊት ለማከናወን ፈቃድ የለዎትም።',
     scopeDenied: 'የተቋም ወሰንዎ ይህን መዝገብ አይጨምርም።',

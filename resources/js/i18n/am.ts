@@ -1,4 +1,4 @@
-﻿const am = {
+const am = {
     nav: {
         dashboard: 'ዳሽቦርድ',
         organizations: 'ተቋማት',

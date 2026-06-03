@@ -1,4 +1,4 @@
-﻿const employees = {
+const employees = {
     title: 'ሠራተኞች',
     employee: 'ሠራተኛ',
     createEmployee: 'ሠራተኛ ፍጠር',

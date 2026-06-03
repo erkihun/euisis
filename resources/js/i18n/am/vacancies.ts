@@ -1,4 +1,4 @@
-﻿const vacancies = {
+const vacancies = {
     announcements: 'የክፍት ቦታ ማስታወቂያዎች',
     announcement: 'የክፍት ቦታ ማስታወቂያ',
     announcementNumber: 'የማስታወቂያ ቁጥር',

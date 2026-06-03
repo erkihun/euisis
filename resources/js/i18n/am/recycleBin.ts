@@ -1,4 +1,4 @@
-﻿const recycleBin = {
+const recycleBin = {
     title: 'የተሰረዙ መዝገቦች',
     description: 'የተሰረዙ መዝገቦችን ይመልከቱ እና ፈቃድ ካለዎት ወደ ነበሩበት ይመልሱ።',
     deletedRecords: 'የተሰረዙ መዝገቦች',

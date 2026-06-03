@@ -1,4 +1,4 @@
-﻿const codeRules = {
+const codeRules = {
     title: 'የኮድ ደንቦች',
     description: 'በስርዓቱ ውስጥ ለተለያዩ አካላት የሚጠቀሙ የኮድ ማመንጫ ደንቦችን ያስተዳድሩ።',
     createTitle: 'የኮድ ደንብ ፍጠር',

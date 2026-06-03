@@ -1,4 +1,4 @@
-﻿const idCards = {
+const idCards = {
     title: 'መታወቂያ ካርዶች',
     idCard: 'መታወቂያ ካርድ',
     requestIdCard: 'መታወቂያ ካርድ ጠይቅ',

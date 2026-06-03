@@ -1,4 +1,4 @@
-﻿const organizationTypes = {
+const organizationTypes = {
     title: 'የተቋም ዓይነቶች',
     organizationType: 'የተቋም ዓይነት',
     createTitle: 'የተቋም ዓይነት ፍጠር',

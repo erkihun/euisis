@@ -1,4 +1,4 @@
-﻿const home = {
+const home = {
     // Header
     headerTagline: 'የአዲስ አበባ ከተማ አስተዳደር',
     loginButton: 'ግባ',

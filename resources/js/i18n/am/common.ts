@@ -1,4 +1,4 @@
-﻿const common = {
+const common = {
     create: 'ፍጠር',
     view: 'ይመልከቱ',
     edit: 'አርትዕ',

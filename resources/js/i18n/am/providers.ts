@@ -1,4 +1,4 @@
-﻿const providers = {
+const providers = {
     title: 'አገልግሎት አቅራቢዎች',
     provider: 'አገልግሎት አቅራቢ',
     providerDetails: 'የአቅራቢ ዝርዝሮች',

@@ -1,4 +1,4 @@
-﻿const organizations = {
+const organizations = {
     expandAll: 'ሁሉንም ዘርጋ',
     collapseAll: 'ሁሉንም ሰብስብ',
     title: 'ተቋማት',

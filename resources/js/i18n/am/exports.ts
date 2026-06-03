@@ -1,4 +1,4 @@
-﻿const exports = {
+const exports = {
     export: 'ላክ',
     exportCsv: 'CSV ላክ',
     exportExcel: 'Excel ላክ',

@@ -1,4 +1,4 @@
-﻿const dashboard = {
+const dashboard = {
     title: 'ዳሽቦርድ',
     subtitle: 'የስርዓቱ አጠቃላይ የስራ እይታ',
     dateRange: 'የቀን ክልል',

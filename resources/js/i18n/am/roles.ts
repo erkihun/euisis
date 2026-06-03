@@ -1,4 +1,4 @@
-﻿const roles = {
+const roles = {
     title: 'ሚናዎች',
     role: 'ሚና',
     createRole: 'ሚና ፍጠር',

@@ -1,4 +1,4 @@
-﻿const transfers = {
+const transfers = {
     // Module
     module: 'የዝውውር አስተዳደር',
     dashboard: 'የዝውውር ዳሽቦርድ',

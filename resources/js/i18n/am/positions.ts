@@ -1,4 +1,4 @@
-﻿const positions = {
+const positions = {
     title: 'የስራ መደቦች',
     jobPositions: 'የስራ መደቦች',
     newPosition: 'አዲስ መደብ',

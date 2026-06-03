@@ -1,4 +1,4 @@
-﻿export default {
+export default {
     title: 'ግንኙነቶች',
     reportingLines: 'የሪፖርት መስመሮች',
     structuralRelationship: 'መዋቅራዊ ግንኙነት',

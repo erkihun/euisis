@@ -1,4 +1,4 @@
-﻿const cafeteria = {
+const cafeteria = {
     moduleName: 'የካፌቴሪያ ድጎማ',
     dashboard: 'የካፌቴሪያ ዳሽቦርድ',
     nameEn: 'ስም (እንግሊዝኛ)',

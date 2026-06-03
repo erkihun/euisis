@@ -1,4 +1,4 @@
-﻿const organizationUnits = {
+const organizationUnits = {
     organizationUnits: 'የተቋም ዩኒቶች',
     organizationUnit: 'የተቋም ዩኒት',
     createOrganizationUnit: 'ዩኒት ፍጠር',

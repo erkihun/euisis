@@ -1,4 +1,4 @@
-﻿const permissions = {
+const permissions = {
     title: 'ፈቃዶች',
     permission: 'ፈቃድ',
     createPermission: 'ፈቃድ ፍጠር',

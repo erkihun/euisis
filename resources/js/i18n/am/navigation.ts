@@ -1,4 +1,4 @@
-﻿const navigation = {
+const navigation = {
     dashboard: 'ዳሽቦርድ',
     groupOverview: 'አጠቃላይ እይታ',
     groupOrganization: 'የተቋም መዋቅር',
