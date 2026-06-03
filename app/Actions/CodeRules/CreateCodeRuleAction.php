@@ -22,6 +22,7 @@ class CreateCodeRuleAction
 
         $codeRule = CodeRule::query()->create([
             ...$attributes,
+            'initial_sequence_number' => $attributes['next_number'] ?? 1,
             'active_scope_key' => ($attributes['is_active'] ?? true)
                 ? CodeRule::buildActiveScopeKey($attributes['entity_type'], $attributes['scope_type'] ?? null, $attributes['scope_id'] ?? null)
                 : null,

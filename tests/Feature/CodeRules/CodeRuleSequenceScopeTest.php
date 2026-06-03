@@ -63,6 +63,7 @@ function makeScopeRule(array $overrides = []): CodeRule
         'separator' => '-',
         'sequence_length' => 4,
         'next_number' => 1,
+        'initial_sequence_number' => 1,
         'sequence_scope_strategy' => CodeRuleScopeStrategy::Auto,
         'sequence_scope_tokens' => [],
         'reset_frequency' => CodeRuleResetFrequency::Never,
@@ -507,4 +508,44 @@ it('backfill command creates sequence rows from generation logs', function (): v
         ->and($seq->next_number)->toBe(4)     // max(3) + 1
         ->and($seq->last_number)->toBe(3)
         ->and($seq->last_generated_code)->toBe('BL-3');
+});
+
+// ─── 16. New scope always starts from initial_sequence_number ─────────────────
+
+it('new per-scope sequence starts at initial_sequence_number even after global scope advanced next_number', function (): void {
+    // Simulate the real-world bug: a rule that first generated codes under global
+    // scope (advancing next_number to 3), then encounters a new prefix for the
+    // first time. Without the fix, the new scope would start at 3 instead of 1.
+
+    OrganizationType::query()->create(['code' => 'AA', 'prefix' => 'AA', 'name_en' => 'Alpha', 'is_active' => true]);
+    OrganizationType::query()->create(['code' => 'BB', 'prefix' => 'BB', 'name_en' => 'Beta', 'is_active' => true]);
+
+    $aa = OrganizationType::query()->where('code', 'AA')->firstOrFail();
+    $bb = OrganizationType::query()->where('code', 'BB')->firstOrFail();
+
+    // Rule starts with next_number = initial_sequence_number = 1
+    $rule = makeScopeRule([
+        'format' => '{ORG_TYPE_PREFIX}-{SEQUENCE_PADDED}',
+        'prefix' => null,
+        'next_number' => 1,
+        'sequence_scope_strategy' => CodeRuleScopeStrategy::Auto,
+        'active_scope_key' => CodeRule::buildActiveScopeKey(CodeRuleEntityType::Organization),
+    ]);
+
+    // Forcibly advance next_number as if global-scope codes had been generated
+    // (this is what happens when a rule previously ran under global scope).
+    $rule->forceFill(['next_number' => 5])->save();
+
+    $gen = app(CodeGeneratorService::class);
+
+    // Generate two codes for AA — creates scope UNIT_TYPE_PREFIX=AA starting at initial_sequence_number=1
+    $aa1 = $gen->generate($rule, ['organization_type_id' => $aa->id]);
+    $aa2 = $gen->generate($rule, ['organization_type_id' => $aa->id]);
+
+    // Generate first code for BB — should start at 1, not at next_number (5)
+    $bb1 = $gen->generate($rule, ['organization_type_id' => $bb->id]);
+
+    expect($aa1)->toBe('AA-0001')
+        ->and($aa2)->toBe('AA-0002')
+        ->and($bb1)->toBe('BB-0001');
 });

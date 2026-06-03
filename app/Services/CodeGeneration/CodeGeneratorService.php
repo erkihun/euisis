@@ -61,12 +61,18 @@ class CodeGeneratorService
                 ->first();
 
             if ($sequence === null) {
+                // Use initial_sequence_number (the admin-configured start) so that a
+                // new scope (e.g. a new UNIT_TYPE_PREFIX value) always begins from the
+                // intended starting point even if next_number was advanced by previous
+                // global-scope generation.
+                $startAt = max(1, $lockedRule->initial_sequence_number ?? $lockedRule->next_number);
+
                 $sequence = new CodeRuleSequence([
                     'code_rule_id' => $lockedRule->getKey(),
                     'sequence_scope_key' => $scope['scope_key'],
                     'sequence_scope_hash' => $scope['scope_hash'],
                     'sequence_scope_values' => $scope['scope_values'],
-                    'next_number' => max(1, $lockedRule->next_number),
+                    'next_number' => $startAt,
                     'reset_frequency' => $lockedRule->reset_frequency?->value,
                 ]);
             }
@@ -173,7 +179,9 @@ class CodeGeneratorService
             ->where('sequence_scope_hash', $scope['scope_hash'])
             ->first();
 
-        return $sequence !== null ? max(1, $sequence->next_number) : max(1, $rule->next_number);
+        return $sequence !== null
+            ? max(1, $sequence->next_number)
+            : max(1, $rule->initial_sequence_number ?? $rule->next_number);
     }
 
     private function resetSequenceIfDue(CodeRuleSequence $sequence, CodeRule $rule): void

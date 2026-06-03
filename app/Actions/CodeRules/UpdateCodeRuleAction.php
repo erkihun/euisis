@@ -22,8 +22,16 @@ class UpdateCodeRuleAction
 
         $this->ensureNoActiveConflict($codeRule, $attributes);
 
+        $fillAttributes = $attributes;
+
+        // When the admin explicitly changes next_number (the configured start), keep
+        // initial_sequence_number in sync so new per-scope sequences start there too.
+        if (array_key_exists('next_number', $attributes)) {
+            $fillAttributes['initial_sequence_number'] = $attributes['next_number'];
+        }
+
         $codeRule->fill([
-            ...$attributes,
+            ...$fillAttributes,
             'active_scope_key' => ($attributes['is_active'] ?? $codeRule->is_active)
                 ? CodeRule::buildActiveScopeKey(
                     $attributes['entity_type'] ?? $codeRule->entity_type,
