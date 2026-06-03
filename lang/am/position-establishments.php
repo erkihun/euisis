@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 declare(strict_types=1);
 
@@ -6,8 +6,8 @@ return [
     'title' => 'የቦታ ምደባዎች',
     'establishment' => 'የቦታ ምደባ',
     'establishmentNumber' => 'የምደባ ቁጥር',
-    'organization' => 'ድርጅት',
-    'organizationUnit' => 'የድርጅት ክፍል',
+    'organization' => 'ተቋም',
+    'organizationUnit' => 'የተቋም ክፍል',
     'position' => 'ቦታ',
     'occupation' => 'ሙያ',
     'approvedSlots' => 'ፈቃደኛ ቦታዎች',

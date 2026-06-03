@@ -1,4 +1,4 @@
-const roles = {
+﻿const roles = {
     title: 'ሚናዎች',
     role: 'ሚና',
     createRole: 'ሚና ፍጠር',
@@ -7,7 +7,7 @@ const roles = {
     permissions: 'ፈቃዶች',
     usersCount: 'ተጠቃሚዎች',
     superAdmin: 'ሱፐር አስተዳዳሪ',
-    organizationAdmin: 'የድርጅት አስተዳዳሪ',
+    organizationAdmin: 'የተቋም አስተዳዳሪ',
     fullAccess: 'ሙሉ መዳረሻ',
     scopedAccess: 'ተወሰነ መዳረሻ',
     deleteRole: 'ሚና ሰርዝ',

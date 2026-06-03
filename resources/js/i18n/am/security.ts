@@ -1,7 +1,7 @@
-const security = {
+﻿const security = {
     sessionExpired: 'የክፍለ ጊዜዎ አብቅቷል። እባክዎ እንደገና ይግቡ።',
     accessDenied: 'ፍቃድ የለም። ይህን ድርጊት ለማከናወን ፈቃድ የለዎትም።',
-    scopeDenied: 'የድርጅት ወሰንዎ ይህን መዝገብ አይጨምርም።',
+    scopeDenied: 'የተቋም ወሰንዎ ይህን መዝገብ አይጨምርም።',
     tooManyAttempts: 'ብዙ ሙከራዎች። እባክዎ ጠብቀው እንደገና ይሞክሩ።',
     strongPasswordRequired: 'የሚስጥር ቃል ዝቅተኛ የደህንነት መስፈርቶችን ማሟላት አለበት።',
     securitySettingsUpdated: 'የደህንነት ቅንብሮች በተሳካ ሁኔታ ተዘምነዋል።',
@@ -28,7 +28,7 @@ const security = {
     unsafeFileType: 'የፋይሉ አይነት አይፈቀድም። የተፈቀዱ አይነቶች ብቻ መጫን ይቻላል።',
     rateLimitExceeded: 'የጥያቄ ገደቡ ተሻገረ። እባክዎ ጥቂት ጠብቀው እንደገና ይሞክሩ።',
     sensitiveInfoProtected: 'ሚስጥራዊ መረጃ ተጠብቋል እና ሊወጣ አይችልም።',
-    orgScopeDenied: 'የድርጅት ወሰንዎ ይህን መዝገብ አይጨምርም።',
+    orgScopeDenied: 'የተቋም ወሰንዎ ይህን መዝገብ አይጨምርም።',
     actionNotPermitted: 'ይህ ድርጊት ለመለያዎ አይፈቀድም።',
     securityHeadersEnabled: 'የደህንነት ራስጌዎች ነቅተዋል።',
     secureConfigRequired: 'ለዚህ አካባቢ ደህንነቱ የተጠበቀ ቅንብር ያስፈልጋል።',

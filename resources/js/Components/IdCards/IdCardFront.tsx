@@ -54,8 +54,11 @@ export default function IdCardFront({
     const textSec    = getString('id_cards.front_text_secondary', '#BFDBFE');
     const nameFontSz = getString('id_cards.front_name_font_size', 'sm');
     const lblFontSz  = getString('id_cards.front_label_font_size', 'xs');
-    const showLogo   = getBoolean('id_cards.show_organization_logo', true);
-    const padding    = getString('id_cards.card_padding', 'normal');
+    const showLogo          = getBoolean('id_cards.show_organization_logo', true);
+    const padding           = getString('id_cards.card_padding', 'normal');
+    // Fall back to the system identity logo when no cityLogoUrl is passed as a prop
+    const systemLogoUrl     = getString('general.identity_system_logo_url', '');
+    const resolvedCityLogo  = cityLogoUrl || (systemLogoUrl || null);
 
     const cityName = locale === 'am'
         ? getString('id_cards.city_name_am', 'አዲስ አበባ ከተማ አስተዳደር')
@@ -137,9 +140,9 @@ export default function IdCardFront({
             {/* Header band */}
             <div className="absolute inset-x-0 top-0 flex items-center gap-2 bg-white/15 px-3 py-1.5">
                 {/* City logo or org logo */}
-                {showLogo && (cityLogoUrl || organizationLogoUrl) ? (
+                {showLogo && (resolvedCityLogo || organizationLogoUrl) ? (
                     <img
-                        src={cityLogoUrl ?? organizationLogoUrl!}
+                        src={resolvedCityLogo ?? organizationLogoUrl!}
                         alt={organizationName ?? 'Logo'}
                         className="h-7 w-7 rounded-full object-contain bg-white/10"
                         crossOrigin="anonymous"

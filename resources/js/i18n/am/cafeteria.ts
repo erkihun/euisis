@@ -1,4 +1,4 @@
-const cafeteria = {
+﻿const cafeteria = {
     moduleName: 'የካፌቴሪያ ድጎማ',
     dashboard: 'የካፌቴሪያ ዳሽቦርድ',
     nameEn: 'ስም (እንግሊዝኛ)',
@@ -19,7 +19,7 @@ const cafeteria = {
     phoneNumber: 'ስልክ',
     email: 'ኢሜይል',
     location: 'አድራሻ',
-    organization: 'ድርጅት',
+    organization: 'ተቋም',
     isActive: 'ንቁ',
 
     // Subsidy Rules
@@ -31,7 +31,7 @@ const cafeteria = {
     effectiveTo: 'እስከ (አማራጭ)',
     appliesTo: 'ተፈጻሚ ለ',
     allEmployees: 'ለሁሉም ሰራተኞች',
-    byOrganization: 'በድርጅት',
+    byOrganization: 'በተቋም',
     byEmployeeType: 'በሰራተኛ አይነት',
     excludeWeekends: 'ቅዳሜና እሁድ አትቆጥር',
     subsidyRuleCreated: 'የድጎማ ደንብ ተፈጥሯል።',

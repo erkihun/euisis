@@ -1,4 +1,4 @@
-const recycleBin = {
+﻿const recycleBin = {
     title: 'የተሰረዙ መዝገቦች',
     description: 'የተሰረዙ መዝገቦችን ይመልከቱ እና ፈቃድ ካለዎት ወደ ነበሩበት ይመልሱ።',
     deletedRecords: 'የተሰረዙ መዝገቦች',
@@ -25,8 +25,8 @@ const recycleBin = {
     notPermanent: 'ይህ ተግባር መዝገቡን በቋሚነት አይሰርዝም።',
     noRestorePermission: 'ይህን መዝገብ ለመመለስ ፈቃድ የለዎትም።',
     types: {
-        organization_units: 'የድርጅት ዩኒቶች',
-        organization_unit_types: 'የድርጅት ዩኒት አይነቶች',
+        organization_units: 'የተቋም ዩኒቶች',
+        organization_unit_types: 'የተቋም ዩኒት አይነቶች',
         positions: 'የስራ መደቦች',
         service_types: 'የአገልግሎት አይነቶች',
         entitlement_rules: 'የመብት ደንቦች',

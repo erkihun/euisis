@@ -1,4 +1,4 @@
-const idCards = {
+﻿const idCards = {
     title: 'መታወቂያ ካርዶች',
     idCard: 'መታወቂያ ካርድ',
     requestIdCard: 'መታወቂያ ካርድ ጠይቅ',
@@ -20,7 +20,7 @@ const idCards = {
     searchCards: 'ካርዶችን ፈልግ…',
     searchRequests: 'ጥያቄዎችን ፈልግ…',
     filterByStatus: 'በሁኔታ ፍልተር',
-    filterByOrg: 'በድርጅት ፍልተር',
+    filterByOrg: 'በተቋም ፍልተር',
     requested: 'ተጠይቋል',
     verified: 'ተረጋግጧል',
     approved: 'ፀድቋል',

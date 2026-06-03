@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 declare(strict_types=1);
 
@@ -6,9 +6,9 @@ return [
     'title' => 'ግንኙነቶች',
     'reporting_lines' => 'የሪፖርት መስመሮች',
     'target_types' => [
-        'organization' => 'ድርጅት',
+        'organization' => 'ተቋም',
         'institution_office' => 'የተቋም ቢሮ',
-        'organization_unit' => 'የድርጅት ክፍል',
+        'organization_unit' => 'የተቋም ክፍል',
     ],
     'types' => [
         'reports_to' => 'ሪፖርት ያደርጋል',
@@ -44,7 +44,7 @@ return [
         'only_one_primary_structural_parent' => 'አንድ ንቁ ዋና መዋቅራዊ ወላጅ ብቻ ይፈቀዳል።',
         'structural_cycle' => 'መዋቅራዊ ግንኙነት ዙር መፍጠር አይችልም።',
         'invalid_structural_target' => 'ይህ የመዳረሻ አይነት እንደ መዋቅራዊ ወላጅ መጠቀም አይቻልም።',
-        'invalid_unit_relationship_target' => 'የድርጅት ዩኒት ግንኙነት ወደ ድርጅት ወይም ወደ ሌላ የድርጅት ዩኒት ብቻ መሆን አለበት።',
+        'invalid_unit_relationship_target' => 'የተቋም ዩኒት ግንኙነት ወደ ተቋም ወይም ወደ ሌላ የተቋም ዩኒት ብቻ መሆን አለበት።',
         'duplicate_active_relationship' => 'ለዚህ ምንጭ፣ መዳረሻ እና የግንኙነት አይነት ንቁ ግንኙነት ቀድሞውኑ አለ።',
     ],
 ];

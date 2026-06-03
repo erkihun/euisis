@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 
 return [
     'title'                          => 'ፈቃዶች',
     'permission'                     => 'ፈቃድ',
     'module'                         => 'ሞጁል',
-    'organization_scopes'            => 'የድርጅት ወሰኖች',
-    'organization_admin'             => 'የድርጅት አስተዳዳሪ',
+    'organization_scopes'            => 'የተቋም ወሰኖች',
+    'organization_admin'             => 'የተቋም አስተዳዳሪ',
     'no_permissions'                 => 'ምንም ፈቃድ አልተገለጸም',
     'grouped_by_module'              => 'በሞጁል ተቧድኗል',
     'created'                        => 'ፈቃድ ተፈጥሯል።',

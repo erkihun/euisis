@@ -7,7 +7,7 @@ import { toDateInput } from '@/lib/dateUtils';
 import CodeRuleField from '@/Components/code-rules/CodeRuleField';
 import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
-type OrgType = { id: string; name_en: string; code: string };
+type OrgType = { id: string; name_en: string; name_am: string | null; code: string };
 
 type Organization = {
     id: string;
@@ -56,7 +56,7 @@ export default function EditOrganization({
     organization: Organization;
     organizationTypes: OrgType[];
 }) {
-    const { t } = useLocale();
+    const { t, locale } = useLocale();
 
     const form = useForm<{
         organization_type_id: string;
@@ -151,7 +151,7 @@ export default function EditOrganization({
                             >
                                 {organizationTypes.map((ot) => (
                                     <option key={ot.id} value={ot.id}>
-                                        {ot.name_en} ({ot.code})
+                                        {locale === 'am' ? (ot.name_am || ot.name_en) : ot.name_en} ({ot.code})
                                     </option>
                                 ))}
                             </select>

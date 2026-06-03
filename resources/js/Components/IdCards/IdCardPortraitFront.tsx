@@ -49,7 +49,9 @@ export default function IdCardPortraitFront({
     const frontTo   = getString('id_cards.front_bg_to',   '#1E3A8A');
     const textPri   = getString('id_cards.front_text_primary',   '#FFFFFF');
     const textSec   = getString('id_cards.front_text_secondary', '#BFDBFE');
-    const showLogo  = getBoolean('id_cards.show_organization_logo', true);
+    const showLogo         = getBoolean('id_cards.show_organization_logo', true);
+    const systemLogoUrl    = getString('general.identity_system_logo_url', '');
+    const resolvedCityLogo = cityLogoUrl || (systemLogoUrl || null);
 
     const cityName = locale === 'am'
         ? getString('id_cards.city_name_am', 'አዲስ አበባ ከተማ አስተዳደር')
@@ -115,9 +117,9 @@ export default function IdCardPortraitFront({
 
             {/* ── Header ───────────────────────────────────────────── */}
             <div className="flex shrink-0 items-center gap-2 bg-white/15 px-3 py-2">
-                {showLogo && (cityLogoUrl || organizationLogoUrl) ? (
+                {showLogo && (resolvedCityLogo || organizationLogoUrl) ? (
                     <img
-                        src={cityLogoUrl ?? organizationLogoUrl!}
+                        src={resolvedCityLogo ?? organizationLogoUrl!}
                         alt={organizationName ?? 'Logo'}
                         className="h-7 w-7 shrink-0 rounded-full object-contain bg-white/10"
                         crossOrigin="anonymous"

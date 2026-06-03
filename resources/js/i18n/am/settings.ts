@@ -1,7 +1,7 @@
-const settings = {
+﻿const settings = {
     title: 'የስርዓት ቅንብሮች',
     subtitle: 'የመተግበሪያ ባህሪ፣ ቋንቋ፣ ማሳወቂያ፣ መለያ እና ደህንነት ቅንብሮችን ያስተዳድሩ።',
-    organizationName: 'የድርጅት ስም',
+    organizationName: 'የተቋም ስም',
     themeMode: 'የገጽታ ሁኔታ',
     configured: 'ተቀናብሯል',
     notConfigured: 'አልተቀናበረም',
@@ -61,7 +61,7 @@ const settings = {
         sampleCardTitle: 'የምሳሌ ካርድ',
         sampleCardText: 'ካርዶች፣ አዝራሮች እና ምልክቶች በገጽታ ቅንብሮች እንዴት እንደሚቀየሩ ይመልከቱ።',
         sampleTableHeader: 'የምሳሌ ረድፍ',
-        sampleTableValue: 'የመንግስት ድርጅት ቅርፀ አቀማመጥ ቅድመ እይታ',
+        sampleTableValue: 'የመንግስት ተቋም ቅርፀ አቀማመጥ ቅድመ እይታ',
         sampleBadge: 'ንቁ',
         securityNotice: 'የይለፍ ቃል፣ የሴሽን፣ የማስገቢያ ወይም የፍጥነት ገደብ ቅንብሮች ለውጥ እንደገና መግባት፣ ካሽ ማጽዳት ወይም የተደራጀ ስርጭት ሊፈልግ ይችላል።',
     },

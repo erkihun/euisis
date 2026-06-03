@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 declare(strict_types=1);
 
@@ -13,9 +13,9 @@ return [
     'manual_override_not_allowed' => 'ለዚህ ደንብ በእጅ የኮድ መቀየር አይፈቀድም።',
     'generated_code_exists' => 'የተፈጠረው ኮድ አስቀድሞ አለ።',
     'no_active_rule' => 'ለዚህ አካል ንቁ የኮድ ደንብ አልተዘጋጀም።',
-    'scope_type_organization' => 'ድርጅት',
-    'scope_type_organization_type' => 'የድርጅት አይነት',
-    'scope_type_organization_unit_type' => 'የድርጅት ዩኒት ዓይነት',
+    'scope_type_organization' => 'ተቋም',
+    'scope_type_organization_type' => 'የተቋም አይነት',
+    'scope_type_organization_unit_type' => 'የተቋም ዩኒት ዓይነት',
     'scope_type_service_type' => 'የአገልግሎት አይነት',
     // የቅርጸት ቶከን UI
     'format_tokens' => 'የቅርጸት ቶከኖች',
@@ -25,7 +25,7 @@ return [
     'token_categories' => 'የቶከን ምድቦች',
     'category_core' => 'መሠረታዊ ቶከኖች',
     'category_date_time' => 'የቀን እና ሰዓት ቶከኖች',
-    'category_organization' => 'የድርጅት ቶከኖች',
+    'category_organization' => 'የተቋም ቶከኖች',
     'category_employee' => 'የሰራተኛ ቶከኖች',
     'category_position' => 'የስራ መደብ ቶከኖች',
     'category_service' => 'የአገልግሎት ቶከኖች',

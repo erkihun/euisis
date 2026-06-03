@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'title' => 'ሠራተኞች',
@@ -10,7 +10,7 @@ return [
     'date_of_birth' => 'የትውልድ ቀን',
     'gender' => 'ፆታ',
     'nationality' => 'ዜግነት',
-    'organization' => 'ድርጅት',
+    'organization' => 'ተቋም',
     'position' => 'የስራ መደብ',
     'department' => 'የስራ ክፍል',
     'employment_date' => 'የቅጥር ቀን',

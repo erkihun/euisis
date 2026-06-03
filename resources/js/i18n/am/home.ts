@@ -1,4 +1,4 @@
-const home = {
+﻿const home = {
     // Header
     headerTagline: 'የአዲስ አበባ ከተማ አስተዳደር',
     loginButton: 'ግባ',
@@ -19,7 +19,7 @@ const home = {
     trust1Title: 'ደህንነቱ የተጠበቀ QR ማረጋገጫ',
     trust1Desc: 'እያንዳንዱ መታወቂያ ካርድ ሃሽ ቶከን ማከማቻ ያለው ፈርሞ QR ኮድ ይዞ ለጠለቀ ማረጋገጫ ይቀርባል።',
     trust2Title: 'ሚና ላይ የተመሰረተ ፈቃድ',
-    trust2Desc: 'ዝርዝር፣ ድርጅት-ደረጃ የተደረገ የመዳረሻ ቁጥጥር ሠራተኞች የሚፈቀድላቸውን ብቻ እንዲደርሱ ያረጋግጣል።',
+    trust2Desc: 'ዝርዝር፣ ተቋም-ደረጃ የተደረገ የመዳረሻ ቁጥጥር ሠራተኞች የሚፈቀድላቸውን ብቻ እንዲደርሱ ያረጋግጣል።',
     trust3Title: 'የማይቀያየሩ የኦዲት ምዝግቦች',
     trust3Desc: 'ሁሉም ድርጊቶች ሙሉ፣ የማይቀያወር የተጠያቂነት ዱካ በሚሰጡ ኢ-ሊሰረዝ ምዝግቦች ውስጥ ይያዛሉ።',
     trust4Title: 'የውሂብ ግላዊነት እና ደህንነት',
@@ -29,7 +29,7 @@ const home = {
     modulesSectionTitle: 'የስርዓቱ ሞጁሎች',
     modulesSectionSubtitle: 'ሙሉ ጫፍ ለጫፍ የሠራተኛ መታወቂያ አስተዳደር የተዋሃዱ ሞጁሎች።',
     module1Title: 'ድርጅቶች',
-    module1Desc: 'የከተማ አስተዳደር ተዋረድን ስሪቶች ያላቸው ድርጅት ቻርቶች እና ጊዜ-ቀናቶች ሁኔታ ያስተዳድሩ።',
+    module1Desc: 'የከተማ አስተዳደር ተዋረድን ስሪቶች ያላቸው ተቋም ቻርቶች እና ጊዜ-ቀናቶች ሁኔታ ያስተዳድሩ።',
     module2Title: 'ሠራተኞች',
     module2Desc: 'ዝውውር ታሪክ፣ ድብልቅ ምርመራ እና ውሂብ ጥራት ደረጃ ያለው ሠራተኛ መዝገብ ያቆዩ።',
     module3Title: 'መታወቂያ ካርዶች',
@@ -47,11 +47,11 @@ const home = {
 
     // How It Works
     howItWorksSectionTitle: 'እንዴት ይሰራል',
-    howItWorksSectionSubtitle: 'ከድርጅት ምዝገባ እስከ የተረጋገጠ አገልግሎት ፍቃድ ድረስ ሥርዓታዊ ሂደት።',
-    step1Title: 'ድርጅት ይመዝግቡ',
+    howItWorksSectionSubtitle: 'ከተቋም ምዝገባ እስከ የተረጋገጠ አገልግሎት ፍቃድ ድረስ ሥርዓታዊ ሂደት።',
+    step1Title: 'ተቋም ይመዝግቡ',
     step1Desc: 'ዲፓርትሜንታዊ ተዋረድ ከሕጋዊ ሰነዶቻቸው ጋር ፍጠሩ።',
     step2Title: 'ሠራተኛ ይመዝግቡ',
-    step2Desc: 'ቋሚ የሠራተኛ መዝገብ ከድርጅት እና ቦታ ጋር ያቋቁሙ።',
+    step2Desc: 'ቋሚ የሠራተኛ መዝገብ ከተቋም እና ቦታ ጋር ያቋቁሙ።',
     step3Title: 'የካርድ ጥያቄ ያቅርቡ',
     step3Desc: 'ሥልጣን ያላቸው ሠራተኞች ሁሉ ያሉ ውሂቦችን ጨምሮ ጥያቄ ያቀርባሉ።',
     step4Title: 'ያፅድቁ እና ያትሙ',

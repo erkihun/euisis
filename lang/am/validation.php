@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 declare(strict_types=1);
 
@@ -33,9 +33,9 @@ return [
     'uuid' => 'የ:attribute መስክ ትክክለኛ UUID መሆን አለበት።',
 
     'attributes' => [
-        'organization_type_id' => 'የድርጅት አይነት',
-        'parent_organization_id' => 'ወላጅ ድርጅት',
-        'child_organization_id' => 'ልጅ ድርጅት',
+        'organization_type_id' => 'የተቋም አይነት',
+        'parent_organization_id' => 'ወላጅ ተቋም',
+        'child_organization_id' => 'ልጅ ተቋም',
         'hierarchy_version_id' => 'የተዋረድ ስሪት',
         'relationship_type' => 'የግንኙነት አይነት',
         'effective_from' => 'የመጀመሪያ ቀን',

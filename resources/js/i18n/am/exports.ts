@@ -1,4 +1,4 @@
-const exports = {
+﻿const exports = {
     export: 'ላክ',
     exportCsv: 'CSV ላክ',
     exportExcel: 'Excel ላክ',
@@ -14,7 +14,7 @@ const exports = {
     no: 'ቁጥር',
     name: 'ስም',
     employeeNumber: 'የሠራተኛ ቁጥር',
-    organization: 'ድርጅት',
+    organization: 'ተቋም',
     position: 'ቦታ',
     status: 'ሁኔታ',
     date: 'ቀን',

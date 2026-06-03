@@ -1,4 +1,4 @@
-const transfers = {
+﻿const transfers = {
     // Module
     module: 'የዝውውር አስተዳደር',
     dashboard: 'የዝውውር ዳሽቦርድ',
@@ -70,7 +70,7 @@ const transfers = {
     statusWithdrawn: 'ተቀልፏል',
 
     // Fields
-    organization: 'ድርጅት',
+    organization: 'ተቋም',
     position: 'ቦታ',
     gradeLevel: 'ደረጃ',
     salaryMin: 'ዝቅተኛ ደሞዝ',
@@ -80,8 +80,8 @@ const transfers = {
     requiredDocuments: 'የሚያስፈልጉ ሰነዶች',
     openingDate: 'የመጀመሪያ ቀን',
     closingDate: 'የመዘጊያ ቀን',
-    releasingOrganization: 'ሠራተኛው ያለው ድርጅት',
-    receivingOrganization: 'ሠራተኛው የሚሄደው ድርጅት',
+    releasingOrganization: 'ሠራተኛው ያለው ተቋም',
+    receivingOrganization: 'ሠራተኛው የሚሄደው ተቋም',
     applicantNotes: 'ማስታወሻ',
     rejectedReason: 'የውድቅ ምክንያት',
 

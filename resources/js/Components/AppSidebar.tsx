@@ -385,7 +385,9 @@ export default function AppSidebar({ onClose, collapsed = false, onToggleCollaps
     const isEmployeeUser = (usePage().props as any).is_employee_user === true;
 
     const appName        = getString('app.short_name',              'AA Employee ID');
-    const orgName        = getString('general.organization_name',   'Addis Ababa City Administration');
+    const orgName        = locale === 'am'
+        ? getString('id_cards.city_name_am', getString('general.organization_name', 'አዲስ አበባ ከተማ አስተዳደር'))
+        : getString('id_cards.city_name_en', getString('general.organization_name', 'Addis Ababa City Administration'));
     const environmentLabel = getString('general.system_environment_label');
     const sidebarStyle: CSSProperties | undefined = locale === 'am'
         ? { fontFamily: 'var(--font-ethiopic)' }

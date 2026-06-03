@@ -1,4 +1,4 @@
-const common = {
+﻿const common = {
     create: 'ፍጠር',
     view: 'ይመልከቱ',
     edit: 'አርትዕ',
@@ -86,7 +86,7 @@ const common = {
     remove: 'አስወግድ',
     user: 'ተጠቃሚ',
     optional: 'አማራጭ',
-    organization: 'ድርጅት',
+    organization: 'ተቋም',
     allOrganizations: 'ሁሉም ድርጅቶች',
     viewAll: 'ሁሉንም ይመልከቱ',
 } as const;

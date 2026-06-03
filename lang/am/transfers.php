@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 declare(strict_types=1);
 
@@ -8,8 +8,8 @@ return [
     'create_transfer' => 'ዝውውር ፍጠር',
     'transfer_details' => 'የዝውውር ዝርዝሮች',
     'edit_transfer' => 'ዝውውር አርትዕ',
-    'from_organization' => 'ከድርጅት',
-    'to_organization' => 'ወደ ድርጅት',
+    'from_organization' => 'ከተቋም',
+    'to_organization' => 'ወደ ተቋም',
     'from_position' => 'ከመደብ',
     'to_position' => 'ወደ መደብ',
     'effective_date' => 'የሚጸናበት ቀን',
@@ -43,10 +43,10 @@ return [
     'announcementDeleted' => 'የዝውውር ማስታወቂያ ተሰርዟል።',
     'announcementNotDraft' => 'ቅድሚያ ረቂቅ ብቻ ሊታተሙ ይችላሉ።',
     'announcementNotPublished' => 'የታተሙ ማስታወቂያዎች ብቻ ሊዘጉ ይችላሉ።',
-    'publishMissingOrganization' => 'ማስታወቂያ ከታተመ በፊት ድርጅት ሊኖረው ይገባል።',
+    'publishMissingOrganization' => 'ማስታወቂያ ከታተመ በፊት ተቋም ሊኖረው ይገባል።',
     'publishMissingPosition' => 'ማስታወቂያ ከታተመ በፊት የስራ መደብ ሊኖረው ይገባል።',
     'publishNoVacancies' => 'ማስታወቂያ ቢያንስ አንድ ክፍት ቦታ ሊኖረው ይገባል።',
     'publishMissingDates' => 'ከታተመ በፊት የጅምር እና የዝጊያ ቀናት ያስፈልጋሉ።',
     'publishInvalidDateRange' => 'የዝጊያ ቀን ከጅምር ቀን በኋላ መሆን አለበት።',
-    'publishNoEstablishment' => 'ለተመረጠው የስራ መደብ እና ድርጅት የጸደቀ ምደባ አልተገኘም።',
+    'publishNoEstablishment' => 'ለተመረጠው የስራ መደብ እና ተቋም የጸደቀ ምደባ አልተገኘም።',
 ];

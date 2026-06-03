@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 
 return [
     'dashboard' => 'ዳሽቦርድ',
     'organizations' => 'ድርጅቶች',
     'registered_organizations' => 'የተመዘገቡ ድርጅቶች',
-    'organization_types' => 'የድርጅት ዓይነቶች',
+    'organization_types' => 'የተቋም ዓይነቶች',
     'employees' => 'ሠራተኞች',
     'id_cards' => 'መታወቂያ ካርዶች',
     'providers' => 'አቅራቢዎች',

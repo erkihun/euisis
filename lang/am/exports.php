@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'export'          => 'ላክ',
@@ -12,7 +12,7 @@ return [
     'no'              => 'ቁጥር',
     'name'            => 'ስም',
     'employee_number' => 'የሠራተኛ ቁጥር',
-    'organization'    => 'ድርጅት',
+    'organization'    => 'ተቋም',
     'position'        => 'ቦታ',
     'status'          => 'ሁኔታ',
     'date'            => 'ቀን',

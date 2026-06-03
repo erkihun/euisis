@@ -1,4 +1,4 @@
-const permissions = {
+﻿const permissions = {
     title: 'ፈቃዶች',
     permission: 'ፈቃድ',
     createPermission: 'ፈቃድ ፍጠር',
@@ -8,8 +8,8 @@ const permissions = {
     permissionLabel: 'የፈቃድ መለያ',
     permissionDescription: 'መግለጫ',
     module: 'ሞጁል',
-    organizationScopes: 'የድርጅት ወሰኖች',
-    organizationAdmin: 'የድርጅት አስተዳዳሪ',
+    organizationScopes: 'የተቋም ወሰኖች',
+    organizationAdmin: 'የተቋም አስተዳዳሪ',
     noPermissions: 'ምንም ፈቃድ አልተገለጸም',
     noPermissionsFound: 'ምንም ፈቃድ አልተገኘም',
     groupedByModule: 'በሞጁል ተቧድኗል',

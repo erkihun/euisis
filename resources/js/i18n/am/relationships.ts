@@ -1,4 +1,4 @@
-export default {
+﻿export default {
     title: 'ግንኙነቶች',
     reportingLines: 'የሪፖርት መስመሮች',
     structuralRelationship: 'መዋቅራዊ ግንኙነት',
@@ -43,9 +43,9 @@ export default {
         other: 'ሌላ',
     },
     targetTypes: {
-        organization: 'ድርጅት',
+        organization: 'ተቋም',
         institution_office: 'የተቋም ቢሮ',
-        organization_unit: 'የድርጅት ክፍል',
+        organization_unit: 'የተቋም ክፍል',
     },
     statuses: {
         active: 'ንቁ',

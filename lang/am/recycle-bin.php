@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 declare(strict_types=1);
 
@@ -7,9 +7,9 @@ return [
     'restored_successfully' => 'መዝገቡ በተሳካ ሁኔታ ተመልሷል።',
     'restore_conflict' => 'ግጭት ስላለ መዝገቡን መመለስ አይቻልም።',
     'types' => [
-        'organization_types' => 'የድርጅት ዓይነቶች',
-        'organization_units' => 'የድርጅት ዩኒቶች',
-        'organization_unit_types' => 'የድርጅት ዩኒት አይነቶች',
+        'organization_types' => 'የተቋም ዓይነቶች',
+        'organization_units' => 'የተቋም ዩኒቶች',
+        'organization_unit_types' => 'የተቋም ዩኒት አይነቶች',
         'positions' => 'የስራ መደቦች',
         'service_types' => 'የአገልግሎት አይነቶች',
         'entitlement_rules' => 'የመብት ደንቦች',

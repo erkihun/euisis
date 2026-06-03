@@ -1,4 +1,4 @@
-const transport = {
+﻿const transport = {
     badge: 'ትራንስፖርት',
     portal: 'የትራንስፖርት አቅራቢ ፖርታል',
     dashboard: 'የትራንስፖርት ዳሽቦርድ',
@@ -29,12 +29,12 @@ const transport = {
     provider: 'አቅራቢ',
     nameEn: 'ስም በእንግሊዝኛ',
     nameAm: 'ስም በአማርኛ',
-    organization: 'ድርጅት',
+    organization: 'ተቋም',
     scope: 'ወሰን',
     assignAllOrganizations: 'ለሁሉም ድርጅቶች መድብ',
     allOrganizations: 'ሁሉም ድርጅቶች',
-    scopeSelf: 'የተመረጠው ድርጅት ብቻ',
-    scopeSubtree: 'የተመረጠው ድርጅት እና ታችኛዎቹ',
+    scopeSelf: 'የተመረጠው ተቋም ብቻ',
+    scopeSubtree: 'የተመረጠው ተቋም እና ታችኛዎቹ',
     scopeCitywide: 'ሁሉም ድርጅቶች',
     contactPerson: 'የመገናኛ ሰው',
     phone: 'ስልክ',

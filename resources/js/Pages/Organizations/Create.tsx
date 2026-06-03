@@ -7,7 +7,7 @@ import { useRef, useState } from 'react';
 import CodeRuleField from '@/Components/code-rules/CodeRuleField';
 import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
-type OrgType = { id: string; name_en: string; code: string };
+type OrgType = { id: string; name_en: string; name_am: string | null; code: string };
 type HierarchyVersion = { id: string; version_name: string; status: string };
 type ParentOrganizationOption = {
     id: string;
@@ -50,7 +50,7 @@ export default function CreateOrganization({
     parentOrganizationOptions: ParentOrganizationOption[];
     selectedParentOrganization: ParentOrganizationOption | null;
 }) {
-    const { t } = useLocale();
+    const { t, locale } = useLocale();
 
     const form = useForm<{
         organization_type_id: string;
@@ -182,7 +182,7 @@ export default function CreateOrganization({
                             >
                                 {organizationTypes.map((organizationType) => (
                                     <option key={organizationType.id} value={organizationType.id}>
-                                        {organizationType.name_en} ({organizationType.code})
+                                        {locale === 'am' ? (organizationType.name_am || organizationType.name_en) : organizationType.name_en} ({organizationType.code})
                                     </option>
                                 ))}
                             </select>

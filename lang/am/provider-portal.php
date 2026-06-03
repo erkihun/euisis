@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 declare(strict_types=1);
 
@@ -78,7 +78,7 @@ return [
         'employee_number' => 'የሰራተኛ ቁጥር',
         'employee_name' => 'የሰራተኛ ስም',
         'employee_institution' => 'የሰራተኛ ተቋም',
-        'employee_organization_unit' => 'የሰራተኛ የድርጅት ክፍል',
+        'employee_organization_unit' => 'የሰራተኛ የተቋም ክፍል',
         'position' => 'የስራ መደብ',
         'cafeteria_provider' => 'የካፌቴሪያ አቅራቢ',
         'provider_institution' => 'የአቅራቢ ተቋም',

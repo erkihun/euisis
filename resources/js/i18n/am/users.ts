@@ -1,4 +1,4 @@
-const users = {
+﻿const users = {
     title: 'ተጠቃሚዎች',
     user: 'ተጠቃሚ',
     createUser: 'ተጠቃሚ ፍጠር',
@@ -15,7 +15,7 @@ const users = {
     reactivate: 'እንደገና አንቃ',
     assignRoles: 'ሚናዎችን መድብ',
     assignPermissions: 'ፈቃዶችን መድብ',
-    organizationScopes: 'የድርጅት ወሰኖች',
+    organizationScopes: 'የተቋም ወሰኖች',
     resetPassword: 'የይለፍ ቃል ዳግም አስጀምር',
     forcePasswordChange: 'የይለፍ ቃል ለውጥ አስገድድ',
     activeUsers: 'ንቁ ተጠቃሚዎች',
@@ -77,26 +77,26 @@ const users = {
     restored: 'ተጠቃሚ ተመልሷል።',
     rolesUpdated: 'ሚናዎች ተዘምነዋል።',
     userOrganizationScopes: {
-        title: 'የድርጅት ወሰኖች',
+        title: 'የተቋም ወሰኖች',
         addScope: 'ወሰን ያክሉ',
-        organization: 'ድርጅት',
+        organization: 'ተቋም',
         scopeType: 'የወሰን ዓይነት',
         effectiveFrom: 'ከ',
         effectiveTo: 'እስከ',
         isActive: 'ንቁ',
         remove: 'አስወግድ',
-        confirmRemove: 'ይህን የድርጅት ወሰን ያስወግዱ? ይህ ተግባር ሊቀለበስ አይችልም።',
-        selfHelperText: "ተጠቃሚውን ወደ የተመረጠው ድርጅት ብቻ ለመገደብ 'ራስ' የወሰን ዓይነት ይጠቀሙ።",
+        confirmRemove: 'ይህን የተቋም ወሰን ያስወግዱ? ይህ ተግባር ሊቀለበስ አይችልም።',
+        selfHelperText: "ተጠቃሚውን ወደ የተመረጠው ተቋም ብቻ ለመገደብ 'ራስ' የወሰን ዓይነት ይጠቀሙ።",
         scopeTypes: {
             self: 'ራስ',
             subtree: 'ንዑስ ዛፍ',
             citywide: 'ከተማ-አቀፍ',
             service_provider: 'የአገልግሎት አቅራቢ',
         },
-        noScopes: 'እስካሁን ምንም የድርጅት ወሰን አልተሰጠም።',
+        noScopes: 'እስካሁን ምንም የተቋም ወሰን አልተሰጠም።',
         save: 'ወሰን አስቀምጥ',
         cancel: 'ሰርዝ',
-        addScopeAfterCreate: 'ተጠቃሚውን ከፈጠሩ በኋላ የድርጅት ወሰኖችን መመደብ ይችላሉ።',
+        addScopeAfterCreate: 'ተጠቃሚውን ከፈጠሩ በኋላ የተቋም ወሰኖችን መመደብ ይችላሉ።',
     },
 } as const;
 

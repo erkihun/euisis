@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 
 declare(strict_types=1);
 
 return [
     'session_expired'           => 'የክፍለ ጊዜዎ አብቅቷል። እባክዎ እንደገና ይግቡ።',
     'access_denied'             => 'ፍቃድ የለም።',
-    'scope_denied'              => 'የድርጅት ወሰንዎ ይህን መዝገብ አይጨምርም።',
+    'scope_denied'              => 'የተቋም ወሰንዎ ይህን መዝገብ አይጨምርም።',
     'too_many_attempts'         => 'ብዙ የመግቢያ ሙከራዎች። እባክዎ :seconds ሰከንዶች ይጠብቁ።',
     'strong_password_required'  => 'የሚስጥር ቃል ዝቅተኛ የደህንነት መስፈርቶችን ማሟላት አለበት።',
 
@@ -28,7 +28,7 @@ return [
     'unsafe_file_type'          => 'የፋይሉ አይነት አይፈቀድም። የተፈቀዱ አይነቶች ብቻ መጫን ይቻላል።',
     'rate_limit_exceeded'       => 'የጥያቄ ገደቡ ተሻገረ። እባክዎ ጥቂት ጠብቀው እንደገና ይሞክሩ።',
     'sensitive_info_protected'  => 'ሚስጥራዊ መረጃ ተጠብቋል እና ሊወጣ አይችልም።',
-    'org_scope_denied'          => 'የድርጅት ወሰንዎ ይህን መዝገብ አይጨምርም።',
+    'org_scope_denied'          => 'የተቋም ወሰንዎ ይህን መዝገብ አይጨምርም።',
     'action_not_permitted'      => 'ይህ ድርጊት ለመለያዎ አይፈቀድም።',
     'security_headers_enabled'  => 'የደህንነት ራስጌዎች ነቅተዋል።',
     'secure_config_required'    => 'ለዚህ አካባቢ ደህንነቱ የተጠበቀ ቅንብር ያስፈልጋል።',

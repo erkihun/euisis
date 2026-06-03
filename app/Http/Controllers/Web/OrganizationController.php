@@ -100,7 +100,7 @@ class OrganizationController extends Controller
         );
 
         return Inertia::render('Organizations/Create', [
-            'organizationTypes' => OrganizationType::query()->orderBy('name_en')->get(['id', 'name_en', 'code']),
+            'organizationTypes' => OrganizationType::query()->orderBy('name_en')->get(['id', 'name_en', 'name_am', 'code']),
             'hierarchyVersions' => HierarchyVersion::query()
                 ->where('status', HierarchyVersionStatus::Draft->value)
                 ->orderByDesc('created_at')
@@ -195,7 +195,7 @@ class OrganizationController extends Controller
 
         return Inertia::render('Organizations/Edit', [
             'organization' => $organization->load('type'),
-            'organizationTypes' => OrganizationType::query()->orderBy('name_en')->get(['id', 'name_en', 'code']),
+            'organizationTypes' => OrganizationType::query()->orderBy('name_en')->get(['id', 'name_en', 'name_am', 'code']),
         ]);
     }
 
