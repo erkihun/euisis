@@ -1,6 +1,8 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';
+import { useLocale } from '@/hooks/useLocale';
+import { useSystemSettings } from '@/hooks/useSystemSettings';
 
 export default function Login({
     status,
@@ -16,15 +18,39 @@ export default function Login({
     });
 
     const [showPassword, setShowPassword] = useState(false);
+    const { t, locale } = useLocale();
+    const { getString } = useSystemSettings();
+
+    // Branding pulled from system settings
+    const systemName  = getString('app.short_name', 'EUISIS');
+    const orgName     = locale === 'am'
+        ? getString('id_cards.city_name_am', getString('general.organization_name', 'አዲስ አበባ ከተማ አስተዳደር'))
+        : getString('id_cards.city_name_en', getString('general.organization_name', 'Addis Ababa City Administration'));
+    const bureauName  = locale === 'am'
+        ? getString('id_cards.bureau_name_am', 'የሲቪል ሰርቪስና ሰው ሃብት ልማት ቢሮ')
+        : getString('id_cards.bureau_name_en', 'Public Service & HRD Bureau');
+    const customMsg   = locale === 'am'
+        ? getString('general.login_page_message_am', '')
+        : getString('general.login_page_message_en', '');
+    const systemLogoUrl = getString('general.identity_system_logo_url', '');
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         post(route('login'), { onFinish: () => reset('password') });
     };
 
+    const features = [
+        { icon: 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z', label: t('auth.featureRoleAccess') },
+        { icon: 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z', label: t('auth.featureIdCard') },
+        { icon: 'M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z', label: t('auth.featureAudit') },
+        { icon: 'M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21', label: t('auth.featureMultiOrg') },
+        { icon: 'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z', label: t('auth.featureRegistry') },
+        { icon: 'M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605', label: t('auth.featureCodeGen') },
+    ];
+
     return (
-        <div className="flex min-h-screen">
-            <Head title="Sign in" />
+        <div className="flex min-h-screen" dir={locale === 'am' ? 'ltr' : 'ltr'}>
+            <Head title={t('auth.signIn')} />
 
             {/* ── Left branding panel ───────────────────────────────────── */}
             <div className="relative hidden w-[58%] shrink-0 overflow-hidden lg:flex lg:flex-col">
@@ -45,7 +71,7 @@ export default function Login({
                 <div className="pointer-events-none absolute -bottom-32 right-0 h-[400px] w-[400px] rounded-full bg-orange-600/15 blur-[100px]" />
                 <div className="pointer-events-none absolute top-1/2 left-1/4 h-64 w-64 -translate-y-1/2 rounded-full bg-blue-400/10 blur-[80px]" />
 
-                {/* Decorative concentric rings (right side) */}
+                {/* Decorative concentric rings */}
                 <div className="pointer-events-none absolute -right-28 top-1/2 -translate-y-1/2">
                     <div className="h-[520px] w-[520px] rounded-full border border-white/[0.06]" />
                     <div className="absolute inset-[52px] rounded-full border border-white/[0.05]" />
@@ -56,63 +82,55 @@ export default function Login({
                 {/* Content */}
                 <div className="relative z-10 flex h-full flex-col items-center justify-between px-10 py-10 text-center">
 
-                    {/* Logo — centered, no background */}
+                    {/* Logo */}
                     <div className="flex flex-col items-center gap-3">
-                        <ApplicationLogo className="h-20 w-auto max-w-[200px] fill-white drop-shadow-lg" />
+                        {systemLogoUrl ? (
+                            <img src={systemLogoUrl} alt={systemName} className="h-20 w-auto max-w-[200px] object-contain drop-shadow-lg" />
+                        ) : (
+                            <ApplicationLogo className="h-20 w-auto max-w-[200px] fill-white drop-shadow-lg" />
+                        )}
                         <div>
-                            <p className="text-lg font-bold tracking-wide text-white">EUISIS</p>
-                            <p className="text-[11px] text-orange-300/60">Employee Unified Identity System</p>
+                            <p className="text-lg font-bold tracking-wide text-white">{systemName}</p>
+                            <p className="text-[11px] text-orange-300/60">{bureauName}</p>
                         </div>
                     </div>
 
-                    {/* Main description block — centered */}
+                    {/* Main description block */}
                     <div className="flex max-w-lg flex-col items-center gap-6">
 
                         {/* Live badge */}
                         <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5">
                             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange-400" />
-                            <span className="text-[11px] font-medium text-orange-300">Secure Government Portal</span>
+                            <span className="text-[11px] font-medium text-orange-300">{t('auth.securePortal')}</span>
                         </div>
 
                         {/* Headline */}
                         <div className="space-y-3">
                             <h1 className="text-[2.2rem] font-bold leading-[1.2] text-white">
-                                Unified Employee<br />
-                                <span className="text-orange-400">Identity</span> Management
+                                {t('auth.systemHeadline1')}<br />
+                                <span className="text-orange-400">{t('auth.systemHeadlineHighlight')}</span> {t('auth.systemHeadline2')}
                             </h1>
                             <p className="text-sm leading-relaxed text-slate-400">
-                                A centralized platform for managing employee identification records, digital ID cards,
-                                and workforce data across all Addis Ababa City Administration organizations.
+                                {customMsg || t('auth.systemDesc1')}
                             </p>
                         </div>
 
                         {/* Divider */}
                         <div className="w-16 border-t border-white/10" />
 
-                        {/* System description paragraphs */}
+                        {/* Description paragraphs */}
                         <div className="space-y-3 text-left">
                             <p className="text-[13px] leading-relaxed text-slate-400">
-                                <span className="font-semibold text-slate-200">EUISIS</span> provides a single source
-                                of truth for employee identity across departments, bureaus, and sub-cities —
-                                from initial registration through the full ID card lifecycle.
+                                <span className="font-semibold text-slate-200">{systemName}</span> {t('auth.systemDesc1')}
                             </p>
                             <p className="text-[13px] leading-relaxed text-slate-400">
-                                The system enforces fine-grained role-based permissions, logs every action in a
-                                tamper-evident audit trail, and integrates with occupational classification
-                                standards to ensure data quality at scale.
+                                {t('auth.systemDesc2')}
                             </p>
                         </div>
 
-                        {/* Feature pills grid */}
+                        {/* Feature pills */}
                         <div className="grid w-full grid-cols-2 gap-2">
-                            {[
-                                { icon: 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z', label: 'Role-Based Access' },
-                                { icon: 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z', label: 'ID Card Lifecycle' },
-                                { icon: 'M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z', label: 'Audit Logging' },
-                                { icon: 'M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21', label: 'Multi-Organization' },
-                                { icon: 'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z', label: 'Workforce Registry' },
-                                { icon: 'M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605', label: 'Code Generation' },
-                            ].map(({ icon, label }, i) => (
+                            {features.map(({ icon, label }, i) => (
                                 <div key={label} className="flex items-center gap-2 rounded-lg border border-white/[0.07] bg-white/[0.04] px-3 py-2">
                                     <svg className={`h-3.5 w-3.5 shrink-0 ${i % 2 === 0 ? 'text-blue-400' : 'text-orange-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
@@ -127,7 +145,7 @@ export default function Login({
                     <div className="flex w-full items-center gap-3">
                         <div className="h-px flex-1 bg-white/[0.06]" />
                         <p className="text-[11px] text-slate-600">
-                            Government of Ethiopia · Addis Ababa City Administration
+                            {t('auth.footerGov')} · {orgName}
                         </p>
                         <div className="h-px flex-1 bg-white/[0.06]" />
                     </div>
@@ -139,8 +157,12 @@ export default function Login({
 
                 {/* Mobile top bar */}
                 <div className="flex items-center gap-2.5 px-6 py-5 lg:hidden">
-                    <ApplicationLogo className="h-8 w-auto max-w-[80px] fill-slate-800 dark:fill-white" />
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">EUISIS</span>
+                    {systemLogoUrl ? (
+                        <img src={systemLogoUrl} alt={systemName} className="h-8 w-auto max-w-[80px] object-contain" />
+                    ) : (
+                        <ApplicationLogo className="h-8 w-auto max-w-[80px] fill-slate-800 dark:fill-white" />
+                    )}
+                    <span className="text-sm font-bold text-slate-900 dark:text-white">{systemName}</span>
                 </div>
 
                 {/* Centered content */}
@@ -157,9 +179,9 @@ export default function Login({
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                     </svg>
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome back</h2>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('auth.welcomeBack')}</h2>
                                 <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
-                                    Sign in to access your dashboard
+                                    {t('auth.signInSubtitle')}
                                 </p>
                             </div>
 
@@ -178,7 +200,7 @@ export default function Login({
                                 {/* Email */}
                                 <div>
                                     <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">
-                                        Email address
+                                        {t('auth.emailAddress')}
                                     </label>
                                     <div className="relative">
                                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
@@ -216,14 +238,14 @@ export default function Login({
                                 <div>
                                     <div className="mb-1.5 flex items-center justify-between">
                                         <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-slate-300">
-                                            Password
+                                            {t('auth.password')}
                                         </label>
                                         {canResetPassword && (
                                             <Link
                                                 href={route('password.request')}
                                                 className="text-xs font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
                                             >
-                                                Forgot password?
+                                                {t('auth.forgotPassword')}
                                             </Link>
                                         )}
                                     </div>
@@ -251,7 +273,7 @@ export default function Login({
                                             type="button"
                                             onClick={() => setShowPassword((v) => !v)}
                                             tabIndex={-1}
-                                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                            aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-0.5 text-gray-400 transition-colors hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"
                                         >
                                             {showPassword ? (
@@ -285,7 +307,7 @@ export default function Login({
                                         onChange={(e) => setData('remember', e.target.checked as false)}
                                         className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800"
                                     />
-                                    <span className="text-sm text-gray-600 dark:text-slate-400">Keep me signed in</span>
+                                    <span className="text-sm text-gray-600 dark:text-slate-400">{t('auth.keepSignedIn')}</span>
                                 </label>
 
                                 {/* Submit */}
@@ -300,11 +322,11 @@ export default function Login({
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                             </svg>
-                                            Signing in…
+                                            {t('auth.signingIn')}
                                         </>
                                     ) : (
                                         <>
-                                            Sign in
+                                            {t('auth.signIn')}
                                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                             </svg>
@@ -316,7 +338,7 @@ export default function Login({
 
                         {/* Footer */}
                         <p className="mt-5 text-center text-[11px] text-gray-400 dark:text-slate-600">
-                            © {new Date().getFullYear()} Addis Ababa City Administration · Government of Ethiopia
+                            © {new Date().getFullYear()} {orgName} · {t('auth.footerGov')}
                         </p>
                     </div>
                 </div>
