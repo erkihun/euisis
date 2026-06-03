@@ -4,6 +4,8 @@ import StatusBadge from '@/Components/StatusBadge';
 import PageHeader from '@/Components/PageHeader';
 import { PencilIcon, ArchiveIcon, Plus } from '@/Components/Icons';
 import { useLocale } from '@/hooks/useLocale';
+import ReportingLinesPanel from '@/Components/relationships/ReportingLinesPanel';
+import type { RelationshipRow } from '@/Components/relationships/RelationshipPanel';
 
 type NameHistory = {
     id: string;
@@ -35,6 +37,8 @@ export default function OrganizationShow({
     descendants,
     can,
     institutionOffices = [],
+    reportingOffices = [],
+    reportingUnits = [],
 }: {
     organization: {
         id: string;
@@ -56,6 +60,8 @@ export default function OrganizationShow({
     descendants: Descendant[];
     can: CanProps;
     institutionOffices?: InstitutionOfficePreview[];
+    reportingOffices?: RelationshipRow[];
+    reportingUnits?: RelationshipRow[];
 }) {
     const { t } = useLocale();
     const archiveForm = useForm({});
@@ -313,6 +319,11 @@ export default function OrganizationShow({
                         </table>
                     </div>
                 )}
+            </section>
+
+            <section className="mt-6 grid gap-6 lg:grid-cols-2">
+                <ReportingLinesPanel rows={reportingOffices} />
+                <ReportingLinesPanel rows={reportingUnits} />
             </section>
 
             <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">

@@ -1,16 +1,27 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import type { ComponentProps } from 'react';
 import PageHeader from '@/Components/PageHeader';
 import OrganizationUnitStatusBadge from '@/Components/organization-units/OrganizationUnitStatusBadge';
 import OrganizationUnitTypeBadge from '@/Components/organization-units/OrganizationUnitTypeBadge';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useLocale } from '@/hooks/useLocale';
 import type { OrganizationUnit } from '@/types/organizationUnit';
+import RelationshipPanel, { type RelationshipRow } from '@/Components/relationships/RelationshipPanel';
+import ReportingLinesPanel from '@/Components/relationships/ReportingLinesPanel';
+import LocalizedDateDisplay from '@/Components/Calendar/LocalizedDateDisplay';
 
 interface Props {
     unit: OrganizationUnit;
+    relationships: RelationshipRow[];
+    relationshipOptions: ComponentProps<typeof RelationshipPanel>['options'];
+    can: {
+        manageRelationships: boolean;
+        updateRelationships: boolean;
+        deleteRelationships: boolean;
+    };
 }
 
-export default function OrganizationUnitsShow({ unit }: Props) {
+export default function OrganizationUnitsShow({ unit, relationships, relationshipOptions, can }: Props) {
     const { t } = useLocale();
     const { post, processing } = useForm();
 
@@ -66,7 +77,7 @@ export default function OrganizationUnitsShow({ unit }: Props) {
         >
             <Head title={unit.name_en} />
 
-            <div className="mx-auto max-w-3xl space-y-6">
+            <div className="mx-auto max-w-5xl space-y-6">
                 {/* Header badges */}
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono text-sm text-gray-500 dark:text-slate-400">{unit.code}</span>
@@ -114,7 +125,7 @@ export default function OrganizationUnitsShow({ unit }: Props) {
                                     {t('organizationUnits.effectiveFrom')}
                                 </dt>
                                 <dd className="font-medium text-gray-900 dark:text-slate-100">
-                                    {unit.effective_from}
+                                    <LocalizedDateDisplay value={unit.effective_from} />
                                 </dd>
                             </div>
                         )}
@@ -124,7 +135,7 @@ export default function OrganizationUnitsShow({ unit }: Props) {
                                     {t('organizationUnits.effectiveTo')}
                                 </dt>
                                 <dd className="font-medium text-gray-900 dark:text-slate-100">
-                                    {unit.effective_to}
+                                    <LocalizedDateDisplay value={unit.effective_to} />
                                 </dd>
                             </div>
                         )}
@@ -168,6 +179,19 @@ export default function OrganizationUnitsShow({ unit }: Props) {
                         </ul>
                     </section>
                 )}
+
+                <RelationshipPanel
+                    rows={relationships}
+                    options={relationshipOptions}
+                    storeRoute={route('organization-units.relationships.store', unit.id)}
+                    updateRoute={(id) => route('organization-units.relationships.update', { organizationUnit: unit.id, relationship: id })}
+                    deleteRoute={(id) => route('organization-units.relationships.destroy', { organizationUnit: unit.id, relationship: id })}
+                    canManage={can.manageRelationships}
+                    canUpdate={can.updateRelationships}
+                    canDelete={can.deleteRelationships}
+                />
+
+                <ReportingLinesPanel rows={relationships.filter((relationship) => relationship.relationship_type !== 'structural_parent')} />
 
                 <div className="flex gap-2">
                     <Link

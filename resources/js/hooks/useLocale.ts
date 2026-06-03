@@ -40,6 +40,7 @@ import amTransport from '@/i18n/am/transport';
 import amUsers from '@/i18n/am/users';
 import amVacancies from '@/i18n/am/vacancies';
 import amInstitutionOffices from '@/i18n/am/institutionOffices';
+import amRelationships from '@/i18n/am/relationships';
 import en from '@/i18n/en';
 import enAuditLogs from '@/i18n/en/auditLogs';
 import enCalendar from '@/i18n/en/calendar';
@@ -79,6 +80,7 @@ import enTransport from '@/i18n/en/transport';
 import enUsers from '@/i18n/en/users';
 import enVacancies from '@/i18n/en/vacancies';
 import enInstitutionOffices from '@/i18n/en/institutionOffices';
+import enRelationships from '@/i18n/en/relationships';
 import type { PageProps } from '@/types';
 
 type Locale = 'en' | 'am';
@@ -122,6 +124,7 @@ const translations: Record<Locale, TranslationTree> = {
         users: { ...((en.users as TranslationTree | undefined) ?? {}), ...enUsers },
         vacancies: enVacancies,
         institutionOffices: enInstitutionOffices,
+        relationships: enRelationships,
         confirmations: enConfirmations,
         auth: enAuth,
         security: enSecurity,
@@ -163,6 +166,7 @@ const translations: Record<Locale, TranslationTree> = {
         users: { ...(((am as { users?: TranslationTree }).users) ?? {}), ...amUsers },
         vacancies: amVacancies,
         institutionOffices: amInstitutionOffices,
+        relationships: amRelationships,
         confirmations: amConfirmations,
         auth: amAuth,
         security: amSecurity,

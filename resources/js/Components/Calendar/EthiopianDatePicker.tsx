@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import {
     gregorianIsoToEthiopian,
     ethiopianToGregorianIso,
@@ -48,6 +48,7 @@ export default function EthiopianDatePicker({
     const [viewYear, setViewYear] = useState(selectedEth?.year ?? todayEth.year);
     const [viewMonth, setViewMonth] = useState(selectedEth?.month ?? todayEth.month);
     const [open, setOpen] = useState(false);
+    const [openUpward, setOpenUpward] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -75,6 +76,17 @@ export default function EthiopianDatePicker({
     function nextMonth() {
         if (viewMonth === 13) { setViewYear(y => y + 1); setViewMonth(1); }
         else setViewMonth(m => m + 1);
+    }
+
+    function toggleOpen() {
+        if (open) { setOpen(false); return; }
+        // Decide whether to open upward based on available space below the button
+        if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            setOpenUpward(spaceBelow < 320);
+        }
+        setOpen(true);
     }
 
     function selectDay(day: number) {
@@ -114,7 +126,7 @@ export default function EthiopianDatePicker({
                 type="button"
                 id={id}
                 disabled={disabled}
-                onClick={() => setOpen(o => !o)}
+                onClick={toggleOpen}
                 className={`flex w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${className}`}
             >
                 <span className={displayValue ? '' : 'text-gray-400'}>
@@ -126,7 +138,10 @@ export default function EthiopianDatePicker({
             </button>
 
             {open && (
-                <div className="absolute z-50 mt-1 rounded-md border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800" style={{ minWidth: '280px' }}>
+                <div
+                    className={`absolute z-50 rounded-md border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800 ${openUpward ? 'bottom-full mb-1' : 'top-full mt-1'}`}
+                    style={{ minWidth: '280px' }}
+                >
                     {/* Header */}
                     <div className="flex items-center justify-between border-b border-gray-200 px-3 py-2 dark:border-gray-700">
                         <button type="button" onClick={prevMonth} className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-700">
