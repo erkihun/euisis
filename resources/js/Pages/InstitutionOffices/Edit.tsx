@@ -5,6 +5,7 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
+import CodeRuleField from '@/Components/code-rules/CodeRuleField';
 import { useLocale } from '@/hooks/useLocale';
 
 interface InstitutionOption {
@@ -153,15 +154,21 @@ export default function InstitutionOfficesEdit({
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="office_code" value={t('institutionOffices.officeCode')} />
-                            <TextInput
-                                id="office_code"
+                            <CodeRuleField
+                                entityType="institution_office"
+                                context={{
+                                    institution_id: data.institution_id || undefined,
+                                    office_level: data.office_level || undefined,
+                                }}
                                 value={data.office_code}
-                                onChange={(e) => setData('office_code', e.target.value)}
-                                className="w-full"
-                                required
+                                onChange={(v) => setData('office_code', v)}
+                                fieldName="office_code"
+                                label={t('institutionOffices.officeCode')}
+                                canManualOverride={false}
+                                existingCode={office.office_code}
+                                preserveExistingCodeOnEdit
+                                error={errors.office_code}
                             />
-                            <InputError message={errors.office_code} />
                         </div>
                     </div>
                 </section>

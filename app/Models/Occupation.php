@@ -15,11 +15,18 @@ class Occupation extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'code',
         'isco_code',
         'name_en',
         'name_am',
         'skill_specialization',
         'description',
+        'is_active',
+        'isco_major_group_code',
+        'isco_sub_major_group_code',
+        'isco_minor_group_code',
+        'isco_unit_group_code',
+        'skill_level',
     ];
 
     public function setIscoCodeAttribute(?string $value): void

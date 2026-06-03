@@ -1,9 +1,12 @@
 import { Head, Link, useForm } from '@inertiajs/react';
+import type { ComponentProps } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PageHeader from '@/Components/PageHeader';
 import StatusBadge from '@/Components/StatusBadge';
 import { PencilIcon } from '@/Components/Icons';
 import { useLocale } from '@/hooks/useLocale';
+import RelationshipPanel, { type RelationshipRow } from '@/Components/relationships/RelationshipPanel';
+import ReportingLinesPanel from '@/Components/relationships/ReportingLinesPanel';
 
 interface ChildOffice {
     id: string;
@@ -47,14 +50,17 @@ interface CanProps {
     restore: boolean;
     move: boolean;
     create: boolean;
+    manageRelationships: boolean;
 }
 
 interface Props {
     office: OfficeDetail;
     can: CanProps;
+    relationships: RelationshipRow[];
+    relationshipOptions: ComponentProps<typeof RelationshipPanel>['options'];
 }
 
-export default function InstitutionOfficesShow({ office, can }: Props) {
+export default function InstitutionOfficesShow({ office, can, relationships, relationshipOptions }: Props) {
     const { t } = useLocale();
     const deleteForm = useForm({});
 
@@ -205,6 +211,16 @@ export default function InstitutionOfficesShow({ office, can }: Props) {
                         </ul>
                     )}
                 </section>
+            </div>
+
+            <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+                <RelationshipPanel
+                    rows={relationships}
+                    options={relationshipOptions}
+                    storeRoute={route('institution-offices.relationships.store', office.id)}
+                    canManage={can.manageRelationships}
+                />
+                <ReportingLinesPanel rows={relationships.filter((relationship) => relationship.relationship_type !== 'structural_parent')} />
             </div>
         </AuthenticatedLayout>
     );

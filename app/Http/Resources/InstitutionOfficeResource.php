@@ -18,6 +18,7 @@ class InstitutionOfficeResource extends JsonResource
         return [
             'id' => $this->id,
             'institution_id' => $this->institution_id,
+            'structural_organization_id' => $this->structural_organization_id,
             'institution' => $this->whenLoaded('institution', fn () => $this->institution ? [
                 'id' => $this->institution->id,
                 'name_en' => $this->institution->name_en,
@@ -25,6 +26,12 @@ class InstitutionOfficeResource extends JsonResource
                 'code' => $this->institution->code,
             ] : null),
             'geographic_organization_id' => $this->geographic_organization_id,
+            'structuralOrganization' => $this->whenLoaded('structuralOrganization', fn () => $this->structuralOrganization ? [
+                'id' => $this->structuralOrganization->id,
+                'name_en' => $this->structuralOrganization->name_en,
+                'name_am' => $this->structuralOrganization->name_am,
+                'code' => $this->structuralOrganization->code,
+            ] : null),
             'geographicOrganization' => $this->whenLoaded('geographicOrganization', fn () => $this->geographicOrganization ? [
                 'id' => $this->geographicOrganization->id,
                 'name_en' => $this->geographicOrganization->name_en,

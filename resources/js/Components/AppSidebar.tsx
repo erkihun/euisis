@@ -69,7 +69,6 @@ const navGroups: NavGroup[] = [
         items: [
             { routeName: 'organizations.index',           labelKey: 'nav.organizations',        icon: Building2,      permission: 'organizations.view' },
             { routeName: 'organization-types.index',      labelKey: 'nav.organizationTypes',    icon: TagsIcon,       permission: 'organization-types.viewAny' },
-            { routeName: 'institution-offices.index',     labelKey: 'nav.institutionOffices',   icon: NetworkIcon,    permission: 'institution-offices.viewAny' },
             { routeName: 'organization-units.index',      labelKey: 'nav.organizationUnits',    icon: GitBranchIcon,  permission: 'organization-units.viewAny' },
             { routeName: 'organization-unit-types.index', labelKey: 'nav.organizationUnitTypes', icon: BoxesIcon,     permission: 'organization-unit-types.viewAny' },
             { routeName: 'hierarchy-versions.index',      labelKey: 'nav.hierarchyVersions',    icon: GitForkIcon,    permission: 'hierarchy-versions.viewAny' },

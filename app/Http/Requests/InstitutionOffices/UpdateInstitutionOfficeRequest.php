@@ -27,6 +27,7 @@ class UpdateInstitutionOfficeRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
+            'structural_organization_id' => $this->input('structural_organization_id') ?: null,
             'geographic_organization_id' => $this->input('geographic_organization_id') ?: null,
             'parent_office_id' => $this->input('parent_office_id') ?: null,
             'name_am' => $this->input('name_am') ?: null,
@@ -49,6 +50,7 @@ class UpdateInstitutionOfficeRequest extends FormRequest
 
         return [
             'institution_id' => ['sometimes', 'uuid', 'exists:organizations,id'],
+            'structural_organization_id' => ['nullable', 'uuid', 'exists:organizations,id'],
             'geographic_organization_id' => ['nullable', 'uuid', 'exists:organizations,id'],
             'parent_office_id' => ['nullable', 'uuid', 'exists:institution_offices,id'],
             'office_level' => ['sometimes', new Enum(InstitutionOfficeLevel::class)],

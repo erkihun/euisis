@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\InstitutionOfficeLevel;
 use App\Enums\InstitutionOfficeStatus;
+use App\Enums\OrganizationRelationshipType;
 use App\Models\Concerns\HasUuidPrimaryKey;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,7 @@ class InstitutionOffice extends Model
 
     protected $fillable = [
         'institution_id',
+        'structural_organization_id',
         'geographic_organization_id',
         'parent_office_id',
         'office_level',
@@ -65,6 +67,11 @@ class InstitutionOffice extends Model
         return $this->belongsTo(Organization::class, 'geographic_organization_id');
     }
 
+    public function structuralOrganization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'structural_organization_id');
+    }
+
     public function parentOffice(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_office_id');
@@ -78,6 +85,31 @@ class InstitutionOffice extends Model
     public function organizationUnits(): HasMany
     {
         return $this->hasMany(OrganizationUnit::class);
+    }
+
+    public function relationships(): HasMany
+    {
+        return $this->hasMany(InstitutionOfficeRelationship::class, 'source_office_id');
+    }
+
+    public function activeRelationships(): HasMany
+    {
+        return $this->relationships()->active();
+    }
+
+    public function structuralParentRelationship(): HasMany
+    {
+        return $this->activeRelationships()->structuralParent()->where('is_primary', true);
+    }
+
+    public function functionalReportingRelationships(): HasMany
+    {
+        return $this->activeRelationships()->where('relationship_type', OrganizationRelationshipType::FunctionalReporting->value);
+    }
+
+    public function technicalSupervisionRelationships(): HasMany
+    {
+        return $this->activeRelationships()->where('relationship_type', OrganizationRelationshipType::TechnicalSupervision->value);
     }
 
     public function createdBy(): BelongsTo

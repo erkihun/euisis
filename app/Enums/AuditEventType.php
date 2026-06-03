@@ -235,13 +235,25 @@ enum AuditEventType: string
     case TransferOverrideRejected = 'transfer_override_rejected';
     case TransferModuleCompleted = 'transfer_module_completed';
 
-    // ── Institution Offices ────────────────────────────────────────────────
+    // ── Institution Offices (module deprecated — use OrganizationUnit) ────
+    case InstitutionOfficeModuleDeprecated = 'institution_office_module_deprecated';
+    case InstitutionOfficeLegacyRouteRedirected = 'institution_office_legacy_route_redirected';
+    case InstitutionOfficeMigratedToOrganizationUnit = 'institution_office_migrated_to_organization_unit';
+    case OrganizationUnitCreatedAsOffice = 'organization_unit_created_as_office';
     case InstitutionOfficeCreated = 'institution_office_created';
     case InstitutionOfficeUpdated = 'institution_office_updated';
     case InstitutionOfficeMoved = 'institution_office_moved';
     case InstitutionOfficeDeleted = 'institution_office_deleted';
     case InstitutionOfficeRestored = 'institution_office_restored';
     case InstitutionOfficeStatusChanged = 'institution_office_status_changed';
+    case InstitutionOfficeRelationshipCreated = 'institution_office_relationship.created';
+    case InstitutionOfficeRelationshipUpdated = 'institution_office_relationship.updated';
+    case InstitutionOfficeRelationshipDeleted = 'institution_office_relationship.deleted';
+    case InstitutionOfficeRelationshipRestored = 'institution_office_relationship.restored';
+    case OrganizationUnitRelationshipCreated = 'organization_unit_relationship.created';
+    case OrganizationUnitRelationshipUpdated = 'organization_unit_relationship.updated';
+    case OrganizationUnitRelationshipDeleted = 'organization_unit_relationship.deleted';
+    case OrganizationUnitRelationshipRestored = 'organization_unit_relationship.restored';
 
     // ── MFA (TOTP) ─────────────────────────────────────────────────────────
     case MfaSetupStarted = 'mfa.setup_started';

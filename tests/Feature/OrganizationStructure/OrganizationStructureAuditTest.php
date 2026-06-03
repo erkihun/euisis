@@ -262,18 +262,22 @@ test('store_institution_office_rejects_parent_from_different_institution', funct
     $user = auditAdminUser();
     $inst1 = auditMakeOrg();
     $inst2 = auditMakeOrg();
-    $parentOffice = auditMakeOffice($inst1);
+    $parentUnit = auditMakeUnit($inst1);
+    $unitType = OrganizationUnitType::query()->firstOrCreate(
+        ['code' => 'office'],
+        ['name_en' => 'Office', 'is_active' => true, 'sort_order' => 0],
+    );
 
     $response = $this->actingAs($user)->post(route('institution-offices.store'), [
-        'institution_id' => $inst2->id,
-        'parent_office_id' => $parentOffice->id,
-        'office_level' => InstitutionOfficeLevel::City->value,
-        'office_code' => 'CROSS-OFF-'.uniqid(),
+        'organization_id' => $inst2->id,
+        'organization_unit_type_id' => $unitType->id,
+        'parent_unit_id' => $parentUnit->id,
+        'code' => 'CROSS-OFF-'.uniqid(),
         'name_en' => 'Cross Institution Office',
-        'status' => InstitutionOfficeStatus::Active->value,
+        'status' => OrganizationUnitStatus::Active->value,
     ]);
 
-    $response->assertSessionHasErrors(['parent_office_id']);
+    $response->assertSessionHasErrors(['parent_unit_id']);
 });
 
 // ── Test 14: Store organization requires organization_type_id ─────────────────

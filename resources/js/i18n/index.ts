@@ -32,6 +32,7 @@ export * as enCafeteria from './en/cafeteria';
 export * as enProviderPortal from './en/providerPortal';
 export * as enPositionEstablishments from './en/positionEstablishments';
 export * as enVacancies from './en/vacancies';
+export * as enRelationships from './en/relationships';
 
 export * as amCommon from './am/common';
 export * as amNav from './am/navigation';
@@ -62,3 +63,4 @@ export * as amCafeteria from './am/cafeteria';
 export * as amProviderPortal from './am/providerPortal';
 export * as amPositionEstablishments from './am/positionEstablishments';
 export * as amVacancies from './am/vacancies';
+export * as amRelationships from './am/relationships';
