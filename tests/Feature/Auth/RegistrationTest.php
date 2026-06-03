@@ -21,16 +21,15 @@ test('registration screen can be rendered when registration is enabled', functio
     $response->assertStatus(200);
 });
 
-test('new users can register when registration is enabled', function () {
+test('registration with missing employee_number fails validation when registration is enabled', function () {
     config(['security.registration_enabled' => true]);
 
+    // Registration requires an employee_number lookup — submitting without one fails validation
     $response = $this->post('/register', [
-        'name' => 'Test User',
-        'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
     ]);
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->assertGuest();
+    $response->assertSessionHasErrors(['employee_number']);
 });

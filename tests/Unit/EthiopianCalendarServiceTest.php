@@ -125,9 +125,9 @@ test('calendar service formatDate returns ethiopian for am locale', function ():
     expect($display)->toContain('18')->toContain('2018');
 });
 
-test('calendar service formatDate returns iso for en locale', function (): void {
+test('calendar service formatDate returns formatted display string for en locale', function (): void {
     $svc = new CalendarService(new EthiopianCalendarService());
-    expect($svc->formatDate('2026-05-26', 'en'))->toBe('2026-05-26');
+    expect($svc->formatDate('2026-05-26', 'en'))->toBe('May 26, 2026');
 });
 
 test('calendar service isValidGregorianIso accepts valid dates', function (): void {

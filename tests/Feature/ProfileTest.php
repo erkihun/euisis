@@ -28,7 +28,7 @@ test('profile information can be updated', function () {
             'email' => 'test@example.com',
             'phone_number' => '+251911111111',
             'gender' => 'female',
-            'national_id' => 'AA-12345',
+            'national_id' => '1234567890123456',
         ]);
 
     $response
@@ -41,7 +41,7 @@ test('profile information can be updated', function () {
     $this->assertSame('test@example.com', $user->email);
     $this->assertSame('+251911111111', $user->phone_number);
     $this->assertSame('female', $user->gender);
-    $this->assertSame('AA-12345', $user->national_id);
+    $this->assertSame('1234567890123456', $user->national_id);
     $this->assertNull($user->email_verified_at);
 
     $this->assertDatabaseHas('audit_logs', [

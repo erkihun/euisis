@@ -317,7 +317,7 @@ it('enforces card approval, print, issue, token privacy, replacement, and verifi
     expect($token)->not->toContain($employee->full_name);
     expect($issued->fresh()->token_hash)->not->toBe($token);
 
-    $serviceType = ServiceType::query()->create(['code' => 'transport', 'name_en' => 'Transport']);
+    $serviceType = ServiceType::query()->firstOrCreate(['code' => 'transport'], ['name_en' => 'Transport Service']);
     $provider = ServiceProvider::query()->create([
         'service_type_id' => $serviceType->id,
         'name' => 'Transport Demo',
@@ -373,7 +373,7 @@ it('records service transactions, audits them, and returns minimal provider api 
     $rawToken = app(GenerateCardTokenAction::class)->execute($issued);
     $token = $issued->id.'|'.$rawToken;
 
-    $serviceType = ServiceType::query()->create(['code' => 'cafeteria', 'name_en' => 'Cafeteria']);
+    $serviceType = ServiceType::query()->firstOrCreate(['code' => 'cafeteria'], ['name_en' => 'Cafeteria Service']);
     $provider = ServiceProvider::query()->create([
         'service_type_id' => $serviceType->id,
         'name' => 'Cafeteria Demo',
@@ -463,7 +463,7 @@ it('writes audit log for sensitive employee update and enforces provider token a
 
     expect(AuditLog::query()->where('event_type', 'employee_updated')->exists())->toBeTrue();
 
-    $serviceType = ServiceType::query()->create(['code' => 'consumer_association', 'name_en' => 'Consumer']);
+    $serviceType = ServiceType::query()->firstOrCreate(['code' => 'consumer_association'], ['name_en' => 'Consumer Association Service']);
     $provider = ServiceProvider::query()->create([
         'service_type_id' => $serviceType->id,
         'name' => 'Consumer Demo',

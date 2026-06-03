@@ -84,17 +84,17 @@ it('creates service types with validation and writes an audit log', function ():
 
     $this->actingAs($admin)
         ->post(route('service-types.store'), [
-            'code' => 'transport',
-            'name_en' => 'Transport',
-            'name_am' => 'ትራንስፖርት',
-            'description' => 'Transport service',
+            'code' => 'legal_aid',
+            'name_en' => 'Legal Aid',
+            'name_am' => 'የህግ ድጋፍ',
+            'description' => 'Legal aid service',
             'is_active' => true,
         ])
         ->assertRedirect();
 
     $this->actingAs($admin)
         ->post(route('service-types.store'), [
-            'code' => 'transport',
+            'code' => 'legal_aid',
             'name_en' => 'Duplicate',
             'is_active' => true,
         ])
@@ -105,11 +105,7 @@ it('creates service types with validation and writes an audit log', function ():
 
 it('updates and archives service types with permission checks', function (): void {
     $admin = serviceCatalogAdmin();
-    $serviceType = ServiceType::query()->create([
-        'code' => 'cafeteria',
-        'name_en' => 'Cafeteria',
-        'is_active' => true,
-    ]);
+    $serviceType = ServiceType::query()->firstOrCreate(['code' => 'cafeteria'], ['name_en' => 'Cafeteria Service', 'is_active' => true]);
 
     $this->actingAs($admin)
         ->patch(route('service-types.update', $serviceType), [
@@ -140,11 +136,7 @@ it('enforces entitlement rule permissions for create routes', function (): void 
 
 it('creates entitlement rules with validation and writes an audit log', function (): void {
     $admin = serviceCatalogAdmin();
-    $serviceType = ServiceType::query()->create([
-        'code' => 'consumer_association',
-        'name_en' => 'Consumer Association',
-        'is_active' => true,
-    ]);
+    $serviceType = ServiceType::query()->firstOrCreate(['code' => 'consumer_association'], ['name_en' => 'Consumer Association Service', 'is_active' => true]);
 
     $this->actingAs($admin)
         ->post(route('entitlement-rules.store'), [
