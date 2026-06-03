@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\OrganizationRelationshipType;
 use App\Enums\OrganizationUnitStatus;
 use App\Models\Concerns\HasUuidPrimaryKey;
 use App\Models\OrganizationUnitType as OrganizationUnitTypeModel;
@@ -79,6 +80,26 @@ class OrganizationUnit extends Model
     public function assignments(): HasMany
     {
         return $this->hasMany(EmployeeAssignment::class);
+    }
+
+    public function relationships(): HasMany
+    {
+        return $this->hasMany(OrganizationUnitRelationship::class, 'source_unit_id');
+    }
+
+    public function activeRelationships(): HasMany
+    {
+        return $this->relationships()->active();
+    }
+
+    public function functionalReportingRelationships(): HasMany
+    {
+        return $this->activeRelationships()->where('relationship_type', OrganizationRelationshipType::FunctionalReporting->value);
+    }
+
+    public function technicalSupervisionRelationships(): HasMany
+    {
+        return $this->activeRelationships()->where('relationship_type', OrganizationRelationshipType::TechnicalSupervision->value);
     }
 
     public function scopeActive(Builder $query): Builder

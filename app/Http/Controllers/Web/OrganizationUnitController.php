@@ -9,12 +9,17 @@ use App\Actions\OrganizationUnits\CreateOrganizationUnitAction;
 use App\Actions\OrganizationUnits\RestoreOrganizationUnitAction;
 use App\Actions\OrganizationUnits\UpdateOrganizationUnitAction;
 use App\Enums\HierarchyVersionStatus;
+use App\Enums\OrganizationRelationshipType;
 use App\Enums\OrganizationUnitStatus;
+use App\Enums\RelationshipStatus;
+use App\Enums\RelationshipTargetType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrganizationUnitRequest;
 use App\Http\Requests\UpdateOrganizationUnitRequest;
+use App\Http\Resources\OrganizationUnitRelationshipResource;
 use App\Http\Resources\OrganizationUnitResource;
 use App\Models\HierarchyVersion;
+use App\Models\InstitutionOffice;
 use App\Models\Organization;
 use App\Models\OrganizationEdge;
 use App\Models\OrganizationUnit;
@@ -238,12 +243,36 @@ class OrganizationUnitController extends Controller
             'organization:id,name_en,name_am,code',
             'parent:id,name_en,code',
             'children',
+            'relationships',
         ]);
 
         $organizationUnit->loadCount('children');
 
         return Inertia::render('OrganizationUnits/Show', [
             'unit' => (new OrganizationUnitResource($organizationUnit))->resolve(request()),
+            'relationships' => OrganizationUnitRelationshipResource::collection($organizationUnit->relationships)->resolve(request()),
+            'relationshipOptions' => [
+                'targetTypes' => array_map(
+                    fn (RelationshipTargetType $case) => ['value' => $case->value, 'label' => $case->label()],
+                    [RelationshipTargetType::Organization, RelationshipTargetType::OrganizationUnit],
+                ),
+                'relationshipTypes' => array_map(
+                    fn (OrganizationRelationshipType $case) => ['value' => $case->value, 'label' => $case->label()],
+                    OrganizationRelationshipType::cases(),
+                ),
+                'statuses' => array_map(
+                    fn (RelationshipStatus $case) => ['value' => $case->value, 'label' => $case->label()],
+                    RelationshipStatus::cases(),
+                ),
+                'organizations' => Organization::query()->orderBy('name_en')->get(['id', 'name_en', 'name_am', 'code']),
+                'institutionOffices' => InstitutionOffice::query()->orderBy('name_en')->get(['id', 'name_en', 'name_am', 'office_code']),
+                'organizationUnits' => OrganizationUnit::query()->whereKeyNot($organizationUnit->id)->orderBy('name_en')->get(['id', 'name_en', 'name_am', 'code']),
+            ],
+            'can' => [
+                'manageRelationships' => Auth::user()?->can('relationships.create') ?? false,
+                'updateRelationships' => Auth::user()?->can('relationships.update') ?? false,
+                'deleteRelationships' => Auth::user()?->can('relationships.delete') ?? false,
+            ],
         ]);
     }
 

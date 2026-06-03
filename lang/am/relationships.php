@@ -1,0 +1,50 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title' => 'ግንኙነቶች',
+    'reporting_lines' => 'የሪፖርት መስመሮች',
+    'target_types' => [
+        'organization' => 'ድርጅት',
+        'institution_office' => 'የተቋም ቢሮ',
+        'organization_unit' => 'የድርጅት ክፍል',
+    ],
+    'types' => [
+        'reports_to' => 'ሪፖርት ያደርጋል',
+        'geographically_under' => 'በጂኦግራፊ ስር',
+        'service_scope' => 'የአገልግሎት ወሰን',
+        'oversight' => 'ቁጥጥር',
+        'structural_parent' => 'መዋቅራዊ ወላጅ',
+        'functional_reporting' => 'ተግባራዊ ሪፖርት',
+        'technical_supervision' => 'ቴክኒካዊ ቁጥጥር',
+        'administrative_reporting' => 'አስተዳደራዊ ሪፖርት',
+        'coordination' => 'ማስተባበር',
+        'service_delivery' => 'አገልግሎት አቅርቦት',
+        'budget_reporting' => 'የበጀት ሪፖርት',
+        'temporary_assignment' => 'ጊዜያዊ ምደባ',
+        'dotted_line_reporting' => 'የተቋረጠ መስመር ሪፖርት',
+        'other' => 'ሌላ',
+    ],
+    'statuses' => [
+        'active' => 'ንቁ',
+        'inactive' => 'ንቁ ያልሆነ',
+        'expired' => 'ጊዜው ያለፈ',
+        'cancelled' => 'የተሰረዘ',
+    ],
+    'messages' => [
+        'created' => 'ግንኙነት በተሳካ ሁኔታ ተፈጥሯል',
+        'updated' => 'ግንኙነት በተሳካ ሁኔታ ተዘምኗል',
+        'deleted' => 'ግንኙነት በተሳካ ሁኔታ ተሰርዟል',
+        'restored' => 'ግንኙነት በተሳካ ሁኔታ ተመልሷል',
+    ],
+    'validation' => [
+        'target_not_found' => 'የተመረጠው የግንኙነት መዳረሻ አልተገኘም።',
+        'invalid_effective_dates' => 'የማብቂያ ቀን ከመጀመሪያ ቀን በኋላ ወይም እኩል መሆን አለበት።',
+        'only_one_primary_structural_parent' => 'አንድ ንቁ ዋና መዋቅራዊ ወላጅ ብቻ ይፈቀዳል።',
+        'structural_cycle' => 'መዋቅራዊ ግንኙነት ዙር መፍጠር አይችልም።',
+        'invalid_structural_target' => 'ይህ የመዳረሻ አይነት እንደ መዋቅራዊ ወላጅ መጠቀም አይቻልም።',
+        'invalid_unit_relationship_target' => 'የድርጅት ዩኒት ግንኙነት ወደ ድርጅት ወይም ወደ ሌላ የድርጅት ዩኒት ብቻ መሆን አለበት።',
+        'duplicate_active_relationship' => 'ለዚህ ምንጭ፣ መዳረሻ እና የግንኙነት አይነት ንቁ ግንኙነት ቀድሞውኑ አለ።',
+    ],
+];

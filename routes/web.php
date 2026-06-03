@@ -62,6 +62,7 @@ use App\Http\Controllers\Web\EntitlementRuleController;
 use App\Http\Controllers\Web\GradeLevelController;
 use App\Http\Controllers\Web\HierarchyVersionController;
 use App\Http\Controllers\Web\InstitutionOfficeController;
+use App\Http\Controllers\Web\InstitutionOfficeRelationshipController;
 use App\Http\Controllers\Web\IdCardController;
 use App\Http\Controllers\Web\IdCardExportController;
 use App\Http\Controllers\Web\IsicActivityController;
@@ -70,12 +71,14 @@ use App\Http\Controllers\Web\OrganizationController;
 use App\Http\Controllers\Web\OrganizationEdgeController;
 use App\Http\Controllers\Web\OrganizationTypeController;
 use App\Http\Controllers\Web\OrganizationUnitController;
+use App\Http\Controllers\Web\OrganizationUnitRelationshipController;
 use App\Http\Controllers\Web\OrganizationUnitTypeController;
 use App\Http\Controllers\Web\PermissionController;
 use App\Http\Controllers\Web\PositionController;
 use App\Http\Controllers\Web\PositionEstablishmentController;
 use App\Http\Controllers\Web\PublicHolidayController;
 use App\Http\Controllers\Web\RecycleBinController;
+use App\Http\Controllers\Web\ReportingLineController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\ServiceProviderController;
 use App\Http\Controllers\Web\ServiceProviderUserController;
@@ -320,6 +323,12 @@ Route::middleware(['auth', 'verified', 'mfa', 'admin.access'])->group(function (
     Route::get('/organization-units/create', [OrganizationUnitController::class, 'create'])->name('organization-units.create');
     Route::post('/organization-units', [OrganizationUnitController::class, 'store'])->name('organization-units.store');
     Route::get('/organization-units/{organizationUnit}', [OrganizationUnitController::class, 'show'])->name('organization-units.show');
+    Route::get('/organization-units/{organizationUnit}/relationships', [OrganizationUnitRelationshipController::class, 'index'])->name('organization-units.relationships.index');
+    Route::post('/organization-units/{organizationUnit}/relationships', [OrganizationUnitRelationshipController::class, 'store'])->name('organization-units.relationships.store');
+    Route::get('/organization-units/{organizationUnit}/relationships/{relationship}', [OrganizationUnitRelationshipController::class, 'show'])->name('organization-units.relationships.show');
+    Route::match(['put', 'patch'], '/organization-units/{organizationUnit}/relationships/{relationship}', [OrganizationUnitRelationshipController::class, 'update'])->name('organization-units.relationships.update');
+    Route::delete('/organization-units/{organizationUnit}/relationships/{relationship}', [OrganizationUnitRelationshipController::class, 'destroy'])->name('organization-units.relationships.destroy');
+    Route::post('/organization-units/{organizationUnit}/relationships/{relationship}/restore', [OrganizationUnitRelationshipController::class, 'restore'])->name('organization-units.relationships.restore');
     Route::get('/organization-units/{organizationUnit}/edit', [OrganizationUnitController::class, 'edit'])->name('organization-units.edit');
     Route::patch('/organization-units/{organizationUnit}', [OrganizationUnitController::class, 'update'])->name('organization-units.update');
     Route::post('/organization-units/{organizationUnit}/archive', [OrganizationUnitController::class, 'archive'])->name('organization-units.archive');
@@ -648,19 +657,33 @@ Route::middleware(['auth', 'verified', 'mfa', 'admin.access'])->group(function (
         Route::get('/reports', [TransportReportController::class, 'index'])->name('reports.index');
     });
 
-    // Institution Offices
+    // Institution Offices — deprecated; GET routes redirect to Organization Units.
+    // POST /institution-offices (store) remains active: creates an OrganizationUnit.
     Route::get('/institution-offices', [InstitutionOfficeController::class, 'index'])->name('institution-offices.index');
     Route::get('/institution-offices/create', [InstitutionOfficeController::class, 'create'])->name('institution-offices.create');
     Route::post('/institution-offices', [InstitutionOfficeController::class, 'store'])->name('institution-offices.store');
-    Route::get('/institution-offices/{institutionOffice}', [InstitutionOfficeController::class, 'show'])->name('institution-offices.show');
-    Route::get('/institution-offices/{institutionOffice}/edit', [InstitutionOfficeController::class, 'edit'])->name('institution-offices.edit');
-    Route::patch('/institution-offices/{institutionOffice}', [InstitutionOfficeController::class, 'update'])->name('institution-offices.update');
-    Route::delete('/institution-offices/{institutionOffice}', [InstitutionOfficeController::class, 'destroy'])->name('institution-offices.destroy');
-    Route::post('/institution-offices/{institutionOffice}/restore', [InstitutionOfficeController::class, 'restore'])->name('institution-offices.restore');
-    Route::post('/institution-offices/{institutionOffice}/move', [InstitutionOfficeController::class, 'move'])->name('institution-offices.move');
-    Route::get('/institutions/{organization}/offices', [InstitutionOfficeController::class, 'index'])->name('institutions.offices.index');
-    Route::get('/institutions/{organization}/offices/tree', [InstitutionOfficeController::class, 'tree'])->name('institutions.offices.tree');
-    Route::get('/institutions/{organization}/offices/parent-options', [InstitutionOfficeController::class, 'parentOptions'])->name('institutions.offices.parent-options');
+    Route::get('/institution-offices/{institutionOffice}', [InstitutionOfficeController::class, 'show'])->name('institution-offices.show')->where('institutionOffice', '[0-9a-f\-]{36}');
+    Route::get('/institution-offices/{institutionOffice}/edit', [InstitutionOfficeController::class, 'edit'])->name('institution-offices.edit')->where('institutionOffice', '[0-9a-f\-]{36}');
+    Route::patch('/institution-offices/{institutionOffice}', [InstitutionOfficeController::class, 'update'])->name('institution-offices.update')->where('institutionOffice', '[0-9a-f\-]{36}');
+    Route::delete('/institution-offices/{institutionOffice}', [InstitutionOfficeController::class, 'destroy'])->name('institution-offices.destroy')->where('institutionOffice', '[0-9a-f\-]{36}');
+    Route::post('/institution-offices/{institutionOffice}/restore', [InstitutionOfficeController::class, 'restore'])->name('institution-offices.restore')->where('institutionOffice', '[0-9a-f\-]{36}');
+    Route::post('/institution-offices/{institutionOffice}/move', [InstitutionOfficeController::class, 'move'])->name('institution-offices.move')->where('institutionOffice', '[0-9a-f\-]{36}');
+    // Legacy institution office relationship routes — redirect to org-unit index
+    Route::get('/institution-offices/{institutionOffice}/relationships', fn () => redirect()->route('organization-units.index'))->name('institution-offices.relationships.index');
+    Route::post('/institution-offices/{institutionOffice}/relationships', fn () => redirect()->route('organization-units.index'))->name('institution-offices.relationships.store');
+    Route::get('/institution-offices/{institutionOffice}/relationships/{relationship}', fn () => redirect()->route('organization-units.index'))->name('institution-offices.relationships.show');
+    Route::match(['put', 'patch'], '/institution-offices/{institutionOffice}/relationships/{relationship}', fn () => redirect()->route('organization-units.index'))->name('institution-offices.relationships.update');
+    Route::delete('/institution-offices/{institutionOffice}/relationships/{relationship}', fn () => redirect()->route('organization-units.index'))->name('institution-offices.relationships.destroy');
+    Route::post('/institution-offices/{institutionOffice}/relationships/{relationship}/restore', fn () => redirect()->route('organization-units.index'))->name('institution-offices.relationships.restore');
+    // Legacy institution sub-routes — redirect to org-units
+    Route::get('/institutions/{organization}/offices', fn () => redirect()->route('organization-units.index'))->name('institutions.offices.index');
+    Route::get('/institutions/{organization}/offices/tree', fn ($organization) => redirect()->route('organizations.units.tree', $organization))->name('institutions.offices.tree');
+    Route::get('/institutions/{organization}/offices/parent-options', fn ($organization) => redirect()->route('organizations.units.options', $organization))->name('institutions.offices.parent-options');
+
+    Route::get('/reporting-lines', [ReportingLineController::class, 'index'])->name('reporting-lines.index');
+    Route::get('/reporting-lines/organizations/{organization}', [ReportingLineController::class, 'organization'])->name('reporting-lines.organizations.show');
+    Route::get('/reporting-lines/institution-offices/{institutionOffice}', [ReportingLineController::class, 'institutionOffice'])->name('reporting-lines.institution-offices.show');
+    Route::get('/reporting-lines/organization-units/{organizationUnit}', [ReportingLineController::class, 'organizationUnit'])->name('reporting-lines.organization-units.show');
 
     // Cafeteria Subsidy Module
     Route::prefix('cafeteria')->name('cafeteria.')->group(function (): void {

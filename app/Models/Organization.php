@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\OrganizationStatus;
+use App\Enums\RelationshipTargetType;
 use App\Models\Concerns\HasUuidPrimaryKey;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -110,5 +111,22 @@ class Organization extends Model
     public function geographicInstitutionOffices(): HasMany
     {
         return $this->hasMany(InstitutionOffice::class, 'geographic_organization_id');
+    }
+
+    public function structurallyOwnedOffices(): HasMany
+    {
+        return $this->hasMany(InstitutionOffice::class, 'structural_organization_id');
+    }
+
+    public function reportedToByOffices(): HasMany
+    {
+        return $this->hasMany(InstitutionOfficeRelationship::class, 'target_id')
+            ->where('target_type', RelationshipTargetType::Organization->value);
+    }
+
+    public function reportedToByUnits(): HasMany
+    {
+        return $this->hasMany(OrganizationUnitRelationship::class, 'target_id')
+            ->where('target_type', RelationshipTargetType::Organization->value);
     }
 }

@@ -9,12 +9,14 @@ use App\Actions\Organizations\CreateOrganizationAction;
 use App\Actions\Organizations\UpdateOrganizationAction;
 use App\Enums\HierarchyVersionStatus;
 use App\Http\Controllers\Controller;
-use App\Models\InstitutionOffice;
 use App\Http\Requests\OrganizationStoreRequest;
 use App\Http\Requests\OrganizationUpdateRequest;
+use App\Http\Resources\ReportingLineResource;
 use App\Models\HierarchyVersion;
+use App\Models\InstitutionOffice;
 use App\Models\Organization;
 use App\Models\OrganizationType;
+use App\Services\OrganizationRelationships\ReportingLineService;
 use App\Services\Organizations\ParentOrganizationOptionsService;
 use App\Services\OrganizationScope\OrganizationScopeService;
 use Illuminate\Http\JsonResponse;
@@ -125,8 +127,11 @@ class OrganizationController extends Controller
         return response()->json($resolved);
     }
 
-    public function show(Organization $organization, OrganizationScopeService $organizationScopeService): Response
-    {
+    public function show(
+        Organization $organization,
+        OrganizationScopeService $organizationScopeService,
+        ReportingLineService $reportingLineService,
+    ): Response {
         $user = Auth::user();
 
         $latestVersionId = HierarchyVersion::query()
@@ -156,6 +161,12 @@ class OrganizationController extends Controller
                 ? []
                 : $organizationScopeService->descendantsForOrganization($organization->id, $latestVersionId),
             'institutionOffices' => $institutionOffices,
+            'reportingOffices' => ReportingLineResource::collection(
+                $reportingLineService->getOfficesReportingToOrganization($organization),
+            )->resolve(request()),
+            'reportingUnits' => ReportingLineResource::collection(
+                $reportingLineService->getUnitsReportingToOrganization($organization),
+            )->resolve(request()),
             'can' => [
                 'update' => $user?->can('update', $organization) ?? false,
                 'archive' => $user?->can('archive', $organization) ?? false,
