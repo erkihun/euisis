@@ -107,16 +107,7 @@ class RecycleBinService
         abort_unless($actor->can($definition['restore_permission']), 403);
 
         $oldValues = $record->toArray();
-
-        $this->writeAuditLogAction->execute(
-            AuditEventType::RecordRestored,
-            $actor,
-            $record,
-            $this->organizationId($record),
-            oldValues: $oldValues,
-            newValues: [],
-            request: $request,
-        );
+        $organizationId = $this->organizationId($record);
 
         try {
             $record->forceDelete();
@@ -128,6 +119,16 @@ class RecycleBinService
             }
             throw $e;
         }
+
+        $this->writeAuditLogAction->execute(
+            AuditEventType::RecordDeleted,
+            $actor,
+            $record,
+            $organizationId,
+            oldValues: $oldValues,
+            newValues: [],
+            request: $request,
+        );
     }
 
     private function applyFilters(Builder $query, Request $request): void

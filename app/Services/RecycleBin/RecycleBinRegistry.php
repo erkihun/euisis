@@ -25,8 +25,8 @@ class RecycleBinRegistry
             'organizations' => [
                 'model' => Organization::class,
                 'label_key' => 'recycleBin.types.organizations',
-                'restore_permission' => 'organizations.restore',
-                'view_deleted_permission' => 'organizations.viewDeleted',
+                'restore_permission' => 'organizations.manage',
+                'view_deleted_permission' => 'organizations.manage',
             ],
             'organization_types' => [
                 'model' => OrganizationType::class,
