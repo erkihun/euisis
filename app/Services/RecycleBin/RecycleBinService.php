@@ -8,6 +8,7 @@ use App\Actions\Audit\WriteAuditLogAction;
 use App\Enums\AuditEventType;
 use App\Models\CodeRule;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -117,7 +118,16 @@ class RecycleBinService
             request: $request,
         );
 
-        $record->forceDelete();
+        try {
+            $record->forceDelete();
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23000') {
+                throw ValidationException::withMessages([
+                    'record' => __('recycle-bin.force_delete_conflict'),
+                ]);
+            }
+            throw $e;
+        }
     }
 
     private function applyFilters(Builder $query, Request $request): void

@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 return [
-    'deleted_successfully' => 'Record deleted successfully.',
+    'deleted_successfully' => 'Record permanently deleted.',
     'restored_successfully' => 'Record restored successfully.',
     'restore_conflict' => 'Cannot restore record because a conflict exists.',
+    'force_delete_conflict' => 'Cannot permanently delete this record because other records still reference it.',
     'types' => [
         'organizations' => 'Organizations',
         'organization_types' => 'Organization Types',
