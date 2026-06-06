@@ -1,13 +1,13 @@
 import { useRef, useState, useEffect } from 'react';
 import { Link, useForm } from '@inertiajs/react';
-import { MoreVertical, PencilIcon, ArchiveIcon, Plus } from '@/Components/Icons';
+import { MoreVertical, PencilIcon, TrashIcon, Plus } from '@/Components/Icons';
 import { useLocale } from '@/hooks/useLocale';
 
 type Props = {
     organizationId: string;
     can: {
         update: boolean;
-        archive: boolean;
+        delete: boolean;
         createChild: boolean;
     };
 };
@@ -29,11 +29,11 @@ export default function OrganizationActionsMenu({ organizationId, can }: Props) 
         return () => document.removeEventListener('mousedown', handler);
     }, [open]);
 
-    const hasAny = can.update || can.archive || can.createChild;
+    const hasAny = can.update || can.delete || can.createChild;
     if (!hasAny) return null;
 
-    function handleArchive() {
-        if (!confirm(t('organizations.archiveConfirm'))) return;
+    function handleDelete() {
+        if (!confirm(t('organizations.deleteConfirm'))) return;
         destroy(route('organizations.archive', organizationId), {
             onSuccess: () => setOpen(false),
         });
@@ -72,15 +72,15 @@ export default function OrganizationActionsMenu({ organizationId, can }: Props) 
                             {t('common.edit')}
                         </Link>
                     )}
-                    {can.archive && (
+                    {can.delete && (
                         <button
                             type="button"
                             disabled={processing}
-                            onClick={handleArchive}
+                            onClick={handleDelete}
                             className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                         >
-                            <ArchiveIcon className="h-3.5 w-3.5" />
-                            {t('common.archive')}
+                            <TrashIcon className="h-3.5 w-3.5" />
+                            {t('common.delete')}
                         </button>
                     )}
                 </div>

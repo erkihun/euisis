@@ -6,6 +6,7 @@ namespace App\Services\RecycleBin;
 
 use App\Models\CodeRule;
 use App\Models\EntitlementRule;
+use App\Models\Organization;
 use App\Models\OrganizationUnit;
 use App\Models\OrganizationType;
 use App\Models\OrganizationUnitType;
@@ -21,6 +22,12 @@ class RecycleBinRegistry
     public function supportedTypes(): array
     {
         return [
+            'organizations' => [
+                'model' => Organization::class,
+                'label_key' => 'recycleBin.types.organizations',
+                'restore_permission' => 'organizations.restore',
+                'view_deleted_permission' => 'organizations.viewDeleted',
+            ],
             'organization_types' => [
                 'model' => OrganizationType::class,
                 'label_key' => 'recycleBin.types.organization_types',

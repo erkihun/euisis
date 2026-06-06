@@ -186,7 +186,7 @@ const en = {
         subtreeReach: 'Subtree Reach',
         noDescendants: 'No descendants found.',
         nameHistory: 'Name History',
-        archiveConfirm: 'Archive this organization?',
+        deleteConfirm: 'Delete this organization? It will be moved to the recycle bin.',
         addChild: 'Add child',
         type: 'Type',
         currentAssignments: 'Current Assignments',

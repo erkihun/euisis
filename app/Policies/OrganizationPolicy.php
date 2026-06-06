@@ -37,7 +37,12 @@ readonly class OrganizationPolicy
         return $user->can('organizations.manage');
     }
 
-    public function archive(User $user, Organization $organization): bool
+    public function delete(User $user, Organization $organization): bool
+    {
+        return $user->can('organizations.manage');
+    }
+
+    public function restore(User $user, Organization $organization): bool
     {
         return $user->can('organizations.manage');
     }

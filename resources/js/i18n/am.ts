@@ -165,7 +165,7 @@ const am = {
         subtreeReach: 'ንዑስ ዛፍ ስፋት',
         noDescendants: 'ምንም ዘሮች አልተገኙም።',
         nameHistory: 'የስም ታሪክ',
-        archiveConfirm: 'ይህን ተቋም ወደ ማህደር ይላኩ?',
+        deleteConfirm: 'ይህን ተቋም ይሰርዙ? ወደ ሪሳይክል ቢን ይዛወራል።',
         addChild: 'ንዑስ ጨምር',
         type: 'ዓይነት',
         currentAssignments: 'አሁናዊ ምደባዎች',

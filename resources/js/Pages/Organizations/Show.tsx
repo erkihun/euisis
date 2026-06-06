@@ -2,7 +2,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import StatusBadge from '@/Components/StatusBadge';
 import PageHeader from '@/Components/PageHeader';
-import { PencilIcon, ArchiveIcon, Plus } from '@/Components/Icons';
+import { PencilIcon, TrashIcon, Plus } from '@/Components/Icons';
 import { useLocale } from '@/hooks/useLocale';
 import ReportingLinesPanel from '@/Components/relationships/ReportingLinesPanel';
 import type { RelationshipRow } from '@/Components/relationships/RelationshipPanel';
@@ -18,7 +18,7 @@ type Descendant = { descendant_organization_id: string; depth: number };
 
 type CanProps = {
     update: boolean;
-    archive: boolean;
+    delete: boolean;
     createChild: boolean;
 };
 
@@ -64,11 +64,11 @@ export default function OrganizationShow({
     reportingUnits?: RelationshipRow[];
 }) {
     const { t } = useLocale();
-    const archiveForm = useForm({});
+    const deleteForm = useForm({});
 
-    function handleArchive() {
-        if (!confirm(t('organizations.archiveConfirm'))) return;
-        archiveForm.delete(route('organizations.archive', organization.id), {
+    function handleDelete() {
+        if (!confirm(t('organizations.deleteConfirm'))) return;
+        deleteForm.delete(route('organizations.archive', organization.id), {
             onSuccess: () => {},
         });
     }
@@ -100,15 +100,15 @@ export default function OrganizationShow({
                                     {t('common.edit')}
                                 </Link>
                             )}
-                            {can.archive && (
+                            {can.delete && (
                                 <button
                                     type="button"
-                                    disabled={archiveForm.processing}
-                                    onClick={handleArchive}
+                                    disabled={deleteForm.processing}
+                                    onClick={handleDelete}
                                     className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
                                 >
-                                    <ArchiveIcon className="h-3.5 w-3.5" />
-                                    {t('common.archive')}
+                                    <TrashIcon className="h-3.5 w-3.5" />
+                                    {t('common.delete')}
                                 </button>
                             )}
                         </div>

@@ -10,10 +10,12 @@ use App\Models\Concerns\HasUuidPrimaryKey;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Organization extends Model
 {
     use HasUuidPrimaryKey;
+    use SoftDeletes;
 
     protected $fillable = [
         'organization_type_id',
@@ -30,6 +32,8 @@ class Organization extends Model
         'logo_path',
         'branding_primary_color',
         'branding_secondary_color',
+        'deleted_by',
+        'deletion_reason',
     ];
 
     protected $appends = ['logo_url', 'has_logo'];

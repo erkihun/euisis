@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Web;
 
-use App\Actions\Organizations\ArchiveOrganizationAction;
+use App\Actions\Organizations\DeleteOrganizationAction;
 use App\Actions\Organizations\CreateOrganizationAction;
 use App\Actions\Organizations\UpdateOrganizationAction;
 use App\Enums\HierarchyVersionStatus;
@@ -169,7 +169,7 @@ class OrganizationController extends Controller
             )->resolve(request()),
             'can' => [
                 'update' => $user?->can('update', $organization) ?? false,
-                'archive' => $user?->can('archive', $organization) ?? false,
+                'delete' => $user?->can('delete', $organization) ?? false,
                 'createChild' => $user?->can('createChild', $organization) ?? false,
             ],
         ]);
@@ -212,11 +212,11 @@ class OrganizationController extends Controller
     public function archive(
         Request $request,
         Organization $organization,
-        ArchiveOrganizationAction $archiveOrganizationAction,
+        DeleteOrganizationAction $deleteOrganizationAction,
     ): RedirectResponse {
-        $this->authorize('archive', $organization);
+        $this->authorize('delete', $organization);
 
-        $archiveOrganizationAction->execute($organization, $request->user());
+        $deleteOrganizationAction->execute($organization, $request->user());
 
         return to_route('organizations.index');
     }

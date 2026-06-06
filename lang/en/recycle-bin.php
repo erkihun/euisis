@@ -7,6 +7,7 @@ return [
     'restored_successfully' => 'Record restored successfully.',
     'restore_conflict' => 'Cannot restore record because a conflict exists.',
     'types' => [
+        'organizations' => 'Organizations',
         'organization_types' => 'Organization Types',
         'organization_units' => 'Organization Units',
         'organization_unit_types' => 'Organization Unit Types',

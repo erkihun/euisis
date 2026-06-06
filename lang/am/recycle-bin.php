@@ -7,6 +7,7 @@ return [
     'restored_successfully' => 'መዝገቡ በተሳካ ሁኔታ ተመልሷል።',
     'restore_conflict' => 'ግጭት ስላለ መዝገቡን መመለስ አይቻልም።',
     'types' => [
+        'organizations' => 'ተቋማት',
         'organization_types' => 'የተቋም ዓይነቶች',
         'organization_units' => 'የተቋም ዩኒቶች',
         'organization_unit_types' => 'የተቋም ዩኒት አይነቶች',
