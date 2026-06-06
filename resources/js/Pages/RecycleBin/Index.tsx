@@ -6,6 +6,7 @@ import type { FormEvent } from 'react';
 import { TrashIcon } from '@/Components/Icons';
 import { useLocale } from '@/hooks/useLocale';
 import { useConfirm } from '@/hooks/useConfirm';
+import { toast } from '@/lib/toast';
 import LocalizedDatePicker from '@/Components/Calendar/LocalizedDatePicker';
 
 type RecycleBinRecord = {
@@ -74,7 +75,11 @@ export default function RecycleBinIndex({ records, filters, types }: Props) {
             variant: 'danger',
         });
         if (!confirmed) return;
-        router.delete(route('recycle-bin.force-delete', { type: record.type, id: record.id }), { preserveScroll: true });
+        router.delete(route('recycle-bin.force-delete', { type: record.type, id: record.id }), {
+            preserveScroll: true,
+            onSuccess: () => toast.success(t('recycleBin.deletedSuccessfully')),
+            onError: () => toast.error(t('recycleBin.failedToDelete')),
+        });
     }
 
     return (
