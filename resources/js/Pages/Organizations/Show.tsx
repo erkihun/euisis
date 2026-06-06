@@ -245,24 +245,19 @@ export default function OrganizationShow({
                 </section>
             )}
 
-            {/* Institution Offices */}
-            <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-                <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900 dark:text-slate-100">
-                        {t('institutionOffices.title')} ({institutionOffices.length})
-                    </h3>
-                    <Link
-                        href={`${route('institution-offices.create')}?institution_id=${organization.id}`}
-                        className="text-xs text-blue-600 hover:underline dark:text-blue-400"
-                    >
-                        + {t('institutionOffices.addOffice')}
-                    </Link>
-                </div>
-                {institutionOffices.length === 0 ? (
-                    <p className="mt-4 text-sm text-gray-400 dark:text-slate-500">
-                        {t('institutionOffices.noOffices')}
-                    </p>
-                ) : (
+            {institutionOffices.length > 0 && (
+                <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex items-center justify-between">
+                        <h3 className="font-semibold text-gray-900 dark:text-slate-100">
+                            {t('institutionOffices.title')} ({institutionOffices.length})
+                        </h3>
+                        <Link
+                            href={`${route('institution-offices.create')}?institution_id=${organization.id}`}
+                            className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                        >
+                            + {t('institutionOffices.addOffice')}
+                        </Link>
+                    </div>
                     <div className="mt-4 overflow-hidden rounded-xl border border-gray-100 dark:border-slate-800">
                         <table className="min-w-full text-left text-sm">
                             <thead className="bg-gray-50 dark:bg-slate-950">
@@ -318,12 +313,11 @@ export default function OrganizationShow({
                             </tbody>
                         </table>
                     </div>
-                )}
-            </section>
+                </section>
+            )}
 
-            <section className="mt-6 grid gap-6 lg:grid-cols-2">
-                <ReportingLinesPanel rows={reportingOffices} />
-                <ReportingLinesPanel rows={reportingUnits} />
+            <section className="mt-6">
+                <ReportingLinesPanel rows={[...reportingOffices, ...reportingUnits]} />
             </section>
 
             <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
