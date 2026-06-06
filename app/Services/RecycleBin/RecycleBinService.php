@@ -98,6 +98,28 @@ class RecycleBinService
         return $record->fresh() ?? $record;
     }
 
+    public function forceDelete(string $type, string $id, User $actor, Request $request): void
+    {
+        $record = $this->findDeleted($type, $id);
+        $definition = $this->registry->definition($type);
+
+        abort_unless($actor->can($definition['restore_permission']), 403);
+
+        $oldValues = $record->toArray();
+
+        $this->writeAuditLogAction->execute(
+            AuditEventType::RecordRestored,
+            $actor,
+            $record,
+            $this->organizationId($record),
+            oldValues: $oldValues,
+            newValues: [],
+            request: $request,
+        );
+
+        $record->forceDelete();
+    }
+
     private function applyFilters(Builder $query, Request $request): void
     {
         $query

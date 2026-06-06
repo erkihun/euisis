@@ -543,6 +543,7 @@ Route::middleware(['auth', 'verified', 'mfa', 'admin.access'])->group(function (
     // Administration: Recycle Bin
     Route::get('/recycle-bin', [RecycleBinController::class, 'index'])->name('recycle-bin.index');
     Route::post('/recycle-bin/{type}/{id}/restore', [RecycleBinController::class, 'restore'])->name('recycle-bin.restore');
+    Route::delete('/recycle-bin/{type}/{id}', [RecycleBinController::class, 'forceDelete'])->name('recycle-bin.force-delete');
 
     // Administration: Code Rules
     Route::get('/code-rules', [CodeRuleController::class, 'index'])->name('code-rules.index');

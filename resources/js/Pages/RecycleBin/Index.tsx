@@ -17,7 +17,7 @@ type RecycleBinRecord = {
     deleted_at: string | null;
     deleted_by: { id: number; name: string } | null;
     deletion_reason: string | null;
-    can: { restore: boolean; view_details: boolean };
+    can: { restore: boolean; forceDelete: boolean; view_details: boolean };
 };
 
 type Props = {
@@ -63,6 +63,18 @@ export default function RecycleBinIndex({ records, filters, types }: Props) {
         });
         if (!confirmed) return;
         router.post(route('recycle-bin.restore', { type: record.type, id: record.id }), {}, { preserveScroll: true });
+    }
+
+    async function permanentlyDelete(record: RecycleBinRecord) {
+        const { confirmed } = await confirm({
+            title: t('recycleBin.confirmPermanentDeleteTitle'),
+            description: t('recycleBin.confirmPermanentDeleteMessage'),
+            confirmLabel: t('recycleBin.permanentlyDelete'),
+            cancelLabel: t('confirmations.cancel'),
+            variant: 'danger',
+        });
+        if (!confirmed) return;
+        router.delete(route('recycle-bin.force-delete', { type: record.type, id: record.id }), { preserveScroll: true });
     }
 
     return (
@@ -135,13 +147,20 @@ export default function RecycleBinIndex({ records, filters, types }: Props) {
                                             <td className="px-4 py-3 text-gray-600 dark:text-slate-300">{record.deleted_at ? new Date(record.deleted_at).toLocaleString() : '-'}</td>
                                             <td className="max-w-xs truncate px-4 py-3 text-gray-600 dark:text-slate-300">{record.deletion_reason ?? '-'}</td>
                                             <td className="px-4 py-3 text-right">
-                                                {record.can.restore ? (
-                                                    <button type="button" onClick={() => restore(record)} className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:border-emerald-900/50 dark:text-emerald-300 dark:hover:bg-emerald-950/30">
-                                                        {t('recycleBin.restoreRecord')}
-                                                    </button>
-                                                ) : (
-                                                    <span className="text-xs text-gray-400 dark:text-slate-500">{t('recycleBin.noRestorePermission')}</span>
-                                                )}
+                                                <div className="flex items-center justify-end gap-2">
+                                                    {record.can.restore ? (
+                                                        <button type="button" onClick={() => restore(record)} className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:border-emerald-900/50 dark:text-emerald-300 dark:hover:bg-emerald-950/30">
+                                                            {t('recycleBin.restoreRecord')}
+                                                        </button>
+                                                    ) : (
+                                                        <span className="text-xs text-gray-400 dark:text-slate-500">{t('recycleBin.noRestorePermission')}</span>
+                                                    )}
+                                                    {record.can.forceDelete && (
+                                                        <button type="button" onClick={() => permanentlyDelete(record)} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-950/30">
+                                                            {t('recycleBin.permanentlyDelete')}
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}

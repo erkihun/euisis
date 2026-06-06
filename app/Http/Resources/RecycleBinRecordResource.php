@@ -29,6 +29,7 @@ class RecycleBinRecordResource extends JsonResource
             'can' => [
                 'restore' => ($request->user()?->can($definition['restore_permission']) ?? false)
                     && ($request->user()?->can('restore', $record) ?? false),
+                'forceDelete' => $request->user()?->can($definition['restore_permission']) ?? false,
                 'view_details' => $request->user()?->can('recycle-bin.viewDetails') ?? false,
             ],
         ];

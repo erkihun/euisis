@@ -42,7 +42,7 @@ class RecycleBinController extends Controller
                 ->values(),
             'can' => [
                 'restore' => $request->user()?->can('recycle-bin.restore') ?? false,
-                'forceDelete' => false,
+                'forceDelete' => $request->user()?->can('recycle-bin.restore') ?? false,
             ],
         ]);
     }
@@ -56,5 +56,18 @@ class RecycleBinController extends Controller
         $recycleBinService->restore($type, $id, $request->user(), $request);
 
         return back()->with('flash', ['message' => __('recycle-bin.restored_successfully'), 'type' => 'success']);
+    }
+
+    public function forceDelete(
+        Request $request,
+        string $type,
+        string $id,
+        RecycleBinService $recycleBinService,
+    ): RedirectResponse {
+        abort_unless($request->user()?->can('recycle-bin.restore'), 403);
+
+        $recycleBinService->forceDelete($type, $id, $request->user(), $request);
+
+        return back()->with('flash', ['message' => __('recycle-bin.deleted_successfully'), 'type' => 'success']);
     }
 }
