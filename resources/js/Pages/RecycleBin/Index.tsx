@@ -78,7 +78,7 @@ export default function RecycleBinIndex({ records, filters, types }: Props) {
         router.delete(route('recycle-bin.force-delete', { type: record.type, id: record.id }), {
             preserveScroll: true,
             onSuccess: () => toast.success(t('recycleBin.deletedSuccessfully')),
-            onError: () => toast.error(t('recycleBin.failedToDelete')),
+            onError: (errors) => toast.error(errors.record ?? t('recycleBin.failedToDelete')),
         });
     }
 
